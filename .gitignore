@@ -1,0 +1,31 @@
+# Android Studio
+build/
+.gradle
+.idea
+*.ipr
+*.iws
+*.iml
+out
+
+# generated files & folder
+bin
+gen
+tmp/
+junit/
+
+# properties
+local.properties
+ant.properties
+
+# built application
+*.apk
+*.ap_
+
+# dex VM
+*.dex
+
+# Java class
+*.class
+
+# DStore
+.DS_Store

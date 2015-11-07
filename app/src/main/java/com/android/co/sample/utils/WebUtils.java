@@ -1,9 +1,9 @@
-package com.android.co.sample.server;
+package com.android.co.sample.utils;
 
 /****************************************************
  * Co.line
  * -----------
- * @version 0.0.2
+ * @version 0.0.3
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git

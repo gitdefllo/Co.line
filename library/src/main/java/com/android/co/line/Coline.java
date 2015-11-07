@@ -19,7 +19,7 @@ import java.util.Map;
 /****************************************************
  * Co.line
  * -----------
- * @version 0.0.2
+ * @version 0.0.3
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -38,10 +38,10 @@ import java.util.Map;
  * You need to initiate Co.line with the context and
  * optionaly set different parameters to do a request:
  *
- * Coline.init(context)
- *       .url(string, string)
- *       .auth(string)
- *		 .with(contentvalues)
+ * Coline.init(Context)
+ *       .url(String, String)
+ *       .auth(ColineAuth.int, String)
+ *		 .with(ContentValues)
  *		 .success(Success())
  *       .error(Error())
  *       .exec();
@@ -58,6 +58,7 @@ public class Coline {
     private String 		   method;
     private String 		   route;
     private String 		   auth;
+    private String         token;
     private ContentValues  values;
     private StringBuilder  body = null;
     private Success	   	   successback;
@@ -93,11 +94,6 @@ public class Coline {
         return this;
     }
 
-    public Coline auth(String auth) {
-        this.auth = auth;
-        return this;
-    }
-
     public Coline with(ContentValues values) {
         this.values = values;
         return this;
@@ -109,6 +105,19 @@ public class Coline {
                     values[i+1].toString() );
             ++i;
         }
+        return this;
+    }
+
+    public Coline auth(int auth, String token) {
+        switch (auth) {
+            case ColineAuth.BASIC_AUTH:
+                this.auth  = "Basic ";
+                break;
+            case ColineAuth.OAUTH_2:
+                this.auth  = "Bearer ";
+                break;
+        }
+        this.token = token;
         return this;
     }
 
@@ -153,8 +162,8 @@ public class Coline {
         int     MAX_READ_TIMEOUT    = 10000;
         int     MAX_CONNECT_TIMEOUT = 15000;
 
-        String  response            = "";
-        URL     url                 = null;
+        String  response = "";
+        URL     url = null;
 
         // Init URL
         try {
@@ -175,7 +184,8 @@ public class Coline {
             http = (HttpURLConnection) url.openConnection();
             http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             http.setRequestProperty("charset", "utf-8");
-            http.addRequestProperty("Authorization", "Basic " + auth);
+            if (auth != null && token != null)
+                http.addRequestProperty("Authorization", auth + token);
             http.setReadTimeout(MAX_READ_TIMEOUT);
             http.setConnectTimeout(MAX_CONNECT_TIMEOUT);
             http.setUseCaches(false);

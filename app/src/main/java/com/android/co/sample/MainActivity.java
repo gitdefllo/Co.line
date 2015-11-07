@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.android.co.line.Coline;
-import com.android.co.sample.server.WebUtils;
+import com.android.co.sample.utils.WebUtils;
 
 /****************************************************
- * Co.line
- * -----------
- * @version 0.0.2
+ * Co.line Sample
+ * --------------
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git

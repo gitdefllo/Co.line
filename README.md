@@ -1,6 +1,6 @@
 Co.line
 =======    
-*v.0.0.2*  
+*v.0.0.3*
 **REST connection class with chained methods for Android.**   
 
 Co.line is a custom class to do a HttpURLConnection in REST.   
@@ -9,14 +9,38 @@ The advantage is using one line declaration by chained methods, it creates autom
 Usage
 ------
 ```java
-Coline.init(context)
-        .url("GET", "http://api.url.com")
-        .auth("eDzp2DA1ezD48S6LSfPdZCab0")
-        .with(values)
-        .success(successCallback)
-        .error(errorCallback)
+Coline.init(this).url("GET", "http://api.url.com").exec();
+```
+You can pass a ContentValues as parameters to request like:
+```java
+ContentValues params = new ContentValues();
+params.put("username", "Fllo");
+params.put("github","@Gitdefllo");
+
+Coline.init(getActivity())
+        .url("POST", "http://api.url.com")
+        .with(params)
         .exec();
 ```
+And you also can do request with BasicAuth and OAuth2.0. This example uses a BasicAuth and retrieves the request result in a success callback:
+```java
+Coline.init(context)
+        .auth(ColineAuth.BASIC_AUTH, "eDzp2DA1ezD48S6LSfPdZCab0")
+        .success(new Coline.Success() {
+            @Override
+            public void onSuccess(String s) {
+                ...
+            }
+        })
+        .exec();
+```
+
+Next features (Todo)
+-------
+- ~~Use a single callback for return: `success` and `error`, instead of combined `callbacks` method;~~
+- ~~Use `context.getMainLooper()` in order to init and back elsewhere than activities/fragments;~~
+- Add a value to des/activate logs in `init()` method;
+- ~~Modify `auth()` methods to integrate OAuth2.0, as a header's params `(String methodAuth, String tokenAuth)`;~~
 
 Documentation
 -------
@@ -39,8 +63,7 @@ public Coline url(String method, String url)
 Coline.url("GET", "https://api.github.com/users");
 ```
 
-**Basic Auth**
-*Note: it's only support BasicAuth.*
+**Authenticate**
 ```java
 public Coline auth(String authentification)
 ```
@@ -96,20 +119,17 @@ Coline.error(new Coline.Error() {
 public void exec()
 ```
 
-Next features (todo)
--------  
-- ~~Add `with(ContentValues params)` method as an override of existing one;~~
-- ~~Use a single callback for return: `success` and `error`, instead of combined `callbacks` method;~~
-- ~~Use `context.getMainLooper()` in order to init and back elsewhere than activities/fragments;~~
-- Add a value to des/activate logs in `init()` method;
-- Modify `auth()` methods to integrate OAuth2.0, as a header's params `(String methodAuth, String tokenAuth)`;
-
 Logs
 ----
 
+######v.0.0.3:
+- Deploy in library project;
+- Handle OAuth2.0;
+- Small examples;
+
 ######v.0.0.2:
-- Callbacks separate in 'success' and 'error' (`back()` decrepeated);
-- Context handler: calling from Activity, Fragment, Service or elsewhere;
+- Callbacks separation 'success' and 'error';
+- Context handler;
 
 ######v.0.0.1:
 - Basic implementation;

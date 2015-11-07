@@ -9,22 +9,12 @@ The advantage is using one line declaration by chained methods, it creates autom
 Usage
 ------
 ```java
-Coline.init(this).url("GET", "http://api.url.com").exec();
+Coline.init(this).url("GET", "http://api.url.com/").exec();
 ```
-You can pass a ContentValues as parameters to request like:
-```java
-ContentValues params = new ContentValues();
-params.put("username", "Fllo");
-params.put("github","@Gitdefllo");
-
-Coline.init(getActivity())
-        .url("POST", "http://api.url.com")
-        .with(params)
-        .exec();
-```
-And you also can do request with BasicAuth and OAuth2.0. This example uses a BasicAuth and retrieves the request result in a success callback:
+You also can do request with BasicAuth and OAuth2.0. This example uses a BasicAuth and retrieves the request result in a success callback:
 ```java
 Coline.init(context)
+        .url("GET", "http://api.url.com/username")
         .auth(ColineAuth.BASIC_AUTH, "eDzp2DA1ezD48S6LSfPdZCab0")
         .success(new Coline.Success() {
             @Override
@@ -60,16 +50,16 @@ public Coline url(String method, String url)
 ```
 *example:*
 ```java
-Coline.url("GET", "https://api.github.com/users");
+Coline.url("GET", "http://api.url.com/users");
 ```
 
 **Authenticate**
 ```java
-public Coline auth(String authentification)
+public Coline auth(int auth, String token)
 ```
 *example:*
 ```java
-Coline.auth("e53rqEK0ydzH5kleR98t9r6Eim");
+Coline.auth(ColineAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
 ```
 
 **Parameters**

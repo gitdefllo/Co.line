@@ -20,7 +20,7 @@ import java.util.Map;
 /****************************************************
  * Co.line
  * -----------
- * @version 0.0.3
+ * @version 0.0.4
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -40,7 +40,7 @@ import java.util.Map;
  * optionaly set different parameters to do a request:
  *
  * Coline.init(Context)
- *       .url(String, String)
+ *       .url(ColineHttpMethod.int, String)
  *       .auth(ColineAuth.int, String)
  *		 .with(ContentValues)
  *		 .success(Success())
@@ -62,8 +62,8 @@ public class Coline {
     private String         token;
     private ContentValues  values;
     private StringBuilder  body = null;
-    private Success	   	   successback;
-    private Error		   errorback;
+    private Success	   	   success;
+    private Error		   error;
 
     // Public constructor
     public static Coline init(Context context) {
@@ -89,8 +89,8 @@ public class Coline {
     }
 
     // Public methods
-    public Coline url(String method, String route) {
-        this.method = method;
+    public Coline url(int method, String route) {
+        this.method = new ColineHttpMethod().getMethod(method);
         this.route  = route;
         return this;
     }
@@ -110,25 +110,18 @@ public class Coline {
     }
 
     public Coline auth(int auth, String token) {
-        switch (auth) {
-            case ColineAuth.BASIC_AUTH:
-                this.auth  = "Basic ";
-                break;
-            case ColineAuth.OAUTH_2:
-                this.auth  = "Bearer ";
-                break;
-        }
+        this.auth  = new ColineAuth().getAuthHeader(auth);
         this.token = token;
         return this;
     }
 
-    public Coline success(Success successback) {
-        this.successback = successback;
+    public Coline success(Success success) {
+        this.success = success;
         return this;
     }
 
-    public Coline error(Error errorback) {
-        this.errorback = errorback;
+    public Coline error(Error error) {
+        this.error = error;
         return this;
     }
 
@@ -250,7 +243,7 @@ public class Coline {
             Log.e(CO_LINE, "error when parsing result: " + e.toString());
         }
 
-        if (status != 200 || response == null || response.contains("error")) {
+        if (status != 200 || response.length() == 0 || response.contains("error")) {
             returnError(response);
             return;
         }
@@ -260,27 +253,21 @@ public class Coline {
 
     // Result handlers in Main Thread
     private void returnSuccess(final String s) {
-        if (successback == null) {
-            return;
-        }
-
+        if (success == null) return;
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                successback.onSuccess(s);
+                success.onSuccess(s);
             }
         });
     }
 
     private void returnError(final String s) {
-        if (errorback == null) {
-            return;
-        }
-
+        if (error == null) return;
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                errorback.onError(s);
+                error.onError(s);
             }
         });
     }

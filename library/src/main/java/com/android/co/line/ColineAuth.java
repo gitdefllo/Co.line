@@ -3,7 +3,7 @@ package com.android.co.line;
 /****************************************************
  * Co.lineAuth
  * -----------
- * @version 0.0.3
+ * @version 0.0.4
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -11,13 +11,6 @@ package com.android.co.line;
  *****************************************************
  * Description
  * ------------
- *
- * This is an open-source ready-to-use class.
- * Just copy/paste it in your project.
- *
- *
- * Usage
- * -----
  *
  * Set a header field (or api key in url) using:
  *
@@ -29,4 +22,18 @@ public class ColineAuth {
     // Authentication fields
     public static final int BASIC_AUTH = 0x00001;
     public static final int OAUTH_2    = 0x00002;
+
+    // Constructor
+    public ColineAuth() { }
+
+    // Retrieve authentication header
+    public String getAuthHeader(int auth) {
+        switch (auth) {
+            case BASIC_AUTH:
+                return "Basic ";
+            case OAUTH_2:
+                return "Bearer ";
+        }
+        return null;
+    }
 }

@@ -1,7 +1,7 @@
 Co.line
 =======    
-*v.0.0.3*  
-**REST connection lib for Android.**   
+*v.0.0.4*
+**REST connection lib for Android.**
 
 Co.line is a custom library to do a HttpURLConnection in REST.   
 The advantage is using one line declaration by chained methods, it creates automatically a new Thread and returns result in callbacks UI Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
@@ -9,12 +9,12 @@ The advantage is using one line declaration by chained methods, it creates autom
 Usage
 ------
 ```java
-Coline.init(this).url("GET", "http://api.url.com/").exec();
+Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
 ```
 You also can do request with BasicAuth and OAuth2.0. This example uses a BasicAuth and retrieves the request result in a success callback:
 ```java
 Coline.init(context)
-        .url("GET", "http://api.url.com/username")
+        .url(ColineHttpMethod.GET, "http://api.url.com/username")
         .auth(ColineAuth.BASIC_AUTH, "eDzp2DA1ezD48S6LSfPdZCab0")
         .success(new Coline.Success() {
             @Override
@@ -27,10 +27,8 @@ Coline.init(context)
 
 Next features (Todo)
 -------
-- ~~Use a single callback for return: `success` and `error`, instead of combined `callbacks` method;~~
-- ~~Use `context.getMainLooper()` in order to init and back elsewhere than activities/fragments;~~
+- In callbacks, apply a custom model for the result string like `.success(myModel, mCallback)`;
 - Add a value to des/activate logs in `init()` method;
-- ~~Modify `auth()` methods to integrate OAuth2.0, as a header's params `(String methodAuth, String tokenAuth)`;~~
 
 Documentation
 -------
@@ -46,12 +44,13 @@ Coline.init(MainActivity.this);
 
 **Request methods**
 ```java
-public Coline url(String method, String url)
+public Coline url(int method, String url)
 ```
 *example:*
 ```java
-Coline.url("GET", "http://api.url.com/users");
+Coline.url(ColineHttpMethod.POST, "http://api.url.com/user");
 ```
+`ColineHttpMethod` class handles the following requests: `GET`, `POST`, `PUT`, `DELETE` and `HEAD`.
 
 **Authenticate**
 ```java
@@ -75,7 +74,7 @@ Coline.with(values);
 ```
 Or it's also possible to pass a String array with this following pattern:
 ```java
-Coline.with("key1", "value1", "key2", "value2", "key3", "value3");
+Coline.with("username", "Fllo", "github", "Gitdefllo");
 ```
 
 **Callbacks**
@@ -112,6 +111,11 @@ public void exec()
 Logs
 ----
 
+######v.0.0.4:
+- Maven library creation;
+- Creation of ColineHttpMethod class;
+- ColineAuth improved and retrieve header fields;
+
 ######v.0.0.3:
 - Deploy in library project;
 - Handle OAuth2.0;
@@ -128,4 +132,4 @@ Contribution
 -------
 
 Developed by Fllo (@Gitdefllo) 2015.  
-Feel free to contribute, customize or improve it.
+Feel free to contribute, improve or use.

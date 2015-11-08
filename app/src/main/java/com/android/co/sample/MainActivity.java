@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.android.co.line.Coline;
+import com.android.co.line.ColineHttpMethod;
 import com.android.co.sample.utils.WebUtils;
 
 /****************************************************
@@ -29,6 +30,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Do a request to api
-        Coline.init(this).url("GET", WebUtils.URL_DISCOVER).exec();
+        Coline.init(this).url(ColineHttpMethod.GET, WebUtils.URL_DISCOVER).exec();
     }
 }

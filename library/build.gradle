@@ -1,4 +1,15 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+def projectVersion  = '0.0.4'
+def mavenVersion    = '1.0.1'
+def libName         = 'Co.line'
+def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
+def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
+def gitUrl          = 'https://github.com/Gitdefllo/Co.line.git'
 
 android {
     compileSdkVersion 23
@@ -8,7 +19,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName = projectVersion
     }
     buildTypes {
         release {
@@ -20,4 +31,83 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+version = projectVersion
+group = 'com.android.co.line'
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name = libName
+                description = libDesc
+                url siteUrl
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'bintray-fllo-maven'
+                        name 'bintray-plugins'
+                        email 'http://dl.bintray.com/fllo/maven'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+// https://github.com/bintray/gradle-bintray-plugin
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.key")
+
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = libName
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+        version {
+            name = libName
+            desc = libDesc
+            released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
+                    Locale.FRANCE).format(new Date())
+            vcsTag = mavenVersion
+        }
+    }
 }

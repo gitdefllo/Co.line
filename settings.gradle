@@ -1,1 +1,1 @@
-include ':app', ':co.line-android', ':library'
+include ':app', ':library'

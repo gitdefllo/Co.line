@@ -1,10 +1,10 @@
 Co.line
 =======    
-*v.0.0.3*
-**REST connection class with chained methods for Android.**   
+*v.0.0.3*  
+**REST connection lib for Android.**   
 
-Co.line is a custom class to do a HttpURLConnection in REST.   
-The advantage is using one line declaration by chained methods, it creates automatically a new Thread and returns results in callbacks UI Thread. You can also specify a BasicAuth authorization key.
+Co.line is a custom library to do a HttpURLConnection in REST.   
+The advantage is using one line declaration by chained methods, it creates automatically a new Thread and returns result in callbacks UI Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
 
 Usage
 ------

@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -149,9 +150,13 @@ public class Coline {
                 if (!first_value) {
                     body.append('&');
                 }
-                body.append(entry.getKey())
-                        .append('=')
-                        .append(URLEncoder.encode(entry.getValue().toString()));
+                try {
+                    body.append(entry.getKey())
+                            .append('=')
+                            .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
+                } catch(UnsupportedEncodingException e) {
+                    Log.e(CO_LINE, e.toString());
+                }
                 first_value = false;
             }
         }
@@ -183,7 +188,7 @@ public class Coline {
         try {
             http = (HttpURLConnection) url.openConnection();
             http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            http.setRequestProperty("charset", "utf-8");
+            http.setRequestProperty("Charset", "UTF-8");
             if (auth != null && token != null)
                 http.addRequestProperty("Authorization", auth + token);
             http.setReadTimeout(MAX_READ_TIMEOUT);

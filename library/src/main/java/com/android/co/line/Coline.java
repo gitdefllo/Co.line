@@ -20,7 +20,7 @@ import java.util.Map;
 /****************************************************
  * Co.line
  * -----------
- * @version 0.0.4
+ * @version 0.0.5
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -51,7 +51,7 @@ import java.util.Map;
 public class Coline {
 
     // Tags
-    private static final String CO_LINE = "-- Co.line";
+    private static final String CO_LINE  = "-- Co.line";
 
     // Configuration
     private static Coline  coline;
@@ -64,6 +64,7 @@ public class Coline {
     private StringBuilder  body = null;
     private Success	   	   success;
     private Error		   error;
+    private boolean        logs;
 
     // Public constructor
     public static Coline init(Context context) {
@@ -73,6 +74,7 @@ public class Coline {
                     coline         = new Coline();
                     coline.context = context;
                     coline.values  = new ContentValues();
+                    coline.logs    = ColineLogs.getStatus();
                 }
             }
         }
@@ -148,7 +150,8 @@ public class Coline {
                             .append('=')
                             .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
                 } catch(UnsupportedEncodingException e) {
-                    Log.e(CO_LINE, e.toString());
+                    if ( logs )
+                        Log.e(CO_LINE, e.toString());
                 }
                 first_value = false;
             }
@@ -165,10 +168,12 @@ public class Coline {
 
         // Init URL
         try {
-            Log.d(CO_LINE, "URL: " + route);
+            if ( logs )
+                Log.d(CO_LINE, "URL: " + route);
             url = new URL( route );
         } catch(MalformedURLException e) {
-            Log.e(CO_LINE, "error in route: " + e.toString());
+            if ( logs )
+                Log.e(CO_LINE, "error in route: " + e.toString());
         }
 
         if (url == null) {
@@ -198,7 +203,8 @@ public class Coline {
                 wr.close();
             }
         } catch(IOException e) {
-            Log.e(CO_LINE, "error in http url connection: " + e.toString());
+            if ( logs )
+                Log.e(CO_LINE, "error in http url connection: " + e.toString());
         }
 
         if (http == null) {
@@ -211,14 +217,16 @@ public class Coline {
         int         status      = 0;
         try {
             status = http.getResponseCode();
-            Log.d(CO_LINE, "status response: " + status);
+            if ( logs )
+                Log.d(CO_LINE, "status response: " + status);
             if (status >= 200 && status < 400) {
                 inputStream = http.getInputStream();
             } else {
                 inputStream = http.getErrorStream();
             }
         } catch (IOException ex) {
-            Log.e(CO_LINE, ex.toString());
+            if ( logs )
+                Log.e(CO_LINE, ex.toString());
         }
 
         if (inputStream == null) {
@@ -238,9 +246,11 @@ public class Coline {
 
             inputStream.close();
             response = sb.toString();
-            Log.d(CO_LINE, response);
+            if ( logs )
+                Log.d(CO_LINE, response);
         } catch (Exception e) {
-            Log.e(CO_LINE, "error when parsing result: " + e.toString());
+            if ( logs )
+                Log.e(CO_LINE, "error when parsing result: " + e.toString());
         }
 
         if (status != 200 || response.length() == 0 || response.contains("error")) {
@@ -270,5 +280,10 @@ public class Coline {
                 error.onError(s);
             }
         });
+    }
+
+    // Debugging
+    public static void activateLogs(boolean status) {
+        ColineLogs.setStatus(status);
     }
 }

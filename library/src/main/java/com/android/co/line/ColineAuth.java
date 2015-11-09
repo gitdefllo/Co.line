@@ -3,7 +3,7 @@ package com.android.co.line;
 /****************************************************
  * Co.lineAuth
  * -----------
- * @version 0.0.4
+ * @version 0.0.5
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git

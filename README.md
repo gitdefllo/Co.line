@@ -1,6 +1,6 @@
 Co.line
 =======    
-*v.0.0.4*
+*v.0.0.5*
 **REST connection lib for Android.**
 
 Co.line is a custom library to do a HttpURLConnection in REST.   
@@ -102,14 +102,28 @@ Coline.error(new Coline.Error() {
 });
 ```
 
-**Execution**  
+**Execution**
 *Note: it should be declared at the end.*
 ```java
 public void exec()
 ```
 
-Logs
-----
+Debugging
+---------
+
+Logs are disabled by default. If you want to enable it, just add the following method before `init()`:
+```java
+Coline.activateLogs(true);
+Coline.init(this);
+```
+
+
+Version
+-------
+
+######v.0.0.5:
+- Maven library modification;
+- Logs method activation;
 
 ######v.0.0.4:
 - Maven library creation;

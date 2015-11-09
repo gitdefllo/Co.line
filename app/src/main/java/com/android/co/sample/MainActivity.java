@@ -18,8 +18,8 @@ import com.android.co.sample.utils.WebUtils;
  * Sample project:
  * ---------------
  *
- * Display movies in list by using Co.line library
- * and with themoviedb api (cf. https://themoviedb.org/).
+ * Get a movies list by using Co.line library
+ * with themoviedb api (cf. https://themoviedb.org/).
  *
  *****************************************************/
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +29,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Do a request to api
-        Coline.init(this).url(ColineHttpMethod.GET, WebUtils.URL_DISCOVER).exec();
+        // Enable the logs
+        Coline.activateLogs(true);
+        // Initialize Coline
+        Coline.init(this)
+                // Prepare method and URL
+                .url(ColineHttpMethod.GET, WebUtils.URL_DISCOVER)
+                // Execute the request
+                .exec();
     }
 }

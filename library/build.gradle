@@ -4,8 +4,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def projectVersion  = '0.0.4'
-def mavenVersion    = '1.0.1'
+def projectVersion  = '0.0.5'
+def mavenVersion    = '1.0.2'
 def libName         = 'Co.line'
 def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
 def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
@@ -89,7 +89,6 @@ artifacts {
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-// https://github.com/bintray/gradle-bintray-plugin
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.key")
@@ -103,7 +102,7 @@ bintray {
         licenses = ["Apache-2.0"]
         publish = true
         version {
-            name = libName
+            name = mavenVersion
             desc = libDesc
             released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
                     Locale.FRANCE).format(new Date())

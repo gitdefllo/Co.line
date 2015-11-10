@@ -1,9 +1,9 @@
-package com.android.co.line;
+package com.fllo.co.line;
 
 /****************************************************
  * Co.lineHttpMethod
  * -----------------
- * @version 0.0.5
+ * @version 1.0.4
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -13,12 +13,11 @@ package com.android.co.line;
  * ------------
  *
  * Set a request method using:
- *
- *      ColineMethod.GET    = 0x00001;
- *      ColineMethod.POST   = 0x00002;
- *      ColineMethod.PUT    = 0x00003;
- *      ColineMethod.DELETE = 0x00004;
- *      ColineMethod.HEAD   = 0x00005;
+ *      ColineHttpMethod.GET    = 0x00001;
+ *      ColineHttpMethod.POST   = 0x00002;
+ *      ColineHttpMethod.PUT    = 0x00003;
+ *      ColineHttpMethod.DELETE = 0x00004;
+ *      ColineHttpMethod.HEAD   = 0x00005;
  *
  *****************************************************/
 public class ColineHttpMethod {
@@ -29,10 +28,20 @@ public class ColineHttpMethod {
     public static final int DELETE = 0x00004;
     public static final int HEAD   = 0x00005;
 
-    // Constructor
+    /**
+     * Co.lineHttpMethod's constructor: method not used.
+     *
+     * @see           ColineHttpMethod
+     */
     public ColineHttpMethod() { }
 
-    // Retrieve authentication header
+    /**
+     * This method gets the method request in String header field.
+     *
+     * @param method (int) Value corresponding to static int in this class
+     * @return       A String like "GET" or "POST"
+     * @see          ColineHttpMethod
+     */
     public String getMethod(int method) {
         switch (method) {
             case GET:

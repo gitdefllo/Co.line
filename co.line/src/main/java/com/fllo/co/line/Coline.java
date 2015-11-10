@@ -1,9 +1,15 @@
-package com.android.co.line;
+package com.fllo.co.line;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
+import android.util.ArrayMap;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -20,7 +26,7 @@ import java.util.Map;
 /****************************************************
  * Co.line
  * -----------
- * @version 0.0.5
+ * @version 1.0.4
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -43,8 +49,8 @@ import java.util.Map;
  *       .url(ColineHttpMethod.int, String)
  *       .auth(ColineAuth.int, String)
  *		 .with(ContentValues)
- *		 .success(Success())
- *       .error(Error())
+ *		 .success(new Success())
+ *       .error(new Error())
  *       .exec();
  *
  *****************************************************/
@@ -66,7 +72,22 @@ public class Coline {
     private Error		   error;
     private boolean        logs;
 
-    // Public constructor
+    /**
+     * Co.line's constructor: method to initiate Coline with actual Context.
+     * It creates a new instance of class if this one does not already exist.
+     * The Context can be an Activity, a Fragment, a Service or anything. This
+     * will be used to return the request response into the main Thread.
+     * <p>
+     * When this class is initiate, it attaches also a boolean value
+     * to des/activate logs and creates a new ContentValues.
+     * <p>
+     * The ContentValues will be used to store the parameters to pass into the
+     * request by {@link #with(ContentValues)} method.
+     *
+     * @param context (Context) Actual Context from the call
+     * @return        An instance of the class
+     * @see           Coline
+     */
     public static Coline init(Context context) {
         if (coline == null) {
             synchronized (Coline.class) {
@@ -81,52 +102,150 @@ public class Coline {
         return coline;
     }
 
-    // Public interfaces
+    /**
+     * Interface when the class should return a successful response.
+     *
+     */
     public interface Success {
         void onSuccess(String s);
     }
 
+    /**
+     * Interface when the class should return an error from response.
+     *
+     */
     public interface Error {
         void onError(String s);
     }
 
-    // Public methods
+    /**
+     * This method initiates the request method and the URL to do the request.
+     * <p>
+     * The request method is a static int value from ColineHttpMethod class like:
+     *      - ColineHttpMethod.GET
+     *      - ColineHttpMethod.POST
+     *      - ColineHttpMethod.PUT
+     *      - ColineHttpMethod.DELETE
+     *      - ColineHttpMethod.HEAD
+     *
+     * @param method (int) Value from ColineHttpMethod
+     *               of request method
+     * @param route  (String) Value for URL route (should be a String URL as
+     *               "http://www.example.com")
+     * @return       The current instance of the class
+     * @see          Coline
+     */
     public Coline url(int method, String route) {
         this.method = new ColineHttpMethod().getMethod(method);
         this.route  = route;
         return this;
     }
 
+    /**
+     * This method initiates the values to pass into the request from
+     * a ContentValues object.
+     * <p>
+     * See also: {@link #with(Object...)} and {@link #with(ArrayMap)}
+     *
+     * @param values (ContentValues) Values to pass into the request
+     * @return       The current instance of the class
+     * @see          Coline
+     */
     public Coline with(ContentValues values) {
         this.values = values;
         return this;
     }
 
+    /**
+     * This method initiates the values to pass into the request from
+     * an Object array. It declared as follows: 'with("key1", value1, "key2",
+     * "value2", "key3", values3);'.
+     * <p>
+     * All the object in the array will be convert to a String.
+     * <p>
+     * See also: {@link #with(ContentValues)} and {@link #with(ArrayMap)}
+     *
+     * @param values (Object...) Values to pass into the request
+     * @return       The current instance of the class
+     * @see          Coline
+     */
     public Coline with(final Object... values) {
         for (int i=0; i<values.length; ++i) {
-            this.values.put( values[i].toString(),
-                    values[i+1].toString() );
+            this.values.put( String.valueOf(values[i]),
+                    String.valueOf(values[i + 1]));
             ++i;
         }
         return this;
     }
 
+    /**
+     * Only with KitKat version and higher:
+     * <p>
+     * This method initiates the values to pass into the request from
+     * an ArrayMap&lt;String, Object&gt;.
+     * <p>
+     * All the object in the array will be convert to a String.
+     * <p>
+     * See also: {@link #with(ContentValues)} and {@link #with(ContentValues)}
+     *
+     * @param values (ArrayMap) Values to pass into the request
+     * @return       The current instance of the class
+     * @see          Coline
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public Coline with(final ArrayMap<String, Object> values) {
+        for (int i = 0; i<values.size(); ++i) {
+            this.values.put(String.valueOf(values.keyAt(i)),
+                    String.valueOf(values.valueAt(i)));
+        }
+        return this;
+    }
+
+    /**
+     * This method prepares the header field to authenticate a request.
+     *
+     * @param auth  (int) Key method for Authentication from
+     *              ColineAuth in header field
+     * @param token (String) Value of Authentication (should be a String
+     *              encoded in BASE64)
+     * @return      The current instance of the class
+     * @see         Coline
+     */
     public Coline auth(int auth, String token) {
         this.auth  = new ColineAuth().getAuthHeader(auth);
         this.token = token;
         return this;
     }
 
+    /**
+     * This method prepares a callback when the request is successful.
+     *
+     * @param success (Success) Interface of successful request
+     * @return        The current instance of the class
+     * @see           Coline
+     */
     public Coline success(Success success) {
         this.success = success;
         return this;
     }
 
+    /**
+     * This method prepares a callback when the request is failed.
+     *
+     * @param error (Error) Interface of failed request
+     * @return      The current instance of the class
+     * @see         Coline
+     */
     public Coline error(Error error) {
-        this.error = error;
+        this.error    = error;
         return this;
     }
 
+    /**
+     * This method executes a request in a new Thread.
+     *
+     * @see         Thread
+     */
     public void exec() {
         new Thread(new Runnable() {
             @Override
@@ -137,7 +256,13 @@ public class Coline {
         }).start();
     }
 
-    // Private methods
+    /**
+     * Private: This method get all value from {@link #with(ContentValues)},
+     * {@link #with(Object...)} or {@link #with(ArrayMap<String, Object)} and prepares
+     * a StringBuilder with all parameter given to send it into the request.
+     *
+     * @see         StringBuilder
+     */
     private void setValues() {
         if (this.values != null && this.values.size() > 0) {
             boolean first_value = true;
@@ -158,8 +283,13 @@ public class Coline {
         }
     }
 
+    /**
+     * Private: This method does a request by HttpURLConnection
+     *
+     * @see         HttpURLConnection
+     */
     private void request() {
-        // Prepare variables
+        // Prepare timeout variables
         int     MAX_READ_TIMEOUT    = 10000;
         int     MAX_CONNECT_TIMEOUT = 15000;
 
@@ -177,7 +307,12 @@ public class Coline {
         }
 
         if (url == null) {
-            returnError("error: url not found");
+            String s = "An error occurred when trying to get URL";
+            try{
+                JSONObject jreturn = new JSONObject(s);
+                s = jreturn.toString();
+            } catch(JSONException e) {}
+            returnError(s);
             return;
         }
 
@@ -208,7 +343,13 @@ public class Coline {
         }
 
         if (http == null) {
-            returnError("error: url connection");
+            String s = "An error occurred in URL connection";
+            try{
+                // Create a json to treat it in returnError(String)
+                JSONObject jreturn = new JSONObject(s);
+                s = jreturn.toString();
+            } catch(JSONException e) {}
+            returnError(s);
             return;
         }
 
@@ -230,7 +371,12 @@ public class Coline {
         }
 
         if (inputStream == null) {
-            returnError("error: inputstream not found");
+            String s = "An error occurred when trying to get server response";
+            try{
+                JSONObject jreturn = new JSONObject(s);
+                s = jreturn.toString();
+            } catch(JSONException e) {}
+            returnError(s);
             return;
         }
 
@@ -261,7 +407,12 @@ public class Coline {
         returnSuccess(response);
     }
 
-    // Result handlers in Main Thread
+    /**
+     * Private: This method returns a String response in main Thread.
+     *
+     * @param s (String) Response of request
+     * @see     android.os.Looper
+     */
     private void returnSuccess(final String s) {
         if (success == null) return;
         new Handler(context.getMainLooper()).post(new Runnable() {
@@ -272,6 +423,12 @@ public class Coline {
         });
     }
 
+    /**
+     * Private: This method returns a String response in main Thread.
+     *
+     * @param s (String) Response of request
+     * @see     android.os.Looper
+     */
     private void returnError(final String s) {
         if (error == null) return;
         new Handler(context.getMainLooper()).post(new Runnable() {
@@ -282,7 +439,14 @@ public class Coline {
         });
     }
 
-    // Debugging
+    /**
+     * This method activate or desactivate console logs in Coline request method.
+     * By default: the logs are desactivate.
+     *
+     * @param status (boolean) Value to activate or not the console logs (true: activate,
+     *               false: desactivate)
+     * @see          ColineLogs
+     */
     public static void activateLogs(boolean status) {
         ColineLogs.setStatus(status);
     }

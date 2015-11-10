@@ -4,8 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def projectVersion  = '0.0.5'
-def mavenVersion    = '1.0.2'
+def projectVersion  = '1.0.4'
 def libName         = 'Co.line'
 def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
 def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
@@ -34,7 +33,7 @@ dependencies {
 }
 
 version = projectVersion
-group = 'com.android.co.line'
+group = 'com.fllo.co.line'
 
 install {
     repositories.mavenInstaller {
@@ -81,6 +80,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
+
 artifacts {
     archives javadocJar
     archives sourcesJar
@@ -102,11 +102,11 @@ bintray {
         licenses = ["Apache-2.0"]
         publish = true
         version {
-            name = mavenVersion
+            name = projectVersion
             desc = libDesc
             released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
                     Locale.FRANCE).format(new Date())
-            vcsTag = mavenVersion
+            vcsTag = projectVersion
         }
     }
 }

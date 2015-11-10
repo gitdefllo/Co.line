@@ -1,9 +1,8 @@
-package com.android.co.sample.utils;
+package com.fllo.co.line.sample.utils;
 
 /****************************************************
  * Co.line
  * -----------
- * @version 0.0.3
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -23,5 +22,6 @@ public class WebUtils {
 
     // URLs
     public static final String URL_DISCOVER = URL_BASE + "discover/movie" + API_KEY;
+    public static final String URL_FAKE_URL = URL_BASE + "error/" + API_KEY;
 }
 

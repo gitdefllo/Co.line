@@ -1,10 +1,11 @@
 Co.line
 =======    
-*v.0.0.5*
-**REST connection lib for Android.**
+*v.1.0.4*
+**REST connection lib in one line for Android.**
 
-Co.line is a custom library to do a HttpURLConnection in REST.   
-The advantage is using one line declaration by chained methods, it creates automatically a new Thread and returns result in callbacks UI Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
+Co.line is a custom library to do a HttpURLConnection in REST.
+The advantage: using only one line declaration by chained methods.
+It creates automatically a new Thread and returns result in callbacks UI Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
 
 Usage
 ------
@@ -27,8 +28,10 @@ Coline.init(context)
 
 Next features (Todo)
 -------
+- Using a queue for thread connection with a method to add a request to the current queue;
 - In callbacks, apply a custom model for the result string like `.success(myModel, mCallback)`;
-- Add a value to des/activate logs in `init()` method;
+- ~~Add a value to des/activate logs in `init()` method;~~
+- ~~Make a simple example with an API~~
 
 Documentation
 -------
@@ -72,13 +75,18 @@ values.put("username", "Fllo");
 values.put("github",   "Gitdefllo");
 Coline.with(values);
 ```
-Or it's also possible to pass a String array with this following pattern:
+Or you can pass an `ArrayMap` (only API 19 and higher):
+```java
+ArrayMap<String, String> values = new ArrayMap();
+values.put("username", "Fllo");
+Coline.with(values);
+```
+Finally, it's also possible to pass a String array with this following pattern:
 ```java
 Coline.with("username", "Fllo", "github", "Gitdefllo");
 ```
 
 **Callbacks**
-
 Co.line let you handle two different callbacks `success` and `error`.  
 Handle successful request with `Coline.Success()`:
 ```java
@@ -90,13 +98,12 @@ Coline.success(new Coline.Success() {
     }
 });
 ```
-An error statement is based on errors in communication with server, a `String` containing the word `error` in response or by a `JSONObject` in your api response as `{ "error": "an error occurred." }`.  
-It retrieves via `Coline.Error()` callback:
+An error is returned a `String` which can be cast to `JSONObject`, and it retrieves as follows:
 ```java
 Coline.error(new Coline.Error() {
     @Override
     public void onError(String s) {
-        // Where "s" is the response server or the communication error
+        // Where "s" is the response of server
         Log.v(CO_LINE, "Error - Server response: "+s);
     }
 });
@@ -117,30 +124,32 @@ Coline.activateLogs(true);
 Coline.init(this);
 ```
 
-
 Version
 -------
 
-######v.0.0.5:
+######v.1.0.4:
+- Package renamed;
+- Publication with jcenter;
+
+######v.1.0.3:
+- Support ArrayMap;
+- Javadoc generated;
+- Internal error response into JSON format in String;
+
+######v.1.0.2:
 - Maven library modification;
 - Logs method activation;
 
-######v.0.0.4:
+######v.1.0.1:
 - Maven library creation;
 - Creation of ColineHttpMethod class;
 - ColineAuth improved and retrieve header fields;
 
-######v.0.0.3:
+######v.1.0.0:
 - Deploy in library project;
 - Handle OAuth2.0;
-- Small examples;
-
-######v.0.0.2:
 - Callbacks separation 'success' and 'error';
 - Context handler;
-
-######v.0.0.1:
-- Basic implementation;
 
 Contribution
 -------

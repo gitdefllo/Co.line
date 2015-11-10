@@ -1,9 +1,9 @@
-package com.android.co.line;
+package com.fllo.co.line;
 
 /****************************************************
  * Co.lineLogs
  * -----------
- * @version 0.0.5
+ * @version 1.0.4
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -23,12 +23,22 @@ public class ColineLogs {
     public static final boolean enable = true;
     public static final boolean disable = false;
 
-    // Set the status
+    /**
+     * This method gets the method request in String header field.
+     *
+     * @param status (boolean) Value to set for logs
+     * @see          ColineLogs
+     */
     public static void setStatus(boolean status) {
         ColineLogs.status = status;
     }
 
-    // Get the status
+    /**
+     * This method returns the status'logs for Co.line class.
+     *
+     * @return       A boolean
+     * @see          ColineLogs
+     */
     public static boolean getStatus() {
         return status;
     }

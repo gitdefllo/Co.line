@@ -3,7 +3,6 @@ package com.fllo.co.line;
 /****************************************************
  * Co.lineLogs
  * -----------
- * @version 1.0.4
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git

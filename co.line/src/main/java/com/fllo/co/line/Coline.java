@@ -26,7 +26,7 @@ import java.util.Map;
 /****************************************************
  * Co.line
  * -----------
- * @version 1.0.4
+ * @version 1.0.5
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Repository: https://github.com/Gitdefllo/Co.line.git
@@ -96,6 +96,8 @@ public class Coline {
                     coline.context = context;
                     coline.values  = new ContentValues();
                     coline.logs    = ColineLogs.getStatus();
+                    if ( coline.logs )
+                        Log.e(CO_LINE, "initialized");
                 }
             }
         }
@@ -247,6 +249,8 @@ public class Coline {
      * @see         Thread
      */
     public void exec() {
+        if ( logs )
+            Log.e(CO_LINE, "request execution...");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -281,6 +285,8 @@ public class Coline {
                 first_value = false;
             }
         }
+        if ( logs )
+            Log.e(CO_LINE, "values added to request body");
     }
 
     /**
@@ -309,6 +315,7 @@ public class Coline {
         if (url == null) {
             String s = "An error occurred when trying to get URL";
             try{
+                // Create a json to treat it in returnError(String)
                 JSONObject jreturn = new JSONObject(s);
                 s = jreturn.toString();
             } catch(JSONException e) {}
@@ -317,6 +324,8 @@ public class Coline {
         }
 
         // Do connection
+        if ( logs )
+            Log.e(CO_LINE, "do connection...");
         HttpURLConnection http = null;
         try {
             http = (HttpURLConnection) url.openConnection();
@@ -373,6 +382,7 @@ public class Coline {
         if (inputStream == null) {
             String s = "An error occurred when trying to get server response";
             try{
+                // Create a json to treat it in returnError(String)
                 JSONObject jreturn = new JSONObject(s);
                 s = jreturn.toString();
             } catch(JSONException e) {}
@@ -415,6 +425,7 @@ public class Coline {
      */
     private void returnSuccess(final String s) {
         if (success == null) return;
+        if ( logs ) Log.e(CO_LINE, "OK, onSuccess called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -431,6 +442,7 @@ public class Coline {
      */
     private void returnError(final String s) {
         if (error == null) return;
+        if ( logs ) Log.e(CO_LINE, "Oops, onError called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -448,6 +460,7 @@ public class Coline {
      * @see          ColineLogs
      */
     public static void activateLogs(boolean status) {
+        if ( status ) Log.e(CO_LINE, "Logs activation!");
         ColineLogs.setStatus(status);
     }
 }

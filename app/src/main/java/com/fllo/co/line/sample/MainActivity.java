@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.fllo.co.line.Coline;
+import com.fllo.co.line.ColineHttpMethod;
 import com.fllo.co.line.sample.utils.WebUtils;
 
 /****************************************************
@@ -61,34 +63,33 @@ public class MainActivity extends AppCompatActivity {
         if ( !request ) {
             urlForRequest = WebUtils.URL_FAKE_URL;
         }
-
-//        // Enable the logs
-//        Coline.activateLogs(true);
-//        // Initialize Coline
-//        Coline.init(this)
-//                // Prepare method and URL
-//                .url(ColineHttpMethod.GET, urlForRequest)
-//                // Retrieve result in success callback
-//                .success(successCallback)
-//                // Retrieve result in error callback
-//                .error(errorCallback)
-//                // Execute the request
-//                .exec();
+        // Enable the logs
+        Coline.activateLogs(true);
+        // Initialize Coline
+        Coline.init(this)
+                // Prepare method and URL
+                .url(ColineHttpMethod.GET, urlForRequest)
+                // Retrieve result in success callback
+                .success(successCallback)
+                // Retrieve result in error callback
+                .error(errorCallback)
+                // Execute the request
+                .exec();
     }
 
-//    // Success callback
-//    private Coline.Success successCallback = new Coline.Success() {
-//        @Override
-//        public void onSuccess(String s) {
-//            textResult.setText("SUCCESS: " + s);
-//        }
-//    };
-//
-//    // Success callback
-//    private Coline.Error errorCallback = new Coline.Error() {
-//        @Override
-//        public void onError(String s) {
-//            textResult.setText("ERROR: " + s);
-//        }
-//    };
+    // Success callback
+    private Coline.Success successCallback = new Coline.Success() {
+        @Override
+        public void onSuccess(String s) {
+            textResult.setText("SUCCESS: " + s);
+        }
+    };
+
+    // Success callback
+    private Coline.Error errorCallback = new Coline.Error() {
+        @Override
+        public void onError(String s) {
+            textResult.setText("ERROR: " + s);
+        }
+    };
 }

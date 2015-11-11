@@ -97,7 +97,7 @@ public class Coline {
                     coline.values  = new ContentValues();
                     coline.logs    = ColineLogs.getStatus();
                     if ( coline.logs )
-                        Log.e(CO_LINE, "initialized");
+                        Log.d(CO_LINE, "Initialized");
                 }
             }
         }
@@ -250,7 +250,7 @@ public class Coline {
      */
     public void exec() {
         if ( logs )
-            Log.e(CO_LINE, "request execution...");
+            Log.d(CO_LINE, "Request execution...");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -284,9 +284,9 @@ public class Coline {
                 }
                 first_value = false;
             }
+            if ( logs )
+                Log.d(CO_LINE, "Values added to request body");
         }
-        if ( logs )
-            Log.e(CO_LINE, "values added to request body");
     }
 
     /**
@@ -325,7 +325,7 @@ public class Coline {
 
         // Do connection
         if ( logs )
-            Log.e(CO_LINE, "do connection...");
+            Log.d(CO_LINE, "Do connection...");
         HttpURLConnection http = null;
         try {
             http = (HttpURLConnection) url.openConnection();
@@ -348,7 +348,7 @@ public class Coline {
             }
         } catch(IOException e) {
             if ( logs )
-                Log.e(CO_LINE, "error in http url connection: " + e.toString());
+                Log.e(CO_LINE, "Error in http url connection: " + e.toString());
         }
 
         if (http == null) {
@@ -360,6 +360,9 @@ public class Coline {
             } catch(JSONException e) {}
             returnError(s);
             return;
+        } else {
+            if ( logs )
+                Log.d(CO_LINE, "Connection etablished");
         }
 
         // Get response
@@ -368,7 +371,7 @@ public class Coline {
         try {
             status = http.getResponseCode();
             if ( logs )
-                Log.d(CO_LINE, "status response: " + status);
+                Log.d(CO_LINE, "Status response: " + status);
             if (status >= 200 && status < 400) {
                 inputStream = http.getInputStream();
             } else {
@@ -406,7 +409,7 @@ public class Coline {
                 Log.d(CO_LINE, response);
         } catch (Exception e) {
             if ( logs )
-                Log.e(CO_LINE, "error when parsing result: " + e.toString());
+                Log.e(CO_LINE, "Error when parsing result: " + e.toString());
         }
 
         if (status != 200 || response.length() == 0 || response.contains("error")) {
@@ -425,7 +428,7 @@ public class Coline {
      */
     private void returnSuccess(final String s) {
         if (success == null) return;
-        if ( logs ) Log.e(CO_LINE, "OK, onSuccess called");
+        if ( logs ) Log.d(CO_LINE, "OK, onSuccess called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -442,7 +445,7 @@ public class Coline {
      */
     private void returnError(final String s) {
         if (error == null) return;
-        if ( logs ) Log.e(CO_LINE, "Oops, onError called");
+        if ( logs ) Log.d(CO_LINE, "Oops, onError called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -460,7 +463,7 @@ public class Coline {
      * @see          ColineLogs
      */
     public static void activateLogs(boolean status) {
-        if ( status ) Log.e(CO_LINE, "Logs activation!");
+        if ( status ) Log.d(CO_LINE, "Logs activation!");
         ColineLogs.setStatus(status);
     }
 }

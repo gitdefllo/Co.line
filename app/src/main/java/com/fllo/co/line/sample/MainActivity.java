@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.fllo.co.line.sample.utils.WebUtils;
+
 /****************************************************
  * Co.line Sample
  * --------------
@@ -22,6 +24,9 @@ import android.widget.TextView;
  *****************************************************/
 public class MainActivity extends AppCompatActivity {
 
+    // Init composants
+    TextView textResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         buttonSuccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSuccessRequest();
+                getRequest(true);
             }
         });
 
@@ -41,32 +46,49 @@ public class MainActivity extends AppCompatActivity {
         buttonError.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getErrorRequest();
+                getRequest(false);
             }
         });
+
+        // Text for results
+        textResult = (TextView) findViewById(R.id.result_text);
     }
 
-    // Method to get success example
-    private void getSuccessRequest() {
+    // Method to get request (true = successful example, false = failed example)
+    private void getRequest(boolean request) {
+        // Change URL according to our need
+        String urlForRequest = WebUtils.URL_DISCOVER;
+        if ( !request ) {
+            urlForRequest = WebUtils.URL_FAKE_URL;
+        }
+
 //        // Enable the logs
 //        Coline.activateLogs(true);
 //        // Initialize Coline
 //        Coline.init(this)
 //                // Prepare method and URL
-//                .url(ColineHttpMethod.GET, WebUtils.URL_DISCOVER)
+//                .url(ColineHttpMethod.GET, urlForRequest)
+//                // Retrieve result in success callback
+//                .success(successCallback)
+//                // Retrieve result in error callback
+//                .error(errorCallback)
 //                // Execute the request
 //                .exec();
     }
 
-    // Method to get error example
-    private void getErrorRequest() {
-//        // Enable the logs
-//        Coline.activateLogs(true);
-//        // Initialize Coline
-//        Coline.init(this)
-//                // Prepare method and URL
-//                .url(ColineHttpMethod.GET, WebUtils.URL_DISCOVER)
-//                // Execute the request
-//                .exec();
-    }
+//    // Success callback
+//    private Coline.Success successCallback = new Coline.Success() {
+//        @Override
+//        public void onSuccess(String s) {
+//            textResult.setText("SUCCESS: " + s);
+//        }
+//    };
+//
+//    // Success callback
+//    private Coline.Error errorCallback = new Coline.Error() {
+//        @Override
+//        public void onError(String s) {
+//            textResult.setText("ERROR: " + s);
+//        }
+//    };
 }

@@ -1,9 +1,24 @@
 Co.line
 =======    
 *v.1.0.5*
-**REST connection lib in one line for Android.**  
+**REST connection lib in one line for Android.**
 
-Co.line is a custom library to do a HttpURLConnection in REST. Advantage: using only one line declaration by chained methods. It creates automatically a new Thread and returns result in callbacks UI Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.  
+Co.line is a custom library to do a HttpURLConnection in REST. Main advantage: using only one and simple line declaration by chained methods. It creates automatically a new Thread and returns result in callbacks main Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
+
+Download
+--------
+Via Gradle
+```java
+compile 'com.fllo.co.line:co.line:1.0.5'
+```
+or maven
+```xml
+<dependency>
+  <groupId>com.fllo.co.line</groupId>
+  <artifactId>co.line</artifactId>
+  <version>1.0.5</version>
+</dependency>
+```
 
 Usage
 ------
@@ -49,7 +64,7 @@ public Coline url(int method, String url)
 *example:*
 ```java
 Coline.url(ColineHttpMethod.POST, "http://api.url.com/user");
-```  
+```
 `ColineHttpMethod` class handles the following requests: `GET`, `POST`, `PUT`, `DELETE` and `HEAD`.
 
 **Authenticate**
@@ -72,7 +87,7 @@ ContentValues values = new ContentValues();
 values.put("username", "Fllo");
 values.put("github",   "Gitdefllo");
 Coline.with(values);
-```  
+```
 Or, it's possible to pass an Object array with this following pattern:  
 ```java
 Coline.with("username", "Fllo", "github", "Gitdefllo");
@@ -84,8 +99,8 @@ values.put("username", "Fllo");
 Coline.with(values);
 ```  
 
-**Callbacks**  
-Co.line lets you handle two different callbacks `success` and `error`.  
+**Callbacks**
+Co.line lets you handle two different callbacks `success` and `error`.
 Handle successful requests with `Coline.Success()`:
 ```java
 Coline.success(new Coline.Success() {
@@ -95,8 +110,8 @@ Coline.success(new Coline.Success() {
         Log.v(CO_LINE, "Success - Server response: "+s);
     }
 });
-```  
-Errors return a `String` which can be cast to `JSONObject`, and it is built as follows:  
+```
+Errors return a `String` which can be cast to `JSONObject`, and it is built as follows:
 ```java
 Coline.error(new Coline.Error() {
     @Override
@@ -107,8 +122,8 @@ Coline.error(new Coline.Error() {
 });
 ```
 
-**Execution**  
-*Note: it should be declared at the end.*  
+**Execution**
+*Note: it should be declared at the end.*
 ```java
 public void exec()
 ```

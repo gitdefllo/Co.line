@@ -9,21 +9,15 @@ import com.fllo.co.line.Coline;
 import com.fllo.co.line.ColineHttpMethod;
 import com.fllo.co.line.sample.utils.WebUtils;
 
-/****************************************************
+/*
  * Co.line Sample
  * --------------
  * @author  Fllo (@Gitdefllo) 2015
  *
+ * Get a movies list by using Co.line library with themoviedb (https://themoviedb.org/).
  * Repository: https://github.com/Gitdefllo/Co.line.git
  *
- *****************************************************
- * Sample project:
- * ---------------
- *
- * Get a movies list by using Co.line library
- * with themoviedb api (cf. https://themoviedb.org/).
- *
- *****************************************************/
+ */
 public class MainActivity extends AppCompatActivity {
 
     // Init composants

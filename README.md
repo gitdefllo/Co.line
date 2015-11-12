@@ -1,13 +1,12 @@
 Co.line
-=======    
-*v.1.0.5*
+=======
 **REST connection lib in one line for Android.**
 
 Co.line is a custom library to do a HttpURLConnection in REST. Main advantage: using only one and simple line declaration by chained methods. It creates automatically a new Thread and returns result in callbacks main Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
 
 Download
 --------
-Via Gradle
+Via gradle
 ```java
 compile 'com.fllo.co.line:co.line:1.0.5'
 ```
@@ -138,6 +137,9 @@ Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
 
 Version  
 -------
+######v.1.0.6:
+- License documentation;
+
 ######v.1.0.5:
 - Co.line uses more logs;
 
@@ -169,3 +171,18 @@ Contribution
 ------------  
 Developed by Fllo (@Gitdefllo) 2015.  
 Feel free to contribute, improve or use.
+
+License
+--------
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.

@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.fllo.co.line;
 
 import android.annotation.TargetApi;
@@ -23,37 +36,17 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
-/****************************************************
+/*
  * Co.line
- * -----------
- * @version 1.0.5
+ * -------
+ * @version 1.0.6
  * @author  Fllo (@Gitdefllo) 2015
  *
+ * Android library for HttpURLConnection connections with automatic Thread
+ * and Callbacks in chained methods in one line.
  * Repository: https://github.com/Gitdefllo/Co.line.git
  *
- *****************************************************
- * Ready-to-use
- * ------------
- *
- * This is an open-source ready-to-use class.
- * Just copy/paste it in your project.
- *
- *
- * Usage
- * -----
- *
- * You need to initiate Co.line with the context and
- * optionaly set different parameters to do a request:
- *
- * Coline.init(Context)
- *       .url(ColineHttpMethod.int, String)
- *       .auth(ColineAuth.int, String)
- *		 .with(ContentValues)
- *		 .success(new Success())
- *       .error(new Error())
- *       .exec();
- *
- *****************************************************/
+ */
 public class Coline {
 
     // Tags

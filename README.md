@@ -93,7 +93,8 @@ Coline.with("username", "Fllo", "github", "Gitdefllo");
 ```
 And you can also pass an `ArrayMap<String, Object>` **(only API 19 and higher)**:
 ```java
-ArrayMap<String, String> values = new ArrayMap();
+ArrayMap<String, Object> values = new ArrayMap();
+values.put("userid",   123456);
 values.put("username", "Fllo");
 Coline.with(values);
 ```  

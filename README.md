@@ -99,6 +99,7 @@ Coline.with(values);
 ```  
 
 **Callbacks**
+
 Co.line lets you handle two different callbacks `success` and `error`.
 Handle successful requests with `Coline.Success()`:
 ```java

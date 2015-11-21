@@ -24,10 +24,16 @@ or maven
 Usage
 ------
 
+Do a request and retrieve it as:
 ```java
-Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
+Coline.init(this)
+        // Set the HTTP method (GET, PUT..) and the URL, then retrieve it in a callback
+        .url(ColineHttpMethod.GET, "http://api.url.com/").success(getSuccess)
+        // Execute the request
+        .exec();
 ```
-You also can do request with BasicAuth and OAuth2.0. This example uses a BasicAuth and retrieves the request result in a success callback:  
+
+You can do a request in BasicAuth or OAuth2.0:
 ```java
 Coline.init(context)
         .url(ColineHttpMethod.GET, "http://api.url.com/username")
@@ -41,13 +47,36 @@ Coline.init(context)
         .exec();
 ```
 
+Request queue
+-------
+
+Set multiple requests in queue and launch one time:
+```java
+Coline.init(MainActivity.this)
+        .url(ColineHttpMethod.GET, "http://api.url.com/username")
+        // Add to a current queue this request
+        .queue();
+
+// In another class
+Coline.init(getActivity())
+        .url(ColineHttpMethod.GET, "http://api.url.com/messages")
+        .success(new Success...)
+        .error(new Error...)
+        .queue();
+
+// Finally, launch the queue (in other Context, why not?)
+Coline.init(getActivity())
+        .url(ColineHttpMethod.GET, "http://api.url.com/contacts")
+        // Execute the current queue
+        .exec();
+```
+
 Next features (Todo)
 -------
 
-- Using a queue for thread connection with a method in order to add a request to the current queue;
+- Personnalization of auth method;
 - In callbacks, apply a custom model for the result string like `.success(myModel, mCallback)`;
-- ~~Add a value to des/activate logs in `init()` method;~~ *(done)*
-- ~~Make a simple example with an API~~ *(done)*
+- ~~Using a queue for thread connection with a method in order to add a request to the current queue;~~ *(done)*
 
 Documentation
 -------
@@ -57,9 +86,9 @@ Documentation
 ```java
 public static Coline init(Context context)
 ```
-*example:*
+Initialise with the current Context.
 ```java
-Coline.init(MainActivity.this);
+ex: Coline.init(MainActivity.this);
 ```
 
 **Request methods**
@@ -67,7 +96,7 @@ Coline.init(MainActivity.this);
 ```java
 public Coline url(int method, String url)
 ```
-*example:*
+Pass the HTTP method and the URL.
 ```java
 Coline.url(ColineHttpMethod.POST, "http://api.url.com/user");
 ```
@@ -78,7 +107,7 @@ Coline.url(ColineHttpMethod.POST, "http://api.url.com/user");
 ```java
 public Coline auth(int auth, String token)
 ```
-*example:*
+Add the Authorization header field.
 ```java
 Coline.auth(ColineAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
 ```
@@ -89,11 +118,12 @@ Coline.auth(ColineAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
 ```java
 public Coline with(ContentValues values)
 ```
-*example:*
+Pass the parameters, generally keys/values pairs, to the server.
 ```java
 ContentValues values = new ContentValues();
 values.put("username", "Fllo");
 values.put("github",   "Gitdefllo");
+// Values to send in body request
 Coline.with(values);
 ```
 Or, it's possible to pass an Object array with this following pattern:  
@@ -106,50 +136,30 @@ ArrayMap<String, Object> values = new ArrayMap();
 values.put("userid",   123456);
 values.put("username", "Fllo");
 Coline.with(values);
-```  
-
-**Callbacks**
-
-Co.line lets you handle two different callbacks `success` and `error`.
-Handle successful requests with `Coline.Success()`:
-```java
-Coline.success(new Coline.Success() {
-    @Override
-    public void onSuccess(String s) {
-        // Where "s" is the response server
-        Log.v(CO_LINE, "Success - Server response: "+s);
-    }
-});
-```
-Errors return a `String` which can be cast to `JSONObject`, and it is built as follows:
-```java
-Coline.error(new Coline.Error() {
-    @Override
-    public void onError(String s) {
-        // Where "s" is the response of server
-        Log.v(CO_LINE, "Error - Server response: "+s);
-    }
-});
 ```
 
 **Execution**
 
-*Note: it should be declared at the end.*
+*Note: it needs to be declared at the end.*
 ```java
 public void exec()
 ```
 
-Debugging  
----------  
+Debugging
+---------
 
-Logs are disabled by default. If you want to enable it, just add the following method before `init()`:  
+Logs are disabled by default. If you want to enable it, just add the following method before `init()`:
 ```java
 Coline.activateLogs(true);
-Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
+Coline.init(this)
+        .url(ColineHttpMethod.GET, "http://api.url.com/").exec();
 ```
 
 Version  
 -------
+
+######v.1.0.7:
+- Using a queue to send requests;
 
 ######v.1.0.6:
 - License documentation;
@@ -157,13 +167,7 @@ Version
 ######v.1.0.5:
 - Co.line uses more logs;
 
-<a href="https://github.com/Gitdefllo/Co.line/blob/master/VERSIONS.md">See old versions</a>
-
-Contribution  
-------------  
-
-Developed by Fllo (@Gitdefllo) 2015.  
-Feel free to contribute, improve or use.
+<a href="https://github.com/Gitdefllo/Co.line/blob/master/VERSIONS.md">See older versions</a>
 
 License
 --------

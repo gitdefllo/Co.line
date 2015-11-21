@@ -49,7 +49,7 @@ import java.util.Map;
  * Repository: https://github.com/Gitdefllo/Co.line.git
  *
  */
-public class Coline {
+public class Coline extends ColineQueue {
 
     // Tags
     private static final String CO_LINE  = "-- Co.line";
@@ -251,6 +251,39 @@ public class Coline {
             public void run() {
                 setValues();
                 request();
+            }
+        }).start();
+    }
+
+    /**
+     * This method creates a current queue to add multiple requests and launch it once.
+     *
+     * @see         Thread
+     */
+    public void queue() {
+        if ( logs )
+            Log.d(CO_LINE, "Adding a new request to the queue.");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ColineRequest request = new ColineRequest(coline);
+                ColineQueue.init().addRequestToQueue(request);
+            }
+        }).start();
+    }
+
+    /**
+     * This method launch all Coline instance.
+     *
+     * @see         Thread
+     */
+    public void send() {
+        if ( logs )
+            Log.d(CO_LINE, "Adding a new request to the queue.");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ColineQueue.init().getRequestsFromCurrentQueue();
             }
         }).start();
     }

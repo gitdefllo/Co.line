@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private Coline.Success successCallback = new Coline.Success() {
         @Override
         public void onSuccess(String s) {
+            // Retrieve the datas in String
             textResult.setText("SUCCESS: " + s);
         }
     };
@@ -83,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private Coline.Error errorCallback = new Coline.Error() {
         @Override
         public void onError(String s) {
-            textResult.setText("ERROR: " + s);
+            // Retrieve the datas in String
+             textResult.setText("ERROR: " + s);
         }
     };
 }

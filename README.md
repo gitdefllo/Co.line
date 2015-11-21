@@ -1,11 +1,13 @@
 Co.line
 =======
+
 **REST connection lib in one line for Android.**
 
 Co.line is a custom library to do a HttpURLConnection in REST. Main advantage: using only one and simple line declaration by chained methods. It creates automatically a new Thread and returns result in callbacks main Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
 
 Download
 --------
+
 Via gradle
 ```java
 compile 'com.fllo.co.line:co.line:1.0.6'
@@ -21,6 +23,7 @@ or maven
 
 Usage
 ------
+
 ```java
 Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
 ```
@@ -40,6 +43,7 @@ Coline.init(context)
 
 Next features (Todo)
 -------
+
 - Using a queue for thread connection with a method in order to add a request to the current queue;
 - In callbacks, apply a custom model for the result string like `.success(myModel, mCallback)`;
 - ~~Add a value to des/activate logs in `init()` method;~~ *(done)*
@@ -47,7 +51,9 @@ Next features (Todo)
 
 Documentation
 -------
+
 **Initialization**
+
 ```java
 public static Coline init(Context context)
 ```
@@ -57,6 +63,7 @@ Coline.init(MainActivity.this);
 ```
 
 **Request methods**
+
 ```java
 public Coline url(int method, String url)
 ```
@@ -67,6 +74,7 @@ Coline.url(ColineHttpMethod.POST, "http://api.url.com/user");
 `ColineHttpMethod` class handles the following requests: `GET`, `POST`, `PUT`, `DELETE` and `HEAD`.
 
 **Authenticate**
+
 ```java
 public Coline auth(int auth, String token)
 ```
@@ -77,6 +85,7 @@ Coline.auth(ColineAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
 `ColineAuth` class handles the following authenticates: `Basic` and `Bearer`.
 
 **Parameters**
+
 ```java
 public Coline with(ContentValues values)
 ```
@@ -132,6 +141,7 @@ public void exec()
 
 Debugging  
 ---------  
+
 Logs are disabled by default. If you want to enable it, just add the following method before `init()`:  
 ```java
 Coline.activateLogs(true);
@@ -140,6 +150,7 @@ Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
 
 Version  
 -------
+
 ######v.1.0.6:
 - License documentation;
 
@@ -150,12 +161,15 @@ Version
 
 Contribution  
 ------------  
+
 Developed by Fllo (@Gitdefllo) 2015.  
 Feel free to contribute, improve or use.
 
 License
 --------
 
+    Fllo, All rights reserved - 2015 (@Gitdefllo)
+    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at

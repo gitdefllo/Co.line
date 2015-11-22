@@ -2,13 +2,12 @@ package com.fllo.co.line.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
 import com.fllo.co.line.Coline;
 import com.fllo.co.line.ColineHttpMethod;
-import com.fllo.co.line.ColineQueue;
 import com.fllo.co.line.sample.utils.WebUtils;
 
 /*
@@ -39,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         buttonSuccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("DEBUG_TAG", "onClick");
                 setRequest(true);
             }
         });
@@ -58,7 +56,11 @@ public class MainActivity extends AppCompatActivity {
         buttonAddToQueue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addRequestToQueue(!isSuccess);
+                addRequestToQueue(isSuccess);
+                if ( isSuccess )
+                    isSuccess = false;
+                else
+                    isSuccess = true;
             }
         });
 
@@ -73,13 +75,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Text for results
         textResult = (TextView) findViewById(R.id.result_text);
+        textResult.setMovementMethod(new ScrollingMovementMethod());
         textMultipleResults = (TextView) findViewById(R.id.info_queue_text);
+        textMultipleResults.setMovementMethod(new ScrollingMovementMethod());
     }
 
     // Method to get request (true = successful example, false = failed example)
     private void setRequest(boolean type) {
         // Change URL according to our need
-        String urlForRequest = WebUtils.URL_DISCOVER;
+        String urlForRequest = WebUtils.URL_SINGLE_MOVIE;
         if ( !type ) {
             urlForRequest = WebUtils.URL_FAKE_URL;
         }
@@ -124,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Enable the logs
-        ColineQueue.activateLogs(true);
+//        ColineQueue.activateLogs(true);
         // Initialize Coline
         Coline.init(this)
                 // Prepare method and URL
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
-                    + "SUCCESS:" + s.substring(0, 20) + "..."
+                    + "SUCCESS:" + s.substring(0, 50) + "..."
                     + "\n\n ------------- \n\n";
             textMultipleResults.setText(sample);
         }
@@ -164,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
-                    + "ERROR:" + s.substring(0, 20) + "..."
+                    + "ERROR:" + s.substring(0, 50) + "..."
                     + "\n\n ------------- \n\n";
             textMultipleResults.setText(sample);
         }

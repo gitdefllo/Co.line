@@ -51,14 +51,15 @@
         <TextView
             android:id="@+id/result_text"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_margin="20dp"
             android:textSize="14sp"
             android:textColor="#212121"
             android:maxLines="5"
             android:background="#e8e8e8"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:scrollbarAlwaysDrawVerticalTrack="true"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -102,13 +103,14 @@
         <TextView
             android:id="@+id/info_queue_text"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_margin="20dp"
             android:textSize="14sp"
             android:textColor="#212121"
             android:maxLines="5"
             android:background="#e8e8e8"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:scrollbarAlwaysDrawVerticalTrack="true"/>
     </LinearLayout>
 </ScrollView>

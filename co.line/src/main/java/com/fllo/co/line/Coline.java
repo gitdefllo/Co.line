@@ -90,9 +90,9 @@ public class Coline extends ColineQueue {
                     coline         = new Coline();
                     coline.context = context;
                     coline.values  = new ContentValues();
-                    coline.logs    = ColineLogs.getStatus();
+                    coline.logs    = ColineLogs.getInstance().getStatus();
                     if ( coline.logs )
-                        Log.d(CO_LINE, "Initialized");
+                        Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
                 }
             }
         }
@@ -244,7 +244,7 @@ public class Coline extends ColineQueue {
      * @see         Thread
      */
     public void exec() {
-        if ( logs )
+        if ( this.logs )
             Log.d(CO_LINE, "Request execution...");
         new Thread(new Runnable() {
             @Override
@@ -261,8 +261,6 @@ public class Coline extends ColineQueue {
      * @see         Thread
      */
     public void queue() {
-        if ( logs )
-            Log.d(CO_LINE, "Adding a new request to the queue.");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -278,8 +276,8 @@ public class Coline extends ColineQueue {
      * @see         Thread
      */
     public void send() {
-        if ( logs )
-            Log.d(CO_LINE, "Launch all request in the current queue.");
+        if ( this.logs )
+            Log.d(CO_LINE, "Launch all request in the current queue");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -307,13 +305,13 @@ public class Coline extends ColineQueue {
                             .append('=')
                             .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
                 } catch(UnsupportedEncodingException e) {
-                    if ( logs )
+                    if ( this.logs )
                         Log.e(CO_LINE, e.toString());
                 }
                 first_value = false;
             }
-            if ( logs )
-                Log.d(CO_LINE, "Values added to request body");
+            if ( this.logs )
+                Log.d(CO_LINE, "Values added to the request body");
         }
     }
 
@@ -332,11 +330,11 @@ public class Coline extends ColineQueue {
 
         // Init URL
         try {
-            if ( logs )
+            if ( this.logs )
                 Log.d(CO_LINE, "URL: " + route);
             url = new URL( route );
         } catch(MalformedURLException e) {
-            if ( logs )
+            if ( this.logs )
                 Log.e(CO_LINE, "error in route: " + e.toString());
         }
 
@@ -352,7 +350,7 @@ public class Coline extends ColineQueue {
         }
 
         // Do connection
-        if ( logs )
+        if ( this.logs )
             Log.d(CO_LINE, "Do connection...");
         HttpURLConnection http = null;
         try {
@@ -375,7 +373,7 @@ public class Coline extends ColineQueue {
                 wr.close();
             }
         } catch(IOException e) {
-            if ( logs )
+            if ( this.logs )
                 Log.e(CO_LINE, "Error in http url connection: " + e.toString());
         }
 
@@ -389,7 +387,7 @@ public class Coline extends ColineQueue {
             returnError(s);
             return;
         } else {
-            if ( logs )
+            if ( this.logs )
                 Log.d(CO_LINE, "Connection etablished");
         }
 
@@ -398,7 +396,7 @@ public class Coline extends ColineQueue {
         int         status      = 0;
         try {
             status = http.getResponseCode();
-            if ( logs )
+            if ( this.logs )
                 Log.d(CO_LINE, "Status response: " + status);
             if (status >= 200 && status < 400) {
                 inputStream = http.getInputStream();
@@ -406,7 +404,7 @@ public class Coline extends ColineQueue {
                 inputStream = http.getErrorStream();
             }
         } catch (IOException ex) {
-            if ( logs )
+            if ( this.logs )
                 Log.e(CO_LINE, ex.toString());
         }
 
@@ -433,10 +431,10 @@ public class Coline extends ColineQueue {
 
             inputStream.close();
             response = sb.toString();
-            if ( logs )
+            if ( this.logs )
                 Log.d(CO_LINE, response);
         } catch (Exception e) {
-            if ( logs )
+            if ( this.logs )
                 Log.e(CO_LINE, "Error when parsing result: " + e.toString());
         }
 
@@ -456,7 +454,7 @@ public class Coline extends ColineQueue {
      */
     private void returnSuccess(final String s) {
         if (success == null) return;
-        if ( logs ) Log.d(CO_LINE, "OK, onSuccess called");
+        if ( this.logs ) Log.d(CO_LINE, "OK, onSuccess() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -474,7 +472,7 @@ public class Coline extends ColineQueue {
      */
     private void returnError(final String s) {
         if (error == null) return;
-        if ( logs ) Log.d(CO_LINE, "Oops, onError called");
+        if ( this.logs ) Log.d(CO_LINE, "Oops, onError() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -486,17 +484,27 @@ public class Coline extends ColineQueue {
 
     private void clearQueue() {
         if ( ColineQueue.getInstance() != null ) {
-            if ( logs ) Log.d(CO_LINE, "A request queue has found");
+            if ( this.logs )  Log.d(CO_LINE, "A current request queue found");
+
             if ( ColineQueue.getInstance().getPending() ) {
-                if ( logs ) Log.d(CO_LINE, "No pending request left, try to destroy the queue...");
+                if ( this.logs )  Log.d(CO_LINE, "No pending requests left, try to destroy the queue...");
+
                 try {
                     destroyCurrentQueue();
+                    destroyColine();
                 } catch (Throwable t) {
-                    if ( logs )
-                        Log.e(CO_LINE, "Throwable error when trying to kill the current queue: \n"+t);
+                    if ( this.logs )
+                        Log.e(CO_LINE, "Throwable error when trying to kill the current queue: \n"+t.toString());
                 }
             }
         }
+    }
+
+    public void destroyColine() throws Throwable {
+        coline.finalize();
+        coline = null;
+        if ( this.logs )
+            Log.d(CO_LINE, "Coline is destroyed");
     }
 
     /**
@@ -509,6 +517,6 @@ public class Coline extends ColineQueue {
      */
     public static void activateLogs(boolean status) {
         if ( status ) Log.d(CO_LINE, "Logs activation!");
-        ColineLogs.setStatus(status);
+        ColineLogs.getInstance().setStatus(status);
     }
 }

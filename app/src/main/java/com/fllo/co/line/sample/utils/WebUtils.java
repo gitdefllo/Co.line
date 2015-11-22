@@ -12,7 +12,7 @@ package com.fllo.co.line.sample.utils;
  * -------------------
  *
  * Prepare utils constants variables to get elements
- * from themoviedb api (cf. https://themoviedb.org/).
+ * from TMDb API (cf. https://themoviedb.org/).
  *
  *****************************************************/
 public class WebUtils {
@@ -22,6 +22,7 @@ public class WebUtils {
 
     // URLs
     public static final String URL_DISCOVER = URL_BASE + "discover/movie" + API_KEY;
+    public static final String URL_SINGLE_MOVIE = URL_BASE + "movie/9693" + API_KEY;
     public static final String URL_FAKE_URL = URL_BASE + "error/" + API_KEY;
 }
 

@@ -24,12 +24,23 @@ package com.fllo.co.line;
  *
  */
 public class ColineLogs {
+    // Configuration
+    private static ColineLogs instance = null;
     // Status
-    public static boolean status = false;
+    public boolean status = false;
 
     // Values
-    public static final boolean enable = true;
-    public static final boolean disable = false;
+    public final boolean enable = true;
+    public final boolean disable = false;
+
+    public ColineLogs() { }
+
+    public static ColineLogs getInstance() {
+        if (instance == null) {
+            ColineLogs.instance = new ColineLogs();
+        }
+        return instance;
+    }
 
     /**
      * This method gets the method request in String header field.
@@ -37,8 +48,8 @@ public class ColineLogs {
      * @param status (boolean) Value to set for logs
      * @see          ColineLogs
      */
-    public static void setStatus(boolean status) {
-        ColineLogs.status = status;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     /**
@@ -47,7 +58,7 @@ public class ColineLogs {
      * @return       A boolean
      * @see          ColineLogs
      */
-    public static boolean getStatus() {
-        return status;
+    public boolean getStatus() {
+        return this.status;
     }
 }

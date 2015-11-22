@@ -52,10 +52,10 @@ public class ColineQueue {
                 if (queue == null) {
                     queue          = new ColineQueue();
                     queue.context  = context;
-                    queue.logs     = ColineLogs.getStatus();
                     queue.requests = new ArrayList<>();
+                    queue.logs     = ColineLogs.getInstance().getStatus();
                     if (queue.logs)
-                        Log.d(CO_LINE_QUEUE, "Request Queue is created");
+                        Log.d(CO_LINE_QUEUE, "Initialization");
                 }
             }
         }
@@ -78,6 +78,8 @@ public class ColineQueue {
         this.requests.add(this.requests.size(), request);
         this.used = true;
         this.pendingRequests += 1;
+        if ( logs )
+            Log.d(CO_LINE_QUEUE, "New request added to the queue");
     }
 
 
@@ -85,8 +87,8 @@ public class ColineQueue {
     public void start() {
         if (this.requests == null) return;
 
-        if ( logs )
-            Log.d(CO_LINE_QUEUE, "Request execution for waiting requests");
+        if ( this.logs )
+            Log.d(CO_LINE_QUEUE, "Start execution of pending requests...");
 
         for (final ColineRequest r : this.requests) {
             new Thread(new Runnable() {
@@ -112,7 +114,7 @@ public class ColineQueue {
     public void destroyCurrentQueue() throws Throwable {
         queue.finalize();
         queue = null;
-        if ( logs )
+        if ( this.logs )
             Log.d(CO_LINE_QUEUE, "Current queue is destroyed");
     }
 
@@ -125,7 +127,7 @@ public class ColineQueue {
      * @see          ColineLogs
      */
     public static void activateLogs(boolean status) {
-        if ( status ) Log.d(CO_LINE_QUEUE, "Logs activation!");
-        ColineLogs.setStatus(status);
+        if ( status ) Log.d(CO_LINE_QUEUE, "Enable logs");
+        ColineLogs.getInstance().setStatus(status);
     }
 }

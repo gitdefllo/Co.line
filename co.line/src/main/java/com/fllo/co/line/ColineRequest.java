@@ -25,27 +25,27 @@ package com.fllo.co.line;
  */
 public class ColineRequest {
 
-    private static Coline builder;
-    private int requestId;
-    private String url;
+    private static Coline    builder;
+    private int              requestId;
+    private String           url;
     private ColineHttpMethod http;
-    private ColineAuth auth;
-    private ColineLogs logs;
+    private ColineAuth       auth;
+    private ColineLogs       logs;
 
     public ColineRequest(Coline builder) {
         this.builder = builder;
     }
 
-    public static void setColineBuilder(Coline builder) {
+    public void setColineBuilder(Coline builder) {
         ColineRequest.builder = builder;
     }
 
-    public static Coline getColineBuilder() {
+    public Coline getColineBuilder() {
         return ColineRequest.builder;
     }
 
     public void setRequestId(int requestId) {
-        this.builder = builder;
+        this.requestId = requestId;
     }
 
     public int getRequestId() {

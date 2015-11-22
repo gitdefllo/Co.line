@@ -2,11 +2,13 @@ package com.fllo.co.line.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.fllo.co.line.Coline;
 import com.fllo.co.line.ColineHttpMethod;
+import com.fllo.co.line.ColineQueue;
 import com.fllo.co.line.sample.utils.WebUtils;
 
 /*
@@ -21,7 +23,11 @@ import com.fllo.co.line.sample.utils.WebUtils;
 public class MainActivity extends AppCompatActivity {
 
     // Init composants
-    TextView textResult;
+    private boolean  isSuccess = true;
+    private int      countRequests = 0;
+    // Init layout
+    private TextView textResult,
+                     textMultipleResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         buttonSuccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRequest(true);
+                Log.v("DEBUG_TAG", "onClick");
+                setRequest(true);
             }
         });
 
@@ -42,19 +49,38 @@ public class MainActivity extends AppCompatActivity {
         buttonError.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRequest(false);
+                setRequest(false);
+            }
+        });
+
+        // Event on adding request to queue
+        TextView buttonAddToQueue = (TextView) findViewById(R.id.button_add_request);
+        buttonAddToQueue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addRequestToQueue(!isSuccess);
+            }
+        });
+
+        // Event on adding request to queue
+        TextView buttonLaunchQueue = (TextView) findViewById(R.id.button_launch_queue);
+        buttonLaunchQueue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchQueue();
             }
         });
 
         // Text for results
         textResult = (TextView) findViewById(R.id.result_text);
+        textMultipleResults = (TextView) findViewById(R.id.info_queue_text);
     }
 
     // Method to get request (true = successful example, false = failed example)
-    private void getRequest(boolean request) {
+    private void setRequest(boolean type) {
         // Change URL according to our need
         String urlForRequest = WebUtils.URL_DISCOVER;
-        if ( !request ) {
+        if ( !type ) {
             urlForRequest = WebUtils.URL_FAKE_URL;
         }
         // Enable the logs
@@ -80,12 +106,67 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    // Success callback
+    // Error callback
     private Coline.Error errorCallback = new Coline.Error() {
         @Override
         public void onError(String s) {
             // Retrieve the datas in String
              textResult.setText("ERROR: " + s);
+        }
+    };
+
+    // Method to add request to the current queue
+    private void addRequestToQueue(boolean type) {
+        // Change URL according to our need
+        String urlForRequest = WebUtils.URL_DISCOVER;
+        if ( !type ) {
+            urlForRequest = WebUtils.URL_FAKE_URL;
+        }
+
+        // Enable the logs
+        ColineQueue.activateLogs(true);
+        // Initialize Coline
+        Coline.init(this)
+                // Prepare method and URL
+                .url(ColineHttpMethod.GET, urlForRequest)
+                // Retrieve result in success callback
+                .success(successQueueCallback)
+                // Retrieve result in error callback
+                .error(errorQueueCallback)
+                // Add the request to the current queue
+                .queue();
+    }
+
+    private void launchQueue() {
+        countRequests = 0;
+        Coline.init(this).send();
+    }
+
+    // Success callback for multiple requests
+    private Coline.Success successQueueCallback = new Coline.Success() {
+        @Override
+        public void onSuccess(String s) {
+            countRequests += 1;
+            // Retrieve the datas in String
+            String sample = textMultipleResults.getText().toString();
+            sample += "Request no." + countRequests + " \n"
+                    + "SUCCESS:" + s.substring(0, 20) + "..."
+                    + "\n\n ------------- \n\n";
+            textMultipleResults.setText(sample);
+        }
+    };
+
+    // Error callback for multiple requests
+    private Coline.Error errorQueueCallback = new Coline.Error() {
+        @Override
+        public void onError(String s) {
+            countRequests += 1;
+            // Retrieve the datas in String
+            String sample = textMultipleResults.getText().toString();
+            sample += "Request no." + countRequests + " \n"
+                    + "ERROR:" + s.substring(0, 20) + "..."
+                    + "\n\n ------------- \n\n";
+            textMultipleResults.setText(sample);
         }
     };
 }

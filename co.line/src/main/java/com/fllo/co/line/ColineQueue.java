@@ -15,6 +15,7 @@
  */
 package com.fllo.co.line;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -35,20 +36,24 @@ public class ColineQueue {
     private static final String CO_LINE_QUEUE  = "-- ColineQueue";
 
     // Configuration
-    private static ColineQueue queue;
+    private static ColineQueue       queue;
+    private Context                  context;
     private ArrayList<ColineRequest> requests;
-    private boolean logs;
+    private boolean                  logs;
 
     // Lifecycle
-    private boolean unused  = false;
+    private boolean used = false;
+    private int     pendingRequests;
 
     // Create the queue
-    public static ColineQueue init() {
+    public static ColineQueue init(Context context) {
         if (queue == null) {
             synchronized (ColineQueue.class) {
                 if (queue == null) {
-                    queue = new ColineQueue();
-                    queue.logs = ColineLogs.getStatus();
+                    queue          = new ColineQueue();
+                    queue.context  = context;
+                    queue.logs     = ColineLogs.getStatus();
+                    queue.requests = new ArrayList<>();
                     if (queue.logs)
                         Log.d(CO_LINE_QUEUE, "Request Queue is created");
                 }
@@ -57,48 +62,58 @@ public class ColineQueue {
         return queue;
     }
 
+    // Get current instance
+    public static ColineQueue getInstance() {
+        return queue;
+    }
 
     // TODO: save the current request into the current queue.
-    public void addRequestToQueue(ColineRequest request) {
+    public void add(ColineRequest request) {
         if (this.requests == null) {
             if ( this.logs )
                 Log.e(CO_LINE_QUEUE, "Failed to add a request to the queue: array = null");
             return;
         }
 
-        this.requests.add(this.requests.size() - 1, request);
+        this.requests.add(this.requests.size(), request);
+        this.used = true;
+        this.pendingRequests += 1;
     }
 
 
     // TODO: retrieve all requests in queue, and launch them.
-    public void getRequestsFromCurrentQueue() {
+    public void start() {
         if (this.requests == null) return;
-        unused = false;
 
         if ( logs )
             Log.d(CO_LINE_QUEUE, "Request execution for waiting requests");
 
-        for (final ColineRequest r : requests) {
+        for (final ColineRequest r : this.requests) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     r.getColineBuilder().exec();
+                    pendingRequests -= 1;
                 }
             }).start();
         }
+    }
 
-        try {
-            destroyCurrentQueue();
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+    // Get the number of pending request in the current queue
+    public boolean getPending() {
+        return this.pendingRequests > 0;
+    }
+
+    // Get the number of pending request in the current queue
+    public boolean getState() {
+        return this.used;
     }
 
     public void destroyCurrentQueue() throws Throwable {
-        if ( this.unused ) {
-            queue.finalize();
-            queue = null;
-        }
+        queue.finalize();
+        queue = null;
+        if ( logs )
+            Log.d(CO_LINE_QUEUE, "Current queue is destroyed");
     }
 
     /**

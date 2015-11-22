@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Co.line</string>
+    <string name="app_title">Hello Co.line!</string>
 
-    <string name="hello_world">Hello Co.line!</string>
-    <string name="action_settings">Settings</string>
+    <string name="legend_simple_request">Do a simple request</string>
+    <string name="legend_request_queue">Handle a request queue</string>
+
+    <string name="action_success">Get success</string>
+    <string name="action_error">Get error</string>
+    <string name="action_add_to_queue">Add to queue</string>
+    <string name="action_launch_the_queue">Launch the queue</string>
 </resources>

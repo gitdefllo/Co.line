@@ -267,7 +267,7 @@ public class Coline extends ColineQueue {
             @Override
             public void run() {
                 ColineRequest request = new ColineRequest(coline);
-                ColineQueue.init().addRequestToQueue(request);
+                ColineQueue.init(context.getApplicationContext()).add(request);
             }
         }).start();
     }
@@ -279,11 +279,11 @@ public class Coline extends ColineQueue {
      */
     public void send() {
         if ( logs )
-            Log.d(CO_LINE, "Adding a new request to the queue.");
+            Log.d(CO_LINE, "Launch all request in the current queue.");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ColineQueue.init().getRequestsFromCurrentQueue();
+                ColineQueue.getInstance().start();
             }
         }).start();
     }
@@ -461,6 +461,7 @@ public class Coline extends ColineQueue {
             @Override
             public void run() {
                 success.onSuccess(s);
+                clearQueue();
             }
         });
     }
@@ -478,8 +479,24 @@ public class Coline extends ColineQueue {
             @Override
             public void run() {
                 error.onError(s);
+                clearQueue();
             }
         });
+    }
+
+    private void clearQueue() {
+        if ( ColineQueue.getInstance() != null ) {
+            if ( logs ) Log.d(CO_LINE, "A request queue has found");
+            if ( ColineQueue.getInstance().getPending() ) {
+                if ( logs ) Log.d(CO_LINE, "No pending request left, try to destroy the queue...");
+                try {
+                    destroyCurrentQueue();
+                } catch (Throwable t) {
+                    if ( logs )
+                        Log.e(CO_LINE, "Throwable error when trying to kill the current queue: \n"+t);
+                }
+            }
+        }
     }
 
     /**

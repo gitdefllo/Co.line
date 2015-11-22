@@ -52,23 +52,21 @@ Request queue
 
 Set multiple requests in queue and launch one time:
 ```java
+// Prepare a first request
 Coline.init(MainActivity.this)
         .url(ColineHttpMethod.GET, "http://api.url.com/username")
         // Add to a current queue this request
         .queue();
 
-// In another class
+// Prepare another request in another class
 Coline.init(getActivity())
         .url(ColineHttpMethod.GET, "http://api.url.com/messages")
         .success(new Success...)
         .error(new Error...)
         .queue();
 
-// Finally, launch the queue (in other Context, why not?)
-Coline.init(getActivity())
-        .url(ColineHttpMethod.GET, "http://api.url.com/contacts")
-        // Execute the current queue
-        .exec();
+// Finally, launch the queue
+Coline.init(this).send();
 ```
 
 Next features (Todo)

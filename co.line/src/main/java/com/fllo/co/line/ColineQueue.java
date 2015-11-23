@@ -36,7 +36,7 @@ public class ColineQueue {
     private static final String CO_LINE_QUEUE  = "-- ColineQueue";
 
     // Configuration
-    private static ColineQueue       queue;
+    private static ColineQueue       queue = null;
     private Context                  context;
     private ArrayList<ColineRequest> requests;
     private boolean                  logs;
@@ -70,14 +70,14 @@ public class ColineQueue {
     // TODO: save the current request into the current queue.
     public void add(ColineRequest request) {
         if (this.requests == null) {
-            if ( this.logs )
+            if ( logs )
                 Log.e(CO_LINE_QUEUE, "Failed to add a request to the queue: array = null");
             return;
         }
 
         this.requests.add(this.requests.size(), request);
         this.used = true;
-        this.pendingRequests += 1;
+        queue.pendingRequests += 1;
         if ( logs )
             Log.d(CO_LINE_QUEUE, "New request added to the queue");
     }
@@ -87,15 +87,15 @@ public class ColineQueue {
     public void start() {
         if (this.requests == null) return;
 
-        if ( this.logs )
-            Log.d(CO_LINE_QUEUE, "Start execution of pending requests...");
+        if ( logs )
+            Log.d(CO_LINE_QUEUE, "Start execution of pending requests");
 
         for (final ColineRequest r : this.requests) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     r.getColineBuilder().exec();
-                    pendingRequests -= 1;
+                    queue.pendingRequests -= 1;
                 }
             }).start();
         }
@@ -112,10 +112,29 @@ public class ColineQueue {
     }
 
     public void destroyCurrentQueue() throws Throwable {
-        queue.finalize();
-        queue = null;
-        if ( this.logs )
-            Log.d(CO_LINE_QUEUE, "Current queue is destroyed");
+        if ( getState() && pendingRequests == 0 ) {
+            queue = null;
+            context = null;
+            requests = null;
+            logs = false;
+            used = false;
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        if ( this.used ) {
+            try {
+                destroyCurrentQueue();
+            }
+            catch(Exception ex) {
+                Log.d(CO_LINE_QUEUE, "Destroying the current queue not working: " + ex.toString());
+            }
+            finally {
+                Log.d(CO_LINE_QUEUE, "Current queue is destroyed");
+                super.finalize();
+            }
+        }
     }
 
     /**

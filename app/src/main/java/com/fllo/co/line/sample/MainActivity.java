@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.fllo.co.line.Coline;
 import com.fllo.co.line.ColineHttpMethod;
+import com.fllo.co.line.ColineQueue;
 import com.fllo.co.line.sample.utils.WebUtils;
 
 /*
@@ -108,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
             // Retrieve the datas in String
             textResult.setText("SUCCESS: " + s);
         }
+
+        @Override
+        public void onClear() { }
     };
 
     // Error callback
@@ -128,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Enable the logs
-//        ColineQueue.activateLogs(true);
-        // Initialize Coline
+        ColineQueue.activateLogs(true);
+        // Initialize Coline with a Queue
         Coline.init(this)
                 // Prepare method and URL
                 .url(ColineHttpMethod.GET, urlForRequest)
@@ -143,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchQueue() {
         countRequests = 0;
-        Coline.init(this).send();
+        ColineQueue.init(getApplicationContext()).start();
     }
 
     // Success callback for multiple requests
@@ -158,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
                     + "\n\n ------------- \n\n";
             textMultipleResults.setText(sample);
         }
+
+        @Override
+        public void onClear() { }
     };
 
     // Error callback for multiple requests
@@ -169,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
                     + "ERROR:" + s.substring(0, 50) + "..."
-                    + "\n\n ------------- \n\n";
+                    + "\n------------\n\n";
             textMultipleResults.setText(sample);
         }
     };

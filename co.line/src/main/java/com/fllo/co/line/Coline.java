@@ -49,7 +49,7 @@ import java.util.Map;
  * Repository: https://github.com/Gitdefllo/Co.line.git
  *
  */
-public class Coline extends ColineQueue {
+public class Coline {
 
     // Tags
     private static final String CO_LINE  = "-- Co.line";
@@ -65,6 +65,7 @@ public class Coline extends ColineQueue {
     private StringBuilder  body = null;
     private Success	   	   success;
     private Error		   error;
+    private boolean        used = false;
     private boolean        logs;
 
     /**
@@ -90,6 +91,7 @@ public class Coline extends ColineQueue {
                     coline         = new Coline();
                     coline.context = context;
                     coline.values  = new ContentValues();
+                    coline.used    = true;
                     coline.logs    = ColineLogs.getInstance().getStatus();
                     if ( coline.logs )
                         Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
@@ -244,7 +246,7 @@ public class Coline extends ColineQueue {
      * @see         Thread
      */
     public void exec() {
-        if ( this.logs )
+        if ( logs )
             Log.d(CO_LINE, "Request execution...");
         new Thread(new Runnable() {
             @Override
@@ -276,8 +278,14 @@ public class Coline extends ColineQueue {
      * @see         Thread
      */
     public void send() {
-        if ( this.logs )
+        if ( logs )
             Log.d(CO_LINE, "Launch all request in the current queue");
+
+        if (ColineQueue.getInstance() == null) {
+            Log.e(CO_LINE, "The queue isn't created. Maybe you missed to add a request with 'queue()'.");
+            return;
+        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -305,12 +313,12 @@ public class Coline extends ColineQueue {
                             .append('=')
                             .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
                 } catch(UnsupportedEncodingException e) {
-                    if ( this.logs )
+                    if ( logs )
                         Log.e(CO_LINE, e.toString());
                 }
                 first_value = false;
             }
-            if ( this.logs )
+            if ( logs )
                 Log.d(CO_LINE, "Values added to the request body");
         }
     }
@@ -330,11 +338,11 @@ public class Coline extends ColineQueue {
 
         // Init URL
         try {
-            if ( this.logs )
+            if ( logs )
                 Log.d(CO_LINE, "URL: " + route);
             url = new URL( route );
         } catch(MalformedURLException e) {
-            if ( this.logs )
+            if ( logs )
                 Log.e(CO_LINE, "error in route: " + e.toString());
         }
 
@@ -350,7 +358,7 @@ public class Coline extends ColineQueue {
         }
 
         // Do connection
-        if ( this.logs )
+        if ( logs )
             Log.d(CO_LINE, "Do connection...");
         HttpURLConnection http = null;
         try {
@@ -373,7 +381,7 @@ public class Coline extends ColineQueue {
                 wr.close();
             }
         } catch(IOException e) {
-            if ( this.logs )
+            if ( logs )
                 Log.e(CO_LINE, "Error in http url connection: " + e.toString());
         }
 
@@ -387,7 +395,7 @@ public class Coline extends ColineQueue {
             returnError(s);
             return;
         } else {
-            if ( this.logs )
+            if ( logs )
                 Log.d(CO_LINE, "Connection etablished");
         }
 
@@ -396,7 +404,7 @@ public class Coline extends ColineQueue {
         int         status      = 0;
         try {
             status = http.getResponseCode();
-            if ( this.logs )
+            if ( logs )
                 Log.d(CO_LINE, "Status response: " + status);
             if (status >= 200 && status < 400) {
                 inputStream = http.getInputStream();
@@ -404,7 +412,7 @@ public class Coline extends ColineQueue {
                 inputStream = http.getErrorStream();
             }
         } catch (IOException ex) {
-            if ( this.logs )
+            if ( logs )
                 Log.e(CO_LINE, ex.toString());
         }
 
@@ -431,10 +439,10 @@ public class Coline extends ColineQueue {
 
             inputStream.close();
             response = sb.toString();
-            if ( this.logs )
+            if ( logs )
                 Log.d(CO_LINE, response);
         } catch (Exception e) {
-            if ( this.logs )
+            if ( logs )
                 Log.e(CO_LINE, "Error when parsing result: " + e.toString());
         }
 
@@ -454,12 +462,12 @@ public class Coline extends ColineQueue {
      */
     private void returnSuccess(final String s) {
         if (success == null) return;
-        if ( this.logs ) Log.d(CO_LINE, "OK, onSuccess() called");
+        if ( logs ) Log.d(CO_LINE, "OK, onSuccess() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 success.onSuccess(s);
-                clearQueue();
+                clear();
             }
         });
     }
@@ -472,39 +480,73 @@ public class Coline extends ColineQueue {
      */
     private void returnError(final String s) {
         if (error == null) return;
-        if ( this.logs ) Log.d(CO_LINE, "Oops, onError() called");
+        if ( logs ) Log.d(CO_LINE, "Oops, onError() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 error.onError(s);
-                clearQueue();
             }
         });
     }
 
+    private void clear() {
+        clearQueue();
+        try {
+            finalize();
+        } catch (Throwable t) {
+            Log.i(CO_LINE, "Clear coline error: " + t.toString());
+        }
+    }
+
     private void clearQueue() {
-        if ( ColineQueue.getInstance() != null ) {
-            if ( this.logs )  Log.d(CO_LINE, "A current request queue found");
+        if ( ColineQueue.getInstance() == null )
+            return;
 
-            if ( ColineQueue.getInstance().getPending() ) {
-                if ( this.logs )  Log.d(CO_LINE, "No pending requests left, try to destroy the queue...");
+        if ( logs ) Log.d(CO_LINE, "A current request queue found");
 
-                try {
-                    destroyCurrentQueue();
-                    destroyColine();
-                } catch (Throwable t) {
-                    if ( this.logs )
-                        Log.e(CO_LINE, "Throwable error when trying to kill the current queue: \n"+t.toString());
-                }
+        if ( !ColineQueue.getInstance().getPending() ) {
+            if ( logs ) Log.d(CO_LINE, "No pending requests left, try to destroy the queue");
+
+            try {
+                ColineQueue.getInstance().finalize();
+            } catch(Throwable t) {
+                if ( logs )
+                    Log.i(CO_LINE, "Clear queue error: "+t.toString());
             }
         }
     }
 
     public void destroyColine() throws Throwable {
-        coline.finalize();
-        coline = null;
-        if ( this.logs )
-            Log.d(CO_LINE, "Coline is destroyed");
+        if ( used ) {
+            coline = null;
+            context = null;
+            method = null;
+            route = null;
+            auth = null;
+            token = null;
+            values = null;
+            body = null;
+            success = null;
+            error = null;
+            used = false;
+            logs = false;
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        if ( used ) {
+            try {
+                destroyColine();
+            }
+            catch(Exception ex) {
+                Log.i(CO_LINE, "Destroying the current coline not working");
+            }
+            finally {
+                Log.d(CO_LINE, "Current coline is destroyed");
+                super.finalize();
+            }
+        }
     }
 
     /**

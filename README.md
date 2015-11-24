@@ -27,17 +27,8 @@ Usage
 Do a request and retrieve it as:
 ```java
 Coline.init(this)
-        // Set the HTTP method (GET, PUT..) and the URL...
-        .url(ColineHttpMethod.GET, "http://api.url.com/")
-        // Then, get response in ColineResponse interface callback
-        .res(new ColineResponse() {
-            @Override
-            public void onSuccess(String s) { }
-            @Override
-            public void onError(String s) { }
-            @Override
-            public void onFail(String s) { }
-        })
+        // Set the HTTP method (GET, PUT..) and the URL, then get response in ColineResponse
+        .url(ColineHttpMethod.GET, "http://api.url.com/").res(response)
         // Execute the request
         .exec();
 ```
@@ -47,7 +38,16 @@ You can do a request in BasicAuth or OAuth2.0:
 Coline.init(context)
         .url(ColineHttpMethod.GET, "http://api.url.com/username")
         .auth(ColineAuth.BASIC_AUTH, "eDzp2DA1ezD48S6LSfPdZCab0")
-        .res(response)
+        .res(new ColineResponse() {
+            @Override
+            public void onSuccess(String s) { }
+
+            @Override
+            public void onError(String s) { }
+
+            @Override
+            public void onFail(String s) { }
+        })
         .exec();
 ```
 

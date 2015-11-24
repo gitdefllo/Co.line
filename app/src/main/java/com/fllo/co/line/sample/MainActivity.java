@@ -3,6 +3,7 @@ package com.fllo.co.line.sample;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import com.fllo.co.line.sample.utils.WebUtils;
  */
 public class MainActivity extends AppCompatActivity {
 
+    // Tags
+    private static final String COLINE_TAG = "-- MainActivity";
     // Init composants
     private boolean  isSuccess = true;
     private int      countRequests = 0;
@@ -88,38 +91,37 @@ public class MainActivity extends AppCompatActivity {
         if ( !type ) {
             urlForRequest = WebUtils.URL_FAKE_URL;
         }
+
         // Enable the logs
         Coline.activateLogs(true);
         // Initialize Coline
         Coline.init(this)
                 // Prepare method and URL
                 .url(ColineHttpMethod.GET, urlForRequest)
-                // Retrieve result in success callback
-                .success(successCallback)
-                // Retrieve result in error callback
-                .error(errorCallback)
+                // General callback
+                .res(singleResponse)
                 // Execute the request
                 .exec();
     }
 
-    // Success callback
-    private Coline.Success successCallback = new Coline.Success() {
+    // General callback
+    private Coline.Response singleResponse = new Coline.Response() {
         @Override
         public void onSuccess(String s) {
-            // Retrieve the datas in String
+            // Called when connection is successful
             textResult.setText("SUCCESS: " + s);
         }
 
         @Override
-        public void onClear() { }
-    };
-
-    // Error callback
-    private Coline.Error errorCallback = new Coline.Error() {
-        @Override
         public void onError(String s) {
-            // Retrieve the datas in String
-             textResult.setText("ERROR: " + s);
+            // Called when connection returns an error from server side
+            textResult.setText("ERROR: " + s);
+        }
+
+        @Override
+        public void onFail(String s) {
+            // Called when connection returns an error in Co.line side
+            Log.e(COLINE_TAG, "FAIL: " + s);
         }
     };
 
@@ -137,10 +139,8 @@ public class MainActivity extends AppCompatActivity {
         Coline.init(this)
                 // Prepare method and URL
                 .url(ColineHttpMethod.GET, urlForRequest)
-                // Retrieve result in success callback
-                .success(successQueueCallback)
-                // Retrieve result in error callback
-                .error(errorQueueCallback)
+                // Retrieve queue results in response callback
+                .res(queueResponse)
                 // Add the request to the current queue
                 .queue();
     }
@@ -150,10 +150,11 @@ public class MainActivity extends AppCompatActivity {
         ColineQueue.init(getApplicationContext()).start();
     }
 
-    // Success callback for multiple requests
-    private Coline.Success successQueueCallback = new Coline.Success() {
+    // General callback
+    private Coline.Response queueResponse = new Coline.Response() {
         @Override
         public void onSuccess(String s) {
+            // Called when connection is successful
             countRequests += 1;
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
@@ -164,18 +165,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onClear() { }
-    };
-
-    // Error callback for multiple requests
-    private Coline.Error errorQueueCallback = new Coline.Error() {
-        @Override
         public void onError(String s) {
+            // Called when connection returns an error from server side
             countRequests += 1;
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
                     + "ERROR:" + s.substring(0, 50) + "..."
+                    + "\n------------\n\n";
+            textMultipleResults.setText(sample);
+        }
+
+        @Override
+        public void onFail(String s) {
+            // Called when connection returns an error in Co.line side
+            countRequests += 1;
+            // Retrieve the datas in String
+            String sample = textMultipleResults.getText().toString();
+            sample += "Request no." + countRequests + " \n"
+                    + "FAIL:" + s.substring(0, 50) + "..."
                     + "\n------------\n\n";
             textMultipleResults.setText(sample);
         }

@@ -155,7 +155,7 @@ Coline.res(new ColineResponse() {
 
     @Override
     public void onError(String s) { }
-    
+
     @Override
     public void onFail(String s) { }
 })

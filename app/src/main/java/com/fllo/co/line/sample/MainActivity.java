@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.fllo.co.line.Coline;
 import com.fllo.co.line.ColineHttpMethod;
 import com.fllo.co.line.ColineQueue;
+import com.fllo.co.line.ColineResponse;
 import com.fllo.co.line.sample.utils.WebUtils;
 
 /*
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // General callback
-    private Coline.Response singleResponse = new Coline.Response() {
+    private ColineResponse singleResponse = new ColineResponse() {
         @Override
         public void onSuccess(String s) {
             // Called when connection is successful
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // General callback
-    private Coline.Response queueResponse = new Coline.Response() {
+    private ColineResponse queueResponse = new ColineResponse() {
         @Override
         public void onSuccess(String s) {
             // Called when connection is successful

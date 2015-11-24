@@ -63,8 +63,7 @@ public class Coline {
     private String         token;
     private ContentValues  values;
     private StringBuilder  body = null;
-    private Success	   	   success;
-    private Error		   error;
+    private Response       response;
     private boolean        used = false;
     private boolean        logs;
 
@@ -102,19 +101,23 @@ public class Coline {
     }
 
     /**
-     * Interface when the class should return a successful response.
+     * Interface to return server response, it has three methods:
+     * <p>
+     *      - onSuccess(String): returns a String server response when Http
+     *      status is equals to 200.
+     * <p>
+     *      - onError(String): returns a String server response when
+     *      Http response is not a success and contains 'error' characters
+     *      chained.
+     * <p>
+     *      - onFail(String): returns a String method response when an error
+     *      occurred in Coline class.
      *
      */
-    public interface Success {
+    public interface Response {
         void onSuccess(String s);
-    }
-
-    /**
-     * Interface when the class should return an error from response.
-     *
-     */
-    public interface Error {
         void onError(String s);
+        void onFail(String s);
     }
 
     /**
@@ -217,26 +220,14 @@ public class Coline {
     }
 
     /**
-     * This method prepares a callback when the request is successful.
+     * This method handles a callback when server returned response.
      *
-     * @param success (Success) Interface of successful request
-     * @return        The current instance of the class
-     * @see           Coline
+     * @param response (Response) Interface of successful and errors requests
+     * @return         The current instance of the class
+     * @see            Coline
      */
-    public Coline success(Success success) {
-        this.success = success;
-        return this;
-    }
-
-    /**
-     * This method prepares a callback when the request is failed.
-     *
-     * @param error (Error) Interface of failed request
-     * @return      The current instance of the class
-     * @see         Coline
-     */
-    public Coline error(Error error) {
-        this.error    = error;
+    public Coline res(Response response) {
+        this.response = response;
         return this;
     }
 
@@ -273,7 +264,7 @@ public class Coline {
     }
 
     /**
-     * This method launch all Coline instance.
+     * This method launches all Coline instance.
      *
      * @see         Thread
      */
@@ -282,7 +273,8 @@ public class Coline {
             Log.d(CO_LINE, "Launch all request in the current queue");
 
         if (ColineQueue.getInstance() == null) {
-            Log.e(CO_LINE, "The queue isn't created. Maybe you missed to add a request with 'queue()'.");
+            Log.e(CO_LINE, "The queue isn't created. Maybe you missed to add " +
+                    "a request with 'queue()'.");
             return;
         }
 
@@ -353,7 +345,7 @@ public class Coline {
                 JSONObject jreturn = new JSONObject(s);
                 s = jreturn.toString();
             } catch(JSONException e) {}
-            returnError(s);
+            returnFail(s);
             return;
         }
 
@@ -392,7 +384,7 @@ public class Coline {
                 JSONObject jreturn = new JSONObject(s);
                 s = jreturn.toString();
             } catch(JSONException e) {}
-            returnError(s);
+            returnFail(s);
             return;
         } else {
             if ( logs )
@@ -423,7 +415,7 @@ public class Coline {
                 JSONObject jreturn = new JSONObject(s);
                 s = jreturn.toString();
             } catch(JSONException e) {}
-            returnError(s);
+            returnFail(s);
             return;
         }
 
@@ -461,13 +453,12 @@ public class Coline {
      * @see     android.os.Looper
      */
     private void returnSuccess(final String s) {
-        if (success == null) return;
+        if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "OK, onSuccess() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                success.onSuccess(s);
-                clear();
+                response.onSuccess(s);
             }
         });
     }
@@ -479,16 +470,38 @@ public class Coline {
      * @see     android.os.Looper
      */
     private void returnError(final String s) {
-        if (error == null) return;
+        if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "Oops, onError() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                error.onError(s);
+                response.onError(s);
             }
         });
     }
 
+    /**
+     * Private: This method returns a String from Coline connection in main Thread.
+     *
+     * @param s (String) Error on Coline connection
+     * @see     android.os.Looper
+     */
+    private void returnFail(final String s) {
+        if (response == null) return;
+        if ( logs ) Log.d(CO_LINE, "Coline! We've got a problem, onFail() called");
+        new Handler(context.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                response.onFail(s);
+            }
+        });
+    }
+
+    /**
+     * Private: This method clear the current queue and calls Coline's
+     * override finalize method.
+     *
+     */
     private void clear() {
         clearQueue();
         try {
@@ -498,6 +511,11 @@ public class Coline {
         }
     }
 
+    /**
+     * Private: Call override {@link #Object} finalize method for the current queue.
+     *
+     * @see     {@link ColineQueue}
+     */
     private void clearQueue() {
         if ( ColineQueue.getInstance() == null )
             return;
@@ -516,6 +534,13 @@ public class Coline {
         }
     }
 
+    /**
+     * Private: This destroys all reference, variable and element of Coline only
+     * if Coline is in {@link #used} state.
+     * <p>
+     * Raised exception: Throwable
+     *
+     */
     public void destroyColine() throws Throwable {
         if ( used ) {
             coline = null;
@@ -526,13 +551,21 @@ public class Coline {
             token = null;
             values = null;
             body = null;
-            success = null;
-            error = null;
+            response = null;
             used = false;
             logs = false;
         }
     }
 
+    /**
+     * Protected: This overrides {@link #Object} finalize method.
+     * <p>
+     * This method checks if Coline instance is used and if not, destroy the instance.
+     * <p>
+     * Exception: Throwable
+     *
+     * @see     java.lang.Object
+     */
     @Override
     protected void finalize() throws Throwable {
         if ( used ) {

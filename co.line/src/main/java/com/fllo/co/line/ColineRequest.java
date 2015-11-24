@@ -20,7 +20,7 @@ package com.fllo.co.line;
  * -----------------
  * @author  Fllo (@Gitdefllo) 2015
  *
- * Model of request http method.
+ * Model of request HttpUrlConnection method.
  *
  */
 public class ColineRequest {

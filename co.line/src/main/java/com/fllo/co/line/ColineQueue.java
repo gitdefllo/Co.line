@@ -45,7 +45,17 @@ public class ColineQueue {
     private boolean used = false;
     private int     pendingRequests;
 
-    // Create the queue
+    /**
+     * Co.lineQueue's constructor: method to initiate ColineQueue with actual Context.
+     * It creates a new instance of class if this one does not already exist.
+     * The Context can be an Activity, a Fragment, a Service or anything and it
+     * assigns by Coline's instance. This is used to create a current queue of
+     * request and launch it at one time.
+     *
+     * @param context (Context) Actual Context from the call in Coline
+     * @return        An instance of the class
+     * @see           ColineQueue
+     */
     public static ColineQueue init(Context context) {
         if (queue == null) {
             synchronized (ColineQueue.class) {
@@ -62,12 +72,23 @@ public class ColineQueue {
         return queue;
     }
 
-    // Get current instance
+    /**
+     * Get the current queue without checking any errors or nullable instance.
+     *
+     * @return queue (ColineQueue) The ColineQueue current's instance.
+     * @see          ColineQueue
+     */
     public static ColineQueue getInstance() {
         return queue;
     }
 
-    // TODO: save the current request into the current queue.
+    /**
+     * Save the current request into the current queue.
+     *
+     * @param request (ColineRequest) The Coline's instance which
+     *                will be added to the queue.
+     * @see           ColineRequest
+     */
     public void add(ColineRequest request) {
         if (this.requests == null) {
             if ( logs )
@@ -82,8 +103,10 @@ public class ColineQueue {
             Log.d(CO_LINE_QUEUE, "New request added to the queue");
     }
 
-
-    // TODO: retrieve all requests in queue, and launch them.
+    /**
+     * Retrieve all requests in queue, and launch them.
+     *
+     */
     public void start() {
         if (this.requests == null) return;
 
@@ -101,16 +124,32 @@ public class ColineQueue {
         }
     }
 
-    // Get the number of pending request in the current queue
+    /**
+     * Get the number of pending requests in the current queue.
+     *
+     * @return pendingRequests (int) The number of pending requests
+     */
     public boolean getPending() {
         return this.pendingRequests > 0;
     }
 
+    /**
+     * Get the current state of the queue: if it's used or not.
+     *
+     * @return used  (boolean) The state of the current queue
+     */
     // Get the number of pending request in the current queue
     public boolean getState() {
         return this.used;
     }
 
+    /**
+     * Private: This destroys all reference, variable and element of ColineQueue
+     * only if ColineQueue is every pending requests are done and if the queue is used.
+     * <p>
+     * Raised exception: Throwable
+     *
+     */
     public void destroyCurrentQueue() throws Throwable {
         if ( getState() && pendingRequests == 0 ) {
             queue = null;
@@ -121,6 +160,16 @@ public class ColineQueue {
         }
     }
 
+    /**
+     * Protected: This overrides {@link #Object} finalize method.
+     * <p>
+     * This method checks if ColineQueue instance is used and if not,
+     * destroy the current queue.
+     * <p>
+     * Exception: Throwable
+     *
+     * @see     java.lang.Object
+     */
     @Override
     protected void finalize() throws Throwable {
         if ( this.used ) {

@@ -27,8 +27,17 @@ Usage
 Do a request and retrieve it as:
 ```java
 Coline.init(this)
-        // Set the HTTP method (GET, PUT..) and the URL, then retrieve it in a callback
-        .url(ColineHttpMethod.GET, "http://api.url.com/").success(getSuccess)
+        // Set the HTTP method (GET, PUT..) and the URL...
+        .url(ColineHttpMethod.GET, "http://api.url.com/")
+        // Then, get response in ColineResponse interface callback
+        .res(new ColineResponse() {
+            @Override
+            public void onSuccess(String s) { }
+            @Override
+            public void onError(String s) { }
+            @Override
+            public void onFail(String s) { }
+        })
         // Execute the request
         .exec();
 ```
@@ -38,12 +47,7 @@ You can do a request in BasicAuth or OAuth2.0:
 Coline.init(context)
         .url(ColineHttpMethod.GET, "http://api.url.com/username")
         .auth(ColineAuth.BASIC_AUTH, "eDzp2DA1ezD48S6LSfPdZCab0")
-        .success(new Coline.Success() {
-            @Override
-            public void onSuccess(String s) {
-                ...
-            }
-        })
+        .res(response)
         .exec();
 ```
 
@@ -53,27 +57,26 @@ Request queue
 Set multiple requests in queue and launch one time:
 ```java
 // Prepare a first request
-Coline.init(MainActivity.this)
+Coline.init(getActivity())
         .url(ColineHttpMethod.GET, "http://api.url.com/username")
-        // Add to a current queue this request
+        .res(response)
         .queue();
 
-// Prepare another request in another class
+// Prepare another request
 Coline.init(getActivity())
         .url(ColineHttpMethod.GET, "http://api.url.com/messages")
-        .success(new Success...)
-        .error(new Error...)
+        .res(otherResponse)
         .queue();
 
 // Finally, launch the queue
-Coline.init(this).send();
+Coline.init(getActivity()).send();
 ```
 
 Next features (Todo)
 -------
 
 - Personnalization of auth method;
-- In callbacks, apply a custom model for the result string like `.success(myModel, mCallback)`;
+- In callbacks, apply a custom model for the result string like `.res(myModel, mCallback)`;
 - ~~Using a queue for thread connection with a method in order to add a request to the current queue;~~ *(done)*
 
 Documentation
@@ -136,6 +139,28 @@ values.put("username", "Fllo");
 Coline.with(values);
 ```
 
+**Callbacks**
+
+```java
+public Coline res(ColineResponse response)
+```
+Called by `res()`, the request response is a `String` and can be retrieved in `ColineResponse` interface, which implements three methods:
+- `onSuccess`: everything went fine,
+- `onError`: response contains an error,
+- `onFail`: internal Coline connection error.
+```java
+Coline.res(new ColineResponse() {
+    @Override
+    public void onSuccess(String s) { }
+
+    @Override
+    public void onError(String s) { }
+    
+    @Override
+    public void onFail(String s) { }
+})
+```
+
 **Execution**
 
 *Note: it needs to be declared at the end.*
@@ -149,8 +174,7 @@ Debugging
 Logs are disabled by default. If you want to enable it, just add the following method before `init()`:
 ```java
 Coline.activateLogs(true);
-Coline.init(this)
-        .url(ColineHttpMethod.GET, "http://api.url.com/").exec();
+Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
 ```
 
 Version  

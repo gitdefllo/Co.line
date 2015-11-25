@@ -15,6 +15,8 @@
  */
 package com.fllo.co.line;
 
+import android.util.Log;
+
 /*
  * Co.lineLogs
  * -----------
@@ -24,17 +26,28 @@ package com.fllo.co.line;
  *
  */
 public class ColineLogs {
+
+    // Tags
+    private static final String CO_LINE  = "Co.line";
+
     // Configuration
     private static ColineLogs instance = null;
+
     // Status
     public boolean status = false;
 
-    // Values
-    public final boolean enable = true;
-    public final boolean disable = false;
-
+    /**
+     * ColineLogs'empty constructor.
+     *
+     * @see          ColineLogs
+     */
     public ColineLogs() { }
 
+    /**
+     * This method gets the current instance or creates a new one.
+     *
+     * @see          ColineLogs
+     */
     public static ColineLogs getInstance() {
         if (instance == null) {
             ColineLogs.instance = new ColineLogs();
@@ -60,5 +73,19 @@ public class ColineLogs {
      */
     public boolean getStatus() {
         return this.status;
+    }
+
+    /**
+     * This method activate or desactivate console logs in Coline request method.
+     * By default: the logs are desactivate.
+     *
+     * @param status (boolean) Value to activate or not the console logs (true: activate,
+     *               false: desactivate)
+     * @see          ColineLogs
+     */
+    public static void activateLogs(boolean status) {
+        if ( status )
+            Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
+        ColineLogs.getInstance().setStatus(status);
     }
 }

@@ -55,7 +55,6 @@ public class Coline {
     private static final String CO_LINE  = "-- Co.line";
 
     // Configuration
-    private static Coline  coline;
     private Context        context;
     private String 		   method;
     private String 		   route;
@@ -84,20 +83,21 @@ public class Coline {
      * @see           Coline
      */
     public static Coline init(Context context) {
-        if (coline == null) {
-            synchronized (Coline.class) {
-                if (coline == null) {
-                    coline         = new Coline();
-                    coline.context = context;
-                    coline.values  = new ContentValues();
-                    coline.used    = true;
-                    coline.logs    = ColineLogs.getInstance().getStatus();
-                    if ( coline.logs )
-                        Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
-                }
-            }
-        }
+        Coline coline  = new Coline();
+        coline.context = context;
+        coline.values  = new ContentValues();
+        coline.used    = true;
+        coline.logs    = ColineLogs.getInstance().getStatus();
         return coline;
+    }
+
+    /**
+     * This method get the status of current logs.
+     *
+     * @see          ColineLogs
+     */
+    protected boolean getStatusLogs() {
+        return ColineLogs.getInstance().getStatus();
     }
 
     /**
@@ -237,8 +237,7 @@ public class Coline {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ColineRequest request = new ColineRequest(coline);
-                ColineQueue.init(context.getApplicationContext()).add(request);
+                ColineQueue.in(context.getApplicationContext()).add(Coline.this);
             }
         }).start();
     }
@@ -253,7 +252,7 @@ public class Coline {
             Log.d(CO_LINE, "Launch all request in the current queue");
 
         if (ColineQueue.getInstance() == null) {
-            Log.e(CO_LINE, "The queue isn't created. Maybe you missed to add " +
+            Log.i(CO_LINE, "The queue isn't created. Maybe you missed to add " +
                     "a request with 'queue()'.");
             return;
         }
@@ -439,6 +438,7 @@ public class Coline {
             @Override
             public void run() {
                 response.onSuccess(s);
+                clear();
             }
         });
     }
@@ -456,6 +456,7 @@ public class Coline {
             @Override
             public void run() {
                 response.onError(s);
+                clear();
             }
         });
     }
@@ -473,6 +474,7 @@ public class Coline {
             @Override
             public void run() {
                 response.onFail(s);
+                clear();
             }
         });
     }
@@ -523,7 +525,7 @@ public class Coline {
      */
     public void destroyColine() throws Throwable {
         if ( used ) {
-            coline = null;
+//            coline = null;
             context = null;
             method = null;
             route = null;
@@ -560,18 +562,5 @@ public class Coline {
                 super.finalize();
             }
         }
-    }
-
-    /**
-     * This method activate or desactivate console logs in Coline request method.
-     * By default: the logs are desactivate.
-     *
-     * @param status (boolean) Value to activate or not the console logs (true: activate,
-     *               false: desactivate)
-     * @see          ColineLogs
-     */
-    public static void activateLogs(boolean status) {
-        if ( status ) Log.d(CO_LINE, "Logs activation!");
-        ColineLogs.getInstance().setStatus(status);
     }
 }

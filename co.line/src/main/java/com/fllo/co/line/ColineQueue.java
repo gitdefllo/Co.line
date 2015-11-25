@@ -28,18 +28,19 @@ import java.util.ArrayList;
  * Add multiple requests on a queue and launch one time:
  * Create a new queue or an instance of the current one if it exists yet. Then, save
  * the state of each request, wait the last one and send it to the server.
- * Contains an ArrayList of ColineRequest with its properties.
+ * Contains an ArrayList of Coline's request with its properties.
  *
  */
 public class ColineQueue {
+
     // Tags
     private static final String CO_LINE_QUEUE  = "-- ColineQueue";
 
     // Configuration
-    private static ColineQueue       queue = null;
-    private Context                  context;
-    private ArrayList<ColineRequest> requests;
-    private boolean                  logs;
+    private static ColineQueue queue = null;
+    private Context            context;
+    private ArrayList<Coline>  requests;
+    private boolean            logs;
 
     // Lifecycle
     private boolean used = false;
@@ -56,7 +57,7 @@ public class ColineQueue {
      * @return        An instance of the class
      * @see           ColineQueue
      */
-    public static ColineQueue init(Context context) {
+    public static ColineQueue in(Context context) {
         if (queue == null) {
             synchronized (ColineQueue.class) {
                 if (queue == null) {
@@ -65,7 +66,7 @@ public class ColineQueue {
                     queue.requests = new ArrayList<>();
                     queue.logs     = ColineLogs.getInstance().getStatus();
                     if (queue.logs)
-                        Log.d(CO_LINE_QUEUE, "Initialization");
+                        Log.d(CO_LINE_QUEUE, "Queue initialization");
                 }
             }
         }
@@ -85,20 +86,21 @@ public class ColineQueue {
     /**
      * Save the current request into the current queue.
      *
-     * @param request (ColineRequest) The Coline's instance which
-     *                will be added to the queue.
-     * @see           ColineRequest
+     * @param request (Coline) The Coline's instance which will be
+     *                added to the queue.
+     * @see           Coline
      */
-    public void add(ColineRequest request) {
+    public void add(Coline request) {
         if (this.requests == null) {
             if ( logs )
-                Log.e(CO_LINE_QUEUE, "Failed to add a request to the queue: array = null");
+                Log.e(CO_LINE_QUEUE, "Failed to add a request to the queue: list = null");
             return;
         }
 
         this.requests.add(this.requests.size(), request);
         this.used = true;
-        queue.pendingRequests += 1;
+        this.logs = request.getStatusLogs();
+        this.pendingRequests += 1;
         if ( logs )
             Log.d(CO_LINE_QUEUE, "New request added to the queue");
     }
@@ -108,19 +110,20 @@ public class ColineQueue {
      *
      */
     public void start() {
-        if (this.requests == null) return;
+        if (this.requests == null) {
+            if ( logs )
+                Log.e(CO_LINE_QUEUE, "Failed to launch the queue: list = null");
+            return;
+        }
 
         if ( logs )
             Log.d(CO_LINE_QUEUE, "Start execution of pending requests");
 
-        for (final ColineRequest r : this.requests) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    r.getColineBuilder().exec();
-                    queue.pendingRequests -= 1;
-                }
-            }).start();
+        for (final Coline r : this.requests) {
+            if ( logs )
+                Log.d(CO_LINE_QUEUE, "Execute request in current queue (rf. " + r.toString() + ")");
+            r.exec();
+            queue.pendingRequests -= 1;
         }
     }
 
@@ -184,18 +187,5 @@ public class ColineQueue {
                 super.finalize();
             }
         }
-    }
-
-    /**
-     * This method activate or desactivate console logs in Coline request method.
-     * By default: the logs are desactivate.
-     *
-     * @param status (boolean) Value to activate or not the console logs (true: activate,
-     *               false: desactivate)
-     * @see          ColineLogs
-     */
-    public static void activateLogs(boolean status) {
-        if ( status ) Log.d(CO_LINE_QUEUE, "Enable logs");
-        ColineLogs.getInstance().setStatus(status);
     }
 }

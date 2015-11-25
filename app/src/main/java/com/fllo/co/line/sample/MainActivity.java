@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.fllo.co.line.Coline;
 import com.fllo.co.line.ColineHttpMethod;
-import com.fllo.co.line.ColineQueue;
+import com.fllo.co.line.ColineLogs;
 import com.fllo.co.line.ColineResponse;
 import com.fllo.co.line.sample.utils.WebUtils;
 
@@ -26,17 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
     // Tags
     private static final String COLINE_TAG = "-- MainActivity";
+
     // Init composants
     private boolean  isSuccess = true;
     private int      countRequests = 0;
+
     // Init layout
-    private TextView textResult,
-                     textMultipleResults;
+    private TextView textResult, textMultipleResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Enable the debugs logs for Co.line
+        ColineLogs.activateLogs(true);
 
         // Event on success click
         TextView buttonSuccess = (TextView) findViewById(R.id.button_success);
@@ -93,15 +97,13 @@ public class MainActivity extends AppCompatActivity {
             urlForRequest = WebUtils.URL_FAKE_URL;
         }
 
-        // Enable the logs
-        Coline.activateLogs(true);
         // Initialize Coline
         Coline.init(this)
                 // Prepare method and URL
                 .url(ColineHttpMethod.GET, urlForRequest)
-                // General callback
+                        // General callback
                 .res(singleResponse)
-                // Execute the request
+                        // Execute the request
                 .exec();
     }
 
@@ -134,21 +136,19 @@ public class MainActivity extends AppCompatActivity {
             urlForRequest = WebUtils.URL_FAKE_URL;
         }
 
-        // Enable the logs
-        ColineQueue.activateLogs(true);
         // Initialize Coline with a Queue
         Coline.init(this)
                 // Prepare method and URL
                 .url(ColineHttpMethod.GET, urlForRequest)
-                // Retrieve queue results in response callback
+                        // Retrieve queue results in response callback
                 .res(queueResponse)
-                // Add the request to the current queue
+                        // Add the request to the current queue
                 .queue();
     }
 
     private void launchQueue() {
         countRequests = 0;
-        ColineQueue.init(getApplicationContext()).start();
+        Coline.init(this).send();
     }
 
     // General callback
@@ -160,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
-                    + "SUCCESS:" + s.substring(0, 50) + "..."
-                    + "\n\n ------------- \n\n";
+                    + "SUCCESS:" + s.substring(0, 50) + "...\n"
+                    + "-------------\n";
             textMultipleResults.setText(sample);
         }
 
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
-                    + "ERROR:" + s.substring(0, 50) + "..."
+                    + "ERROR:" + s.substring(0, 50) + "...\n"
                     + "\n------------\n\n";
             textMultipleResults.setText(sample);
         }
@@ -184,8 +184,8 @@ public class MainActivity extends AppCompatActivity {
             // Retrieve the datas in String
             String sample = textMultipleResults.getText().toString();
             sample += "Request no." + countRequests + " \n"
-                    + "FAIL:" + s.substring(0, 50) + "..."
-                    + "\n------------\n\n";
+                    + "FAIL:" + s.substring(0, 50) + "...\n"
+                    + "------------\n";
             textMultipleResults.setText(sample);
         }
     };

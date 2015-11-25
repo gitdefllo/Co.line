@@ -1,5 +1,5 @@
 /*
- * Fllo, All rights reserved - 2015 (@Gitdefllo)
+ * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class ColineQueue {
     /**
      * Get the current queue without checking any errors or nullable instance.
      *
-     * @return queue (ColineQueue) The ColineQueue current's instance.
+     * @return       The ColineQueue current's instance.
      * @see          ColineQueue
      */
     public static ColineQueue getInstance() {
@@ -130,7 +130,7 @@ public class ColineQueue {
     /**
      * Get the number of pending requests in the current queue.
      *
-     * @return pendingRequests (int) The number of pending requests
+     * @return       The number of pending requests
      */
     public boolean getPending() {
         return this.pendingRequests > 0;
@@ -139,7 +139,7 @@ public class ColineQueue {
     /**
      * Get the current state of the queue: if it's used or not.
      *
-     * @return used  (boolean) The state of the current queue
+     * @return       The state of the current queue
      */
     // Get the number of pending request in the current queue
     public boolean getState() {
@@ -149,9 +149,8 @@ public class ColineQueue {
     /**
      * Private: This destroys all reference, variable and element of ColineQueue
      * only if ColineQueue is every pending requests are done and if the queue is used.
-     * <p>
-     * Raised exception: Throwable
      *
+     * @throws       Throwable
      */
     public void destroyCurrentQueue() throws Throwable {
         if ( getState() && pendingRequests == 0 ) {
@@ -164,14 +163,13 @@ public class ColineQueue {
     }
 
     /**
-     * Protected: This overrides {@link #Object} finalize method.
+     * Protected: This overrides Object's finalize method.
      * <p>
      * This method checks if ColineQueue instance is used and if not,
      * destroy the current queue.
-     * <p>
-     * Exception: Throwable
      *
-     * @see     java.lang.Object
+     * @throws       Throwable
+     * @see          java.lang.Object
      */
     @Override
     protected void finalize() throws Throwable {

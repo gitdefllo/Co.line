@@ -1,6 +1,6 @@
 /*
- * Fllo, All rights reserved - 2015 (@Gitdefllo)
- * 
+ * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,12 +41,14 @@ import java.util.Map;
 /*
  * Co.line
  * -------
- * @version 1.0.6
+ * @version 1.0.7
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Android library for HttpURLConnection connections with automatic Thread
  * and Callbacks in chained methods in one line.
- * Repository: https://github.com/Gitdefllo/Co.line.git
+ *
+ * Repository:    https://github.com/Gitdefllo/Co.line.git
+ * Issue tracker: https://github.com/Gitdefllo/Co.line/issues
  *
  */
 public class Coline {
@@ -94,6 +96,7 @@ public class Coline {
     /**
      * This method get the status of current logs.
      *
+     * @return       A boolean (true: activate, false: disable)
      * @see          ColineLogs
      */
     protected boolean getStatusLogs() {
@@ -519,9 +522,8 @@ public class Coline {
     /**
      * Private: This destroys all reference, variable and element of Coline only
      * if Coline is in {@link #used} state.
-     * <p>
-     * Raised exception: Throwable
      *
+     * @throws Throwable
      */
     public void destroyColine() throws Throwable {
         if ( used ) {
@@ -540,12 +542,11 @@ public class Coline {
     }
 
     /**
-     * Protected: This overrides {@link #Object} finalize method.
+     * Protected: This overrides Object's finalize method.
      * <p>
      * This method checks if Coline instance is used and if not, destroy the instance.
-     * <p>
-     * Exception: Throwable
      *
+     * @throws  Throwable
      * @see     java.lang.Object
      */
     @Override

@@ -1,5 +1,5 @@
 /*
- * Fllo, All rights reserved - 2015 (@Gitdefllo)
+ * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ public class ColineLogs {
     /**
      * This method gets the current instance or creates a new one.
      *
+     * @return       An instance of logs class
      * @see          ColineLogs
      */
     public static ColineLogs getInstance() {
@@ -76,11 +77,11 @@ public class ColineLogs {
     }
 
     /**
-     * This method activate or desactivate console logs in Coline request method.
-     * By default: the logs are desactivate.
+     * This method activate or disable console logs in Coline request method.
+     * By default: the logs are disable.
      *
-     * @param status (boolean) Value to activate or not the console logs (true: activate,
-     *               false: desactivate)
+     * @param status (boolean) Value to activate or not the console logs
+     *               (true: activate, false: disable)
      * @see          ColineLogs
      */
     public static void activateLogs(boolean status) {

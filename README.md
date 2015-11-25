@@ -54,10 +54,10 @@ Coline.init(context)
 Request queue
 -------
 
-Set multiple requests in queue and launch one time:
+Set multiple requests in queue and launch all at one time:
 ```java
 // Prepare a first request
-Coline.init(getActivity())
+Coline.init(this)
         .url(ColineHttpMethod.GET, "http://api.url.com/username")
         .res(response)
         .queue();
@@ -69,7 +69,7 @@ Coline.init(getActivity())
         .queue();
 
 // Finally, launch the queue
-Coline.init(getActivity()).send();
+Coline.init(MainActivity.this).send();
 ```
 
 Next features (Todo)
@@ -77,6 +77,7 @@ Next features (Todo)
 
 - Personnalization of auth method;
 - In callbacks, apply a custom model for the result string like `.res(myModel, mCallback)`;
+- ~~Clear the current queue once it's used';~~ *(done)*
 - ~~Using a queue for thread connection with a method in order to add a request to the current queue;~~ *(done)*
 
 Documentation
@@ -161,6 +162,25 @@ Coline.res(new ColineResponse() {
 })
 ```
 
+**Current queue**
+
+```java
+public void queue()
+public void send()
+```
+These methods are used to fetch and batch multiple requests later at one time.
+To add a request to the current queue, call `queue()` at the end:
+```java
+Coline.init(contextB).url(ColineHttpMethod.GET, urlB).res(responseB).queue();
+...
+Coline.init(contextA).url(ColineHttpMethod.POST, urlA).with(valuesA).res(responseA).queue();
+...
+```
+Then, call `send()` in order to launch all request in the current queue:
+```java
+Coline.init(contextC).send();
+```
+
 **Execution**
 
 *Note: it needs to be declared at the end.*
@@ -173,8 +193,7 @@ Debugging
 
 Logs are disabled by default. If you want to enable it, just add the following method before `init()`:
 ```java
-Coline.activateLogs(true);
-Coline.init(this).url(ColineHttpMethod.GET, "http://api.url.com/").exec();
+ColineLogs.activateLogs(true);
 ```
 
 Version  

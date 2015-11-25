@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.7'
+compile 'com.fllo.co.line:co.line:1.0.8'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
 </dependency>
 ```
 
@@ -199,8 +199,9 @@ ColineLogs.activateLogs(true);
 Version  
 -------
 
-######v.1.0.7:
+######v.1.0.7-v.1.0.8:
 - Using a queue to send requests;
+- Update Javadoc (issue on publishing javadoc)
 
 ######v.1.0.6:
 - License documentation;

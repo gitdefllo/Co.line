@@ -29,6 +29,7 @@ package com.fllo.co.line;
  *
  */
 public class ColineHttpMethod {
+
     // Methods
     public static final int GET    = 0x00001;
     public static final int POST   = 0x00002;

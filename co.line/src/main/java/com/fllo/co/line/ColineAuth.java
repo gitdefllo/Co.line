@@ -26,6 +26,7 @@ package com.fllo.co.line;
  *
  */
 public class ColineAuth {
+
     // Authentication fields
     public static final int BASIC_AUTH = 0x00001;
     public static final int OAUTH_2    = 0x00002;

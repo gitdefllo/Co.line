@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.6'
+compile 'com.fllo.co.line:co.line:1.0.7'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
 </dependency>
 ```
 
@@ -171,9 +171,9 @@ public void send()
 These methods are used to fetch and batch multiple requests later at one time.
 To add a request to the current queue, call `queue()` at the end:
 ```java
-Coline.init(contextB).url(ColineHttpMethod.GET, urlB).res(responseB).queue();
+Coline.init(contextA).url(ColineHttpMethod.GET, urlA).res(responseA).queue();
 ...
-Coline.init(contextA).url(ColineHttpMethod.POST, urlA).with(valuesA).res(responseA).queue();
+Coline.init(contextB).url(ColineHttpMethod.POST, urlB).with(valuesB).res(responseB).queue();
 ...
 ```
 Then, call `send()` in order to launch all request in the current queue:
@@ -213,7 +213,7 @@ Version
 License
 --------
 
-    Fllo, All rights reserved - 2015 (@Gitdefllo)
+    Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

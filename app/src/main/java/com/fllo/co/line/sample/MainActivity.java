@@ -20,6 +20,7 @@ import com.fllo.co.line.sample.utils.WebUtils;
  *
  * Get a movies list by using Co.line library with themoviedb (https://themoviedb.org/).
  * Repository: https://github.com/Gitdefllo/Co.line.git
+ * Issue tracker: https://github.com/Gitdefllo/Co.line/issues
  *
  */
 public class MainActivity extends AppCompatActivity {

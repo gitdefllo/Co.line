@@ -41,7 +41,7 @@ import java.util.Map;
 /*
  * Co.line
  * -------
- * @version 1.0.7
+ * @version 1.0.8
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Android library for HttpURLConnection connections with automatic Thread
@@ -69,20 +69,23 @@ public class Coline {
     private boolean        logs;
 
     /**
+     * <p>
      * Co.line's constructor: method to initiate Coline with actual Context.
      * It creates a new instance of class if this one does not already exist.
      * The Context can be an Activity, a Fragment, a Service or anything. This
      * will be used to return the request response into the main Thread.
+     * </p>
      * <p>
      * When this class is initiate, it attaches also a boolean value
      * to des/activate logs and creates a new ContentValues.
+     * </p>
      * <p>
      * The ContentValues will be used to store the parameters to pass into the
-     * request by {@link #with(ContentValues)} method.
+     * request by {@link #with(ContentValues values)} method.
+     * </p>
      *
      * @param context (Context) Actual Context from the call
      * @return        An instance of the class
-     * @see           Coline
      */
     public static Coline init(Context context) {
         Coline coline  = new Coline();
@@ -104,7 +107,9 @@ public class Coline {
     }
 
     /**
+     * <p>
      * This method initiates the request method and the URL to do the request.
+     * </p>
      * <p>
      * The request method is a static int value from ColineHttpMethod class like:
      *      - ColineHttpMethod.GET
@@ -112,13 +117,14 @@ public class Coline {
      *      - ColineHttpMethod.PUT
      *      - ColineHttpMethod.DELETE
      *      - ColineHttpMethod.HEAD
+     * </p>
      *
      * @param method (int) Value from ColineHttpMethod
      *               of request method
      * @param route  (String) Value for URL route (should be a String URL as
      *               "http://www.example.com")
      * @return       The current instance of the class
-     * @see          Coline
+     * @see          ColineHttpMethod
      */
     public Coline url(int method, String route) {
         this.method = new ColineHttpMethod().getMethod(method);
@@ -127,32 +133,37 @@ public class Coline {
     }
 
     /**
+     * <p>
      * This method initiates the values to pass into the request from
      * a ContentValues object.
+     * </p>
      * <p>
-     * See also: {@link #with(Object...)} and {@link #with(ArrayMap)}
+     * See also: with(Object...) and with(ArrayMap&lt;String, Object&gt;)
+     * </p>
      *
      * @param values (ContentValues) Values to pass into the request
      * @return       The current instance of the class
-     * @see          Coline
      */
-    public Coline with(ContentValues values) {
+    public Coline with(final ContentValues values) {
         this.values = values;
         return this;
     }
 
     /**
+     * <p>
      * This method initiates the values to pass into the request from
      * an Object array. It declared as follows: 'with("key1", value1, "key2",
      * "value2", "key3", values3);'.
+     * </p>
      * <p>
      * All the object in the array will be convert to a String.
+     * </p>
      * <p>
-     * See also: {@link #with(ContentValues)} and {@link #with(ArrayMap)}
+     * See also: with(ContentValues) and with(ArrayMap&lt;String, Object&gt;)
+     * </p>
      *
      * @param values (Object...) Values to pass into the request
      * @return       The current instance of the class
-     * @see          Coline
      */
     public Coline with(final Object... values) {
         for (int i=0; i<values.length; ++i) {
@@ -164,18 +175,22 @@ public class Coline {
     }
 
     /**
+     * <p>
      * Only with KitKat version and higher:
+     * </p>
      * <p>
      * This method initiates the values to pass into the request from
      * an ArrayMap&lt;String, Object&gt;.
+     * </p>
      * <p>
      * All the object in the array will be convert to a String.
+     * </p>
      * <p>
-     * See also: {@link #with(ContentValues)} and {@link #with(ContentValues)}
+     * See also: with(ContentValues) and with(Object...)
+     * </p>
      *
      * @param values (ArrayMap) Values to pass into the request
      * @return       The current instance of the class
-     * @see          Coline
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline with(final ArrayMap<String, Object> values) {
@@ -194,7 +209,7 @@ public class Coline {
      * @param token (String) Value of Authentication (should be a String
      *              encoded in BASE64)
      * @return      The current instance of the class
-     * @see         Coline
+     * @see         ColineAuth
      */
     public Coline auth(int auth, String token) {
         this.auth  = new ColineAuth().getAuthHeader(auth);
@@ -207,7 +222,7 @@ public class Coline {
      *
      * @param response (Response) Interface of successful and errors requests
      * @return         The current instance of the class
-     * @see            Coline
+     * @see            ColineResponse
      */
     public Coline res(ColineResponse response) {
         this.response = response;
@@ -269,8 +284,8 @@ public class Coline {
     }
 
     /**
-     * Private: This method get all value from {@link #with(ContentValues)},
-     * {@link #with(Object...)} or {@link #with(ArrayMap<String, Object)} and prepares
+     * Private: This method get all value from {@link #with(ContentValues values)},
+     * {@link #with(Object... values)} or {@link #with(ArrayMap<String, Object> values)} and prepares
      * a StringBuilder with all parameter given to send it into the request.
      *
      * @see         StringBuilder
@@ -432,7 +447,6 @@ public class Coline {
      * Private: This method returns a String response in main Thread.
      *
      * @param s (String) Response of request
-     * @see     android.os.Looper
      */
     private void returnSuccess(final String s) {
         if (response == null) return;
@@ -450,7 +464,6 @@ public class Coline {
      * Private: This method returns a String response in main Thread.
      *
      * @param s (String) Response of request
-     * @see     android.os.Looper
      */
     private void returnError(final String s) {
         if (response == null) return;
@@ -468,7 +481,6 @@ public class Coline {
      * Private: This method returns a String from Coline connection in main Thread.
      *
      * @param s (String) Error on Coline connection
-     * @see     android.os.Looper
      */
     private void returnFail(final String s) {
         if (response == null) return;
@@ -497,7 +509,7 @@ public class Coline {
     }
 
     /**
-     * Private: Call override {@link #Object} finalize method for the current queue.
+     * Private: Call override Object's finalize method for the current queue.
      *
      * @see     {@link ColineQueue}
      */
@@ -523,11 +535,10 @@ public class Coline {
      * Private: This destroys all reference, variable and element of Coline only
      * if Coline is in {@link #used} state.
      *
-     * @throws Throwable
+     * @throws Throwable  Throw an exception when destroyed is compromised
      */
     public void destroyColine() throws Throwable {
         if ( used ) {
-//            coline = null;
             context = null;
             method = null;
             route = null;
@@ -542,12 +553,10 @@ public class Coline {
     }
 
     /**
-     * Protected: This overrides Object's finalize method.
-     * <p>
-     * This method checks if Coline instance is used and if not, destroy the instance.
+     * <p>Protected: This overrides Object's finalize method.</p>
+     * <p>This method checks if Coline instance is used and if not, destroy the instance.</p>
      *
-     * @throws  Throwable
-     * @see     java.lang.Object
+     * @throws Throwable  Throw an exception when destroyed is compromised
      */
     @Override
     protected void finalize() throws Throwable {

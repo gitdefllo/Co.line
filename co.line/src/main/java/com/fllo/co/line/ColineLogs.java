@@ -22,7 +22,7 @@ import android.util.Log;
  * -----------
  * @author  Fllo (@Gitdefllo) 2015
  *
- * Des/Activate logs in Co.line
+ * Enable or disable debug logs in Co.line
  *
  */
 public class ColineLogs {
@@ -39,7 +39,6 @@ public class ColineLogs {
     /**
      * ColineLogs'empty constructor.
      *
-     * @see          ColineLogs
      */
     public ColineLogs() { }
 
@@ -47,7 +46,6 @@ public class ColineLogs {
      * This method gets the current instance or creates a new one.
      *
      * @return       An instance of logs class
-     * @see          ColineLogs
      */
     public static ColineLogs getInstance() {
         if (instance == null) {
@@ -60,7 +58,6 @@ public class ColineLogs {
      * This method gets the method request in String header field.
      *
      * @param status (boolean) Value to set for logs
-     * @see          ColineLogs
      */
     public void setStatus(boolean status) {
         this.status = status;
@@ -70,7 +67,6 @@ public class ColineLogs {
      * This method returns the status'logs for Co.line class.
      *
      * @return       A boolean
-     * @see          ColineLogs
      */
     public boolean getStatus() {
         return this.status;
@@ -82,7 +78,6 @@ public class ColineLogs {
      *
      * @param status (boolean) Value to activate or not the console logs
      *               (true: activate, false: disable)
-     * @see          ColineLogs
      */
     public static void activateLogs(boolean status) {
         if ( status )

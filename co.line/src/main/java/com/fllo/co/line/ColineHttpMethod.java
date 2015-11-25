@@ -40,7 +40,6 @@ public class ColineHttpMethod {
     /**
      * Co.lineHttpMethod's constructor: method not used.
      *
-     * @see           ColineHttpMethod
      */
     public ColineHttpMethod() { }
 
@@ -49,7 +48,6 @@ public class ColineHttpMethod {
      *
      * @param method (int) Value corresponding to static int in this class
      * @return       A String like "GET" or "POST"
-     * @see          ColineHttpMethod
      */
     public String getMethod(int method) {
         switch (method) {

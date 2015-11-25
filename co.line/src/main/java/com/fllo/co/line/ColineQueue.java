@@ -55,7 +55,6 @@ public class ColineQueue {
      *
      * @param context (Context) Actual Context from the call in Coline
      * @return        An instance of the class
-     * @see           ColineQueue
      */
     public static ColineQueue in(Context context) {
         if (queue == null) {
@@ -77,7 +76,6 @@ public class ColineQueue {
      * Get the current queue without checking any errors or nullable instance.
      *
      * @return       The ColineQueue current's instance.
-     * @see          ColineQueue
      */
     public static ColineQueue getInstance() {
         return queue;
@@ -88,7 +86,6 @@ public class ColineQueue {
      *
      * @param request (Coline) The Coline's instance which will be
      *                added to the queue.
-     * @see           Coline
      */
     public void add(Coline request) {
         if (this.requests == null) {
@@ -150,7 +147,7 @@ public class ColineQueue {
      * Private: This destroys all reference, variable and element of ColineQueue
      * only if ColineQueue is every pending requests are done and if the queue is used.
      *
-     * @throws       Throwable
+     * @throws  Throwable Throw an exception when destroyed is compromised
      */
     public void destroyCurrentQueue() throws Throwable {
         if ( getState() && pendingRequests == 0 ) {
@@ -163,13 +160,15 @@ public class ColineQueue {
     }
 
     /**
+     * <p>
      * Protected: This overrides Object's finalize method.
+     * </p>
      * <p>
      * This method checks if ColineQueue instance is used and if not,
      * destroy the current queue.
+     * </p>
      *
-     * @throws       Throwable
-     * @see          java.lang.Object
+     * @throws  Throwable Throw an exception when destroyed is compromised
      */
     @Override
     protected void finalize() throws Throwable {

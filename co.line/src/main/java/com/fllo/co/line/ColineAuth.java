@@ -34,7 +34,6 @@ public class ColineAuth {
     /**
      * Co.lineAuth's constructor: method not used.
      *
-     * @see           ColineAuth
      */
     public ColineAuth() { }
 
@@ -43,7 +42,6 @@ public class ColineAuth {
      *
      * @param auth (int) Value corresponding to static int in this class
      * @return     A String like "Basic " or "Bearer "
-     * @see        ColineAuth
      */
     public String getAuthHeader(int auth) {
         switch (auth) {

@@ -24,7 +24,7 @@ package com.fllo.co.line;
  *  - onSuccess
  *  - onError
  *  - onFail
- * <p>
+ *
  * Co.line handle and treat server response to retrieve it
  * in the specific response condition above.
  *
@@ -41,7 +41,7 @@ public interface ColineResponse {
 
     /**
      * This method returns a String server response when Http response
-     * is not a {@link #onSuccess} or contains 'error' word.
+     * is not a {@link #onSuccess(String s)} or contains 'error' word.
      *
      * @param s (String) Error response from server side
      */

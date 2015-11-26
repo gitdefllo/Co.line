@@ -41,7 +41,7 @@ import java.util.Map;
 /*
  * Co.line
  * -------
- * @version 1.0.8
+ * @version 1.0.9
  * @author  Fllo (@Gitdefllo) 2015
  *
  * Android library for HttpURLConnection connections with automatic Thread
@@ -58,9 +58,9 @@ public class Coline {
 
     // Configuration
     private Context        context;
-    private String 		   method;
-    private String 		   route;
-    private String 		   auth;
+    private String         method;
+    private String         route;
+    private String         auth;
     private String         token;
     private ContentValues  values;
     private StringBuilder  body = null;
@@ -319,8 +319,8 @@ public class Coline {
      */
     private void request() {
         // Prepare timeout variables
-        int     MAX_READ_TIMEOUT    = 10000;
-        int     MAX_CONNECT_TIMEOUT = 15000;
+        int     MAX_READ_TIMEOUT    = 3000;
+        int     MAX_CONNECT_TIMEOUT = 7000;
 
         String  response = "";
         URL     url = null;

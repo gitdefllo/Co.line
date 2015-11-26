@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.8'
+compile 'com.fllo.co.line:co.line:1.0.9'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.8</version>
+  <version>1.0.9</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ public static Coline init(Context context)
 ```
 Initialise with the current Context.
 ```java
-ex: Coline.init(MainActivity.this);
+Coline.init(MainActivity.this);
 ```
 
 **Request methods**
@@ -199,9 +199,9 @@ ColineLogs.activateLogs(true);
 Version  
 -------
 
-######v.1.0.7-v.1.0.8:
+######v.1.0.7-v.1.0.9:
 - Using a queue to send requests;
-- Update Javadoc (issue on publishing javadoc)
+- Update Javadoc (publishing Javadoc issue)
 
 ######v.1.0.6:
 - License documentation;

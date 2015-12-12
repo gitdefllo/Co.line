@@ -1,5 +1,5 @@
 /*
- * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
+ * Copyright 2015 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import java.util.Map;
  * Co.line
  * -------
  * @version 1.0.9
- * @author  Fllo (@Gitdefllo) 2015
+ * @author  Florent Blot (@Gitdefllo)
  *
  * Android library for HttpURLConnection connections with automatic Thread
  * and Callbacks in chained methods in one line.
@@ -111,12 +111,12 @@ public class Coline {
      * This method initiates the request method and the URL to do the request.
      * </p>
      * <p>
-     * The request method is a static int value from ColineHttpMethod class like:
-     *      - ColineHttpMethod.GET
-     *      - ColineHttpMethod.POST
-     *      - ColineHttpMethod.PUT
-     *      - ColineHttpMethod.DELETE
-     *      - ColineHttpMethod.HEAD
+     * The request method is a static int value from ColineHttpMethod class like:<br>
+     *      - ColineHttpMethod.GET<br>
+     *      - ColineHttpMethod.POST<br>
+     *      - ColineHttpMethod.PUT<br>
+     *      - ColineHttpMethod.DELETE<br>
+     *      - ColineHttpMethod.HEAD<br>
      * </p>
      *
      * @param method (int) Value from ColineHttpMethod
@@ -152,8 +152,8 @@ public class Coline {
     /**
      * <p>
      * This method initiates the values to pass into the request from
-     * an Object array. It declared as follows: 'with("key1", value1, "key2",
-     * "value2", "key3", values3);'.
+     * an Object array. It declared as follows:<br>
+     * 'with("key1", value1, "key2", "value2", "key3", values3);'.
      * </p>
      * <p>
      * All the object in the array will be convert to a String.

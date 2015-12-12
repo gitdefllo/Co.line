@@ -1,5 +1,5 @@
 /*
- * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
+ * Copyright 2015 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 /*
  * Co.lineQueue
  * -----------------
- * @author  Fllo (@Gitdefllo) 2015
+ * @author  Florent Blot (@Gitdefllo)
  *
  * Add multiple requests on a queue and launch one time:
  * Create a new queue or an instance of the current one if it exists yet. Then, save

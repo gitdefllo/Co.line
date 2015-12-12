@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def projectVersion  = '1.0.9'
+def projectVersion  = '1.0.10'
 def libName         = 'Co.line'
 def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
 def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
@@ -66,14 +66,30 @@ install {
     }
 }
 
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.links("http://docs.oracle.com/javase/7/docs/api/");
+    options.linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
+    failOnError = false
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
 task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
 }
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.encoding = 'UTF-8'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -82,6 +98,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 artifacts {
+    archives androidJavadocsJar
     archives javadocJar
     archives sourcesJar
 }

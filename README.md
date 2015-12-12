@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.9'
+compile 'com.fllo.co.line:co.line:1.0.10'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.9</version>
+  <version>1.0.10</version>
 </dependency>
 ```
 
@@ -173,12 +173,12 @@ To add a request to the current queue, call `queue()` at the end:
 ```java
 Coline.init(contextA).url(ColineHttpMethod.GET, urlA).res(responseA).queue();
 ...
-Coline.init(contextB).url(ColineHttpMethod.POST, urlB).with(valuesB).res(responseB).queue();
+Coline.init(contextA).url(ColineHttpMethod.POST, urlB).with(valuesB).res(responseB).queue();
 ...
 ```
 Then, call `send()` in order to launch all request in the current queue:
 ```java
-Coline.init(contextC).send();
+Coline.init(contextA).send();
 ```
 
 **Execution**
@@ -199,6 +199,9 @@ ColineLogs.activateLogs(true);
 Version  
 -------
 
+######v.1.0.10:
+- Change queue initialization (internal)
+
 ######v.1.0.7-v.1.0.9:
 - Using a queue to send requests;
 - Update Javadoc (publishing Javadoc issue)
@@ -214,7 +217,7 @@ Version
 License
 --------
 
-    Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
+    Copyright 2015 Florent Blot
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

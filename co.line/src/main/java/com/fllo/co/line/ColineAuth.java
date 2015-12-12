@@ -1,5 +1,5 @@
 /*
- * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
+ * Copyright 2015 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.fllo.co.line;
 /*
  * Co.lineAuth
  * -----------
- * @author  Fllo (@Gitdefllo) 2015
+ * @author  Florent Blot (@Gitdefllo)
  *
  * Set a header field using:
  *      ColineAuth.BASIC_AUTH   = 0x00001;

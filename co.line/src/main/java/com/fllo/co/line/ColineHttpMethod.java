@@ -1,5 +1,5 @@
 /*
- * Florent Blot (Fllo, @Gitdefllo), all rights reserved - 2015
+ * Copyright 2015 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.fllo.co.line;
 /*
  * Co.lineHttpMethod
  * -----------------
- * @author  Fllo (@Gitdefllo) 2015
+ * @author  Florent Blot (@Gitdefllo)
  *
  * Set a request method using:
  *      ColineHttpMethod.GET    = 0x00001;

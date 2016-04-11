@@ -186,18 +186,15 @@ CoLogs.desactivate();
 Version  
 -------
 
+######v.1.0.14:
+- Merging Manifest file resolved
+
 ######v.1.0.13:
 - Minor app name changes
 
 ######v.1.0.12:
 - Change classes names and methods
 - Passing enums instead of String
-
-######v.1.0.11:
-- Debugs
-
-######v.1.0.10:
-- Change queue initialization (internal)
 
 <a href="https://github.com/Gitdefllo/Co.line/blob/master/VERSIONS.md">See older versions</a>
 

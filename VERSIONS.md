@@ -1,6 +1,12 @@
 Old versions
 ------------
 
+######v.1.0.11:
+- Debugs
+
+######v.1.0.10:
+- Change queue initialization (internal)
+
 ######v.1.0.7-v.1.0.9:
 - Using a queue to send requests;
 - Update Javadoc (publishing Javadoc issue)

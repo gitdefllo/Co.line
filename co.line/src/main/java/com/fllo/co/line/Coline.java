@@ -41,7 +41,7 @@ import java.util.Map;
 /*
  * Co.line
  * -------
- * @version 1.0.12
+ * @version 1.0.13
  * @author  Florent Blot (@Gitdefllo)
  *
  * Android library for HttpURLConnection connections with automatic Thread

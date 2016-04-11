@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.12'
+compile 'com.fllo.co.line:co.line:1.0.13'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.12</version>
+  <version>1.0.13</version>
 </dependency>
 ```
 
@@ -185,6 +185,9 @@ CoLogs.desactivate();
 
 Version  
 -------
+
+######v.1.0.13:
+- Minor app name changes
 
 ######v.1.0.12:
 - Change classes names and methods

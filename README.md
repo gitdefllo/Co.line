@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.10'
+compile 'com.fllo.co.line:co.line:1.0.12'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.10</version>
+  <version>1.0.12</version>
 </dependency>
 ```
 
@@ -27,27 +27,15 @@ Usage
 Do a request and retrieve it as:
 ```java
 Coline.init(this)
-        // Set the HTTP method (GET, PUT..) and the URL, then get response in ColineResponse
-        .url(ColineHttpMethod.GET, "http://api.url.com/").res(response)
-        // Execute the request
-        .exec();
-```
-
-You can do a request in BasicAuth or OAuth2.0:
-```java
-Coline.init(context)
-        .url(ColineHttpMethod.GET, "http://api.url.com/username")
-        .auth(ColineAuth.BASIC_AUTH, "eDzp2DA1ezD48S6LSfPdZCab0")
-        .res(new ColineResponse() {
+        // Set the HTTP method (GET, PUT..) and the URL, then get response in CoResponse class
+        .url(CoHttp.GET, "http://api.url.com/")
+        .res(new CoResponse() {
             @Override
-            public void onSuccess(String s) { }
-
+            public void onSuccess(String s) { /** Handle successful response */ }
             @Override
-            public void onError(String s) { }
-
-            @Override
-            public void onFail(String s) { }
+            public void onFail(String s) { /** Handle bad response */ }
         })
+        // Execute the request
         .exec();
 ```
 
@@ -58,27 +46,25 @@ Set multiple requests in queue and launch all at one time:
 ```java
 // Prepare a first request
 Coline.init(this)
-        .url(ColineHttpMethod.GET, "http://api.url.com/username")
-        .res(response)
+        .url(CoHttp.GET, "http://api.url.com/user")
+        .res(userResponse)
         .queue();
 
 // Prepare another request
-Coline.init(getActivity())
-        .url(ColineHttpMethod.GET, "http://api.url.com/messages")
-        .res(otherResponse)
+Coline.init(this)
+        .url(CoHttp.GET, "http://api.url.com/user/messages")
+        .res(msgResponse)
         .queue();
 
 // Finally, launch the queue
-Coline.init(MainActivity.this).send();
+Coline.init(this).send();
 ```
 
 Next features (Todo)
 -------
 
-- Personnalization of auth method;
-- In callbacks, apply a custom model for the result string like `.res(myModel, mCallback)`;
-- ~~Clear the current queue once it's used';~~ *(done)*
-- ~~Using a queue for thread connection with a method in order to add a request to the current queue;~~ *(done)*
+- Adding other auth methods;
+- Populate a custom model with `.res(myCustomModel)`;
 
 Documentation
 -------
@@ -96,24 +82,24 @@ Coline.init(MainActivity.this);
 **Request methods**
 
 ```java
-public Coline url(int method, String url)
+public Coline url(CoHttp method, String url)
 ```
 Pass the HTTP method and the URL.
 ```java
-Coline.url(ColineHttpMethod.POST, "http://api.url.com/user");
+Coline.url(CoHttp.POST, "http://api.url.com/user");
 ```
-`ColineHttpMethod` class handles the following requests: `GET`, `POST`, `PUT`, `DELETE` and `HEAD`.
+`CoHttp` class handles the following requests: `GET`, `POST`, `PUT`, `DELETE` and `HEAD`.
 
 **Authenticate**
 
 ```java
-public Coline auth(int auth, String token)
+public Coline auth(CoAuth auth, String token)
 ```
 Add the Authorization header field.
 ```java
-Coline.auth(ColineAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
+Coline.auth(CoAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
 ```
-`ColineAuth` class handles the following authenticates: `Basic` and `Bearer`.
+`CoAuth` class handles the following authenticates: `Basic` and `Bearer`.
 
 **Parameters**
 
@@ -143,23 +129,19 @@ Coline.with(values);
 **Callbacks**
 
 ```java
-public Coline res(ColineResponse response)
+public Coline res(CoResponse response)
 ```
-Called by `res()`, the request response is a `String` and can be retrieved in `ColineResponse` interface, which implements three methods:
+Called by `res()`, the request response is a `String` and can be retrieved in `CoResponse` interface, which implements three methods:
 - `onSuccess`: everything went fine,
-- `onError`: response contains an error,
-- `onFail`: internal Coline connection error.
+- `onFail`: response contains an error.
 ```java
-Coline.res(new ColineResponse() {
+Coline.res(new CoResponse() {
     @Override
     public void onSuccess(String s) { }
 
     @Override
-    public void onError(String s) { }
-
-    @Override
     public void onFail(String s) { }
-})
+});
 ```
 
 **Current queue**
@@ -171,14 +153,14 @@ public void send()
 These methods are used to fetch and batch multiple requests later at one time.
 To add a request to the current queue, call `queue()` at the end:
 ```java
-Coline.init(contextA).url(ColineHttpMethod.GET, urlA).res(responseA).queue();
+Coline.init(context).url(CoHttp.GET, urlA).res(responseA).queue();
 ...
-Coline.init(contextA).url(ColineHttpMethod.POST, urlB).with(valuesB).res(responseB).queue();
+Coline.init(context).url(CoHttp.POST, urlB).with(valuesB).res(responseB).queue();
 ...
 ```
 Then, call `send()` in order to launch all request in the current queue:
 ```java
-Coline.init(contextA).send();
+Coline.init(context).send();
 ```
 
 **Execution**
@@ -191,33 +173,34 @@ public void exec()
 Debugging
 ---------
 
-Logs are disabled by default. If you want to enable it, just add the following method before `init()`:
+Logs are disabled by default. If you want to enable it, just call the following method:
 ```java
-ColineLogs.activateLogs(true);
+CoLogs.activate();
+```
+To disable it, call the static method `desactivate()`:
+```java
+CoLogs.desactivate();
 ```
 
 Version  
 -------
 
+######v.1.0.12:
+- Change classes names and methods
+- Passing enums instead of String
+
+######v.1.0.11:
+- Debugs
+
 ######v.1.0.10:
 - Change queue initialization (internal)
-
-######v.1.0.7-v.1.0.9:
-- Using a queue to send requests;
-- Update Javadoc (publishing Javadoc issue)
-
-######v.1.0.6:
-- License documentation;
-
-######v.1.0.5:
-- Co.line uses more logs;
 
 <a href="https://github.com/Gitdefllo/Co.line/blob/master/VERSIONS.md">See older versions</a>
 
 License
 --------
 
-    Copyright 2015 Florent Blot
+    Copyright 2016 Florent Blot
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

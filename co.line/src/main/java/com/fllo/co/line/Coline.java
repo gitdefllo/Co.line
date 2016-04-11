@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Florent Blot
+ * Copyright 2016 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import java.util.Map;
 /*
  * Co.line
  * -------
- * @version 1.0.9
+ * @version 1.0.12
  * @author  Florent Blot (@Gitdefllo)
  *
  * Android library for HttpURLConnection connections with automatic Thread
@@ -64,7 +64,7 @@ public class Coline {
     private String         token;
     private ContentValues  values;
     private StringBuilder  body = null;
-    private ColineResponse response;
+    private CoResponse     response;
     private boolean        used = false;
     private boolean        logs;
 
@@ -92,7 +92,7 @@ public class Coline {
         coline.context = context;
         coline.values  = new ContentValues();
         coline.used    = true;
-        coline.logs    = ColineLogs.getInstance().getStatus();
+        coline.logs    = CoLogs.getInstance().getStatus();
         return coline;
     }
 
@@ -100,10 +100,10 @@ public class Coline {
      * This method get the status of current logs.
      *
      * @return       A boolean (true: activate, false: disable)
-     * @see          ColineLogs
+     * @see          CoLogs
      */
     protected boolean getStatusLogs() {
-        return ColineLogs.getInstance().getStatus();
+        return CoLogs.getInstance().getStatus();
     }
 
     /**
@@ -111,23 +111,22 @@ public class Coline {
      * This method initiates the request method and the URL to do the request.
      * </p>
      * <p>
-     * The request method is a static int value from ColineHttpMethod class like:<br>
-     *      - ColineHttpMethod.GET<br>
-     *      - ColineHttpMethod.POST<br>
-     *      - ColineHttpMethod.PUT<br>
-     *      - ColineHttpMethod.DELETE<br>
-     *      - ColineHttpMethod.HEAD<br>
+     * The request method is a static int value from CoHttp class like:<br>
+     *      - CoHttp.GET<br>
+     *      - CoHttp.POST<br>
+     *      - CoHttp.PUT<br>
+     *      - CoHttp.DELETE<br>
+     *      - CoHttp.HEAD<br>
      * </p>
      *
-     * @param method (int) Value from ColineHttpMethod
-     *               of request method
+     * @param method (CoHttp) Value from CoHttp of request method
      * @param route  (String) Value for URL route (should be a String URL as
      *               "http://www.example.com")
      * @return       The current instance of the class
-     * @see          ColineHttpMethod
+     * @see          CoHttp
      */
-    public Coline url(int method, String route) {
-        this.method = new ColineHttpMethod().getMethod(method);
+    public Coline url(CoHttp method, String route) {
+        this.method = method.toString();
         this.route  = route;
         return this;
     }
@@ -145,6 +144,10 @@ public class Coline {
      * @return       The current instance of the class
      */
     public Coline with(final ContentValues values) {
+        if (values.size() <= 0) {
+            prepareOnFail("Please check the values sent in \"with(\"ContentValues\")\".");
+        }
+
         this.values = values;
         return this;
     }
@@ -166,6 +169,10 @@ public class Coline {
      * @return       The current instance of the class
      */
     public Coline with(final Object... values) {
+        if (values.length <= 0 || values.length % 2 == 0) {
+            prepareOnFail("Please check the values sent in \"with(\"key1\",\"value1\",...)\".");
+        }
+
         for (int i=0; i<values.length; ++i) {
             this.values.put( String.valueOf(values[i]),
                     String.valueOf(values[i + 1]));
@@ -194,6 +201,10 @@ public class Coline {
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline with(final ArrayMap<String, Object> values) {
+        if (values.size() <= 0) {
+            prepareOnFail("Please check the values sent in \"with(\"ArrayMap<String, Object>\")\".");
+        }
+
         for (int i = 0; i<values.size(); ++i) {
             this.values.put(String.valueOf(values.keyAt(i)),
                     String.valueOf(values.valueAt(i)));
@@ -204,15 +215,15 @@ public class Coline {
     /**
      * This method prepares the header field to authenticate a request.
      *
-     * @param auth  (int) Key method for Authentication from
-     *              ColineAuth in header field
+     * @param auth  (enum) Key method for Authentication from
+     *              CoAuth in header field
      * @param token (String) Value of Authentication (should be a String
      *              encoded in BASE64)
      * @return      The current instance of the class
-     * @see         ColineAuth
+     * @see         CoAuth
      */
-    public Coline auth(int auth, String token) {
-        this.auth  = new ColineAuth().getAuthHeader(auth);
+    public Coline auth(CoAuth auth, String token) {
+        this.auth  = auth.toString();
         this.token = token;
         return this;
     }
@@ -220,11 +231,11 @@ public class Coline {
     /**
      * This method handles a callback when server returned response.
      *
-     * @param response (Response) Interface of successful and errors requests
+     * @param response (CoResponse) Interface of successful and errors requests
      * @return         The current instance of the class
-     * @see            ColineResponse
+     * @see            CoResponse
      */
-    public Coline res(ColineResponse response) {
+    public Coline res(CoResponse response) {
         this.response = response;
         return this;
     }
@@ -255,7 +266,7 @@ public class Coline {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ColineQueue.in(context.getApplicationContext()).add(Coline.this);
+                CoQueue.init().add(Coline.this);
             }
         }).start();
     }
@@ -269,7 +280,7 @@ public class Coline {
         if ( logs )
             Log.d(CO_LINE, "Launch all request in the current queue");
 
-        if (ColineQueue.getInstance() == null) {
+        if (CoQueue.getInstance() == null) {
             Log.i(CO_LINE, "The queue isn't created. Maybe you missed to add " +
                     "a request with 'queue()'.");
             return;
@@ -278,7 +289,7 @@ public class Coline {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ColineQueue.getInstance().start();
+                CoQueue.getInstance().start();
             }
         }).start();
     }
@@ -293,6 +304,7 @@ public class Coline {
     private void setValues() {
         if (this.values != null && this.values.size() > 0) {
             boolean first_value = true;
+            body = new StringBuilder();
             for (Map.Entry<String, Object> entry : this.values.valueSet()) {
                 if (!first_value) {
                     body.append('&');
@@ -336,13 +348,7 @@ public class Coline {
         }
 
         if (url == null) {
-            String s = "An error occurred when trying to get URL";
-            try{
-                // Create a json to treat it in returnError(String)
-                JSONObject jreturn = new JSONObject(s);
-                s = jreturn.toString();
-            } catch(JSONException e) {}
-            returnFail(s);
+            prepareOnFail("An error occurred when trying to get URL");
             return;
         }
 
@@ -375,13 +381,7 @@ public class Coline {
         }
 
         if (http == null) {
-            String s = "An error occurred in URL connection";
-            try{
-                // Create a json to treat it in returnError(String)
-                JSONObject jreturn = new JSONObject(s);
-                s = jreturn.toString();
-            } catch(JSONException e) {}
-            returnFail(s);
+            prepareOnFail("An error occurred in URL connection");
             return;
         } else {
             if ( logs )
@@ -406,13 +406,7 @@ public class Coline {
         }
 
         if (inputStream == null) {
-            String s = "An error occurred when trying to get server response";
-            try{
-                // Create a json to treat it in returnError(String)
-                JSONObject jreturn = new JSONObject(s);
-                s = jreturn.toString();
-            } catch(JSONException e) {}
-            returnFail(s);
+            prepareOnFail("An error occurred when trying to get server response");
             return;
         }
 
@@ -436,11 +430,24 @@ public class Coline {
         }
 
         if (status != 200 || response.length() == 0 || response.contains("error")) {
-            returnError(response);
+            returnFail(response);
             return;
         }
 
         returnSuccess(response);
+    }
+
+    /**
+     * Create a JSON to be handled by returnFail(String)
+     *
+     * @see         {@link #returnFail(String s)}
+     */
+    private void prepareOnFail(String s) {
+        try{
+            JSONObject jreturn = new JSONObject(s);
+            s = jreturn.toString();
+        } catch(JSONException e) {}
+        returnFail(s);
     }
 
     /**
@@ -465,26 +472,9 @@ public class Coline {
      *
      * @param s (String) Response of request
      */
-    private void returnError(final String s) {
-        if (response == null) return;
-        if ( logs ) Log.d(CO_LINE, "Oops, onError() called");
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                response.onError(s);
-                clear();
-            }
-        });
-    }
-
-    /**
-     * Private: This method returns a String from Coline connection in main Thread.
-     *
-     * @param s (String) Error on Coline connection
-     */
     private void returnFail(final String s) {
         if (response == null) return;
-        if ( logs ) Log.d(CO_LINE, "Coline! We've got a problem, onFail() called");
+        if ( logs ) Log.d(CO_LINE, "Oops, onFail() called");
         new Handler(context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -511,19 +501,19 @@ public class Coline {
     /**
      * Private: Call override Object's finalize method for the current queue.
      *
-     * @see     {@link ColineQueue}
+     * @see     {@link CoQueue}
      */
     private void clearQueue() {
-        if ( ColineQueue.getInstance() == null )
+        if ( CoQueue.getInstance() == null )
             return;
 
         if ( logs ) Log.d(CO_LINE, "A current request queue found");
 
-        if ( !ColineQueue.getInstance().getPending() ) {
+        if ( !CoQueue.getInstance().getPending() ) {
             if ( logs ) Log.d(CO_LINE, "No pending requests left, try to destroy the queue");
 
             try {
-                ColineQueue.getInstance().finalize();
+                CoQueue.getInstance().finalize();
             } catch(Throwable t) {
                 if ( logs )
                     Log.i(CO_LINE, "Clear queue error: "+t.toString());
@@ -553,8 +543,8 @@ public class Coline {
     }
 
     /**
-     * <p>Protected: This overrides Object's finalize method.</p>
-     * <p>This method checks if Coline instance is used and if not, destroy the instance.</p>
+     * Protected: This overrides Object's finalize method.
+     * This method checks if Coline instance is used and if not, destroy the instance.
      *
      * @throws Throwable  Throw an exception when destroyed is compromised
      */

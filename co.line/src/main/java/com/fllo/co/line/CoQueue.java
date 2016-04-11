@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Florent Blot
+ * Copyright 2016 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.fllo.co.line;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -31,14 +30,13 @@ import java.util.ArrayList;
  * Contains an ArrayList of Coline's request with its properties.
  *
  */
-public class ColineQueue {
+public class CoQueue {
 
     // Tags
-    private static final String CO_LINE_QUEUE  = "-- ColineQueue";
+    private static final String CO_LINE_QUEUE  = "-- CoQueue";
 
     // Configuration
-    private static ColineQueue queue = null;
-    private Context            context;
+    private static CoQueue queue = null;
     private ArrayList<Coline>  requests;
     private boolean            logs;
 
@@ -47,23 +45,21 @@ public class ColineQueue {
     private int     pendingRequests;
 
     /**
-     * Co.lineQueue's constructor: method to initiate ColineQueue with actual Context.
+     * Co.lineQueue's constructor: method to initiate CoQueue with actual Context.
      * It creates a new instance of class if this one does not already exist.
      * The Context can be an Activity, a Fragment, a Service or anything and it
      * assigns by Coline's instance. This is used to create a current queue of
      * request and launch it at one time.
      *
-     * @param context (Context) Actual Context from the call in Coline
      * @return        An instance of the class
      */
-    public static ColineQueue in(Context context) {
+    public static CoQueue init() {
         if (queue == null) {
-            synchronized (ColineQueue.class) {
+            synchronized (CoQueue.class) {
                 if (queue == null) {
-                    queue          = new ColineQueue();
-                    queue.context  = context;
+                    queue          = new CoQueue();
                     queue.requests = new ArrayList<>();
-                    queue.logs     = ColineLogs.getInstance().getStatus();
+                    queue.logs     = CoLogs.getInstance().getStatus();
                     if (queue.logs)
                         Log.d(CO_LINE_QUEUE, "Queue initialization");
                 }
@@ -75,9 +71,9 @@ public class ColineQueue {
     /**
      * Get the current queue without checking any errors or nullable instance.
      *
-     * @return       The ColineQueue current's instance.
+     * @return       The CoQueue current's instance.
      */
-    public static ColineQueue getInstance() {
+    public static CoQueue getInstance() {
         return queue;
     }
 
@@ -144,15 +140,14 @@ public class ColineQueue {
     }
 
     /**
-     * Private: This destroys all reference, variable and element of ColineQueue
-     * only if ColineQueue is every pending requests are done and if the queue is used.
+     * Private: This destroys all reference, variable and element of CoQueue
+     * only if CoQueue is every pending requests are done and if the queue is used.
      *
      * @throws  Throwable Throw an exception when destroyed is compromised
      */
     public void destroyCurrentQueue() throws Throwable {
         if ( getState() && pendingRequests == 0 ) {
             queue = null;
-            context = null;
             requests = null;
             logs = false;
             used = false;
@@ -164,7 +159,7 @@ public class ColineQueue {
      * Protected: This overrides Object's finalize method.
      * </p>
      * <p>
-     * This method checks if ColineQueue instance is used and if not,
+     * This method checks if CoQueue instance is used and if not,
      * destroy the current queue.
      * </p>
      *

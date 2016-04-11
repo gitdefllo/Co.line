@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def projectVersion  = '1.0.10'
+def projectVersion  = '1.0.12'
 def libName         = 'Co.line'
 def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
 def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
@@ -12,7 +12,7 @@ def gitUrl          = 'https://github.com/Gitdefllo/Co.line.git'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 9
@@ -121,7 +121,7 @@ bintray {
         version {
             name = projectVersion
             desc = libDesc
-            released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
+            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
                     Locale.FRANCE).format(new Date())
             vcsTag = projectVersion
         }

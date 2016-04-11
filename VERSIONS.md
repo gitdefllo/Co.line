@@ -1,6 +1,16 @@
 Old versions
 ------------
 
+######v.1.0.7-v.1.0.9:
+- Using a queue to send requests;
+- Update Javadoc (publishing Javadoc issue)
+
+######v.1.0.6:
+- License documentation;
+
+######v.1.0.5:
+- Co.line uses more logs;
+
 ######v.1.0.4:
 - Package renamed;
 - Publication with jcenter;

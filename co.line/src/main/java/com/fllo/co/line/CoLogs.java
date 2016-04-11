@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Florent Blot
+ * Copyright 2016 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,37 +25,38 @@ import android.util.Log;
  * Enable or disable debug logs in Co.line
  *
  */
-public class ColineLogs {
+public class CoLogs {
 
     // Tags
     private static final String CO_LINE  = "Co.line";
 
     // Configuration
-    private static ColineLogs instance = null;
+    private static CoLogs instance = null;
 
     // Status
     public boolean status = false;
 
     /**
-     * ColineLogs'empty constructor.
+     * CoLogs'empty constructor.
      *
      */
-    public ColineLogs() { }
+    public CoLogs() { }
 
     /**
      * This method gets the current instance or creates a new one.
      *
      * @return       An instance of logs class
      */
-    public static ColineLogs getInstance() {
+    public static CoLogs getInstance() {
         if (instance == null) {
-            ColineLogs.instance = new ColineLogs();
+            CoLogs.instance = new CoLogs();
+            Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
         }
         return instance;
     }
 
     /**
-     * This method gets the method request in String header field.
+     * This method sets the method request.
      *
      * @param status (boolean) Value to set for logs
      */
@@ -73,15 +74,16 @@ public class ColineLogs {
     }
 
     /**
-     * This method activate or disable console logs in Coline request method.
-     * By default: the logs are disable.
-     *
-     * @param status (boolean) Value to activate or not the console logs
-     *               (true: activate, false: disable)
+     * This static method activates the logs.
      */
-    public static void activateLogs(boolean status) {
-        if ( status )
-            Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
-        ColineLogs.getInstance().setStatus(status);
+    public static void activate() {
+        CoLogs.getInstance().setStatus(true);
+    }
+
+    /**
+     * This static method desactivates the logs.
+     */
+    public static void desactivate() {
+        CoLogs.getInstance().setStatus(false);
     }
 }

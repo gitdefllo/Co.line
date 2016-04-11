@@ -29,30 +29,21 @@ package com.fllo.co.line;
  * in the specific response condition above.
  *
  */
-public interface ColineResponse {
+public interface CoResponse {
 
     /**
      * This method returns a String server response when Http Status
      * equals to 200.
      *
-     * @param s (String) Success response from server side
+     * @param s (String) Success response
      */
     void onSuccess(String s);
 
     /**
-     * This method returns a String server response when Http response
-     * is not a {@link #onSuccess(String s)} or contains 'error' word.
+     * This method returns a String method response when an error occurred.
+     * It might be a wrong URL format, an error response, etc.
      *
-     * @param s (String) Error response from server side
-     */
-    void onError(String s);
-
-    /**
-     * This method returns a String method response when an error occurred
-     * in Coline class. It can be a wrong URL format, an open connection's
-     * problem, a response not catch, etc.
-     *
-     * @param s (String) Error from Coline side
+     * @param s (String) Error response
      */
     void onFail(String s);
 }

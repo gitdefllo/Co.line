@@ -27,8 +27,9 @@ Usage
 Do a request and retrieve it as:
 ```java
 Coline.init(this)
-        // Set the HTTP method (GET, PUT..) and the URL, then get response in CoResponse class
+        // Set the HTTP method (GET, PUT..) and the URL
         .url(CoHttp.GET, "http://api.url.com/")
+        // Then get response in CoResponse class
         .res(new CoResponse() {
             @Override
             public void onSuccess(String s) { /** Handle successful response */ }

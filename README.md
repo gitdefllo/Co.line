@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.13'
+compile 'com.fllo.co.line:co.line:1.0.14'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.13</version>
+  <version>1.0.14</version>
 </dependency>
 ```
 

@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def projectVersion  = '1.0.14'
+def projectVersion  = '1.0.15'
 def libName         = 'Co.line'
 def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
 def siteUrl         = 'https://github.com/Gitdefllo/Co.line'

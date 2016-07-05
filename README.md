@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.14'
+compile 'com.fllo.co.line:co.line:1.0.15'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.14</version>
+  <version>1.0.15</version>
 </dependency>
 ```
 
@@ -186,7 +186,7 @@ CoLogs.desactivate();
 Version  
 -------
 
-######v.1.0.14:
+######v.1.0.14 - 1.0.15:
 - Merging Manifest file resolved
 
 ######v.1.0.13:

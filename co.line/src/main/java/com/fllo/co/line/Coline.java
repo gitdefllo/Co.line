@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -57,7 +58,8 @@ public class Coline {
     private static final String CO_LINE  = "-- Co.line";
 
     // Configuration
-    private Context        context;
+    private WeakReference<Context> context;
+    private Thread         thread;
     private String         method;
     private String         route;
     private String         auth;
@@ -89,7 +91,7 @@ public class Coline {
      */
     public static Coline init(Context context) {
         Coline coline  = new Coline();
-        coline.context = context;
+        coline.context = new WeakReference<>(context);
         coline.values  = new ContentValues();
         coline.used    = true;
         coline.logs    = CoLogs.getInstance().getStatus();
@@ -248,13 +250,14 @@ public class Coline {
     public void exec() {
         if ( logs )
             Log.d(CO_LINE, "Request execution...");
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 setValues();
                 request();
             }
-        }).start();
+        });
+        thread.start();
     }
 
     /**
@@ -263,12 +266,13 @@ public class Coline {
      * @see         Thread
      */
     public void queue() {
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 CoQueue.init().add(Coline.this);
             }
-        }).start();
+        });
+        thread.start();
     }
 
     /**
@@ -286,12 +290,13 @@ public class Coline {
             return;
         }
 
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 CoQueue.getInstance().start();
             }
-        }).start();
+        });
+        thread.start();
     }
 
     /**
@@ -438,7 +443,7 @@ public class Coline {
     }
 
     /**
-     * Create a JSON to be handled by returnFail(String)
+     * Private: Create a JSON to be handled by returnFail(String)
      *
      * @see         {@link #returnFail(String s)}
      */
@@ -458,13 +463,16 @@ public class Coline {
     private void returnSuccess(final String s) {
         if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "OK, onSuccess() called");
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                response.onSuccess(s);
-                clear();
-            }
-        });
+        Context c = context.get();
+        if (c != null) {
+            new Handler(c.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    response.onSuccess(s);
+                    clear();
+                }
+            });
+        }
     }
 
     /**
@@ -475,13 +483,32 @@ public class Coline {
     private void returnFail(final String s) {
         if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "Oops, onFail() called");
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                response.onFail(s);
-                clear();
-            }
-        });
+        Context c = context.get();
+        if (c != null) {
+            new Handler(c.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    response.onFail(s);
+                    clear();
+                }
+            });
+        }
+    }
+
+    /**
+     * Unused: This method interrupts the background thread.
+     *
+     * @see         Thread
+     */
+    public void cancel() {
+        if ( logs )
+            Log.d(CO_LINE, "Interrupt background treatment");
+
+        if (thread == null) {
+            Log.i(CO_LINE, "The background treatment is already null.");
+            return;
+        }
+        thread.interrupt();
     }
 
     /**

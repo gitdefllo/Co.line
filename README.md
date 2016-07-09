@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.15'
+compile 'com.fllo.co.line:co.line:1.0.16'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.15</version>
+  <version>1.0.16</version>
 </dependency>
 ```
 
@@ -60,12 +60,6 @@ Coline.init(this)
 // Finally, launch the queue
 Coline.init(this).send();
 ```
-
-Next features (Todo)
--------
-
-- Adding other auth methods;
-- Populate a custom model with `.res(myCustomModel)`;
 
 Documentation
 -------
@@ -186,15 +180,15 @@ CoLogs.desactivate();
 Version  
 -------
 
+######v.1.0.16:
+- Context stored in WeakReference<>()
+- Error handler with better status server respone
+
 ######v.1.0.14 - 1.0.15:
 - Merging Manifest file resolved
 
 ######v.1.0.13:
 - Minor app name changes
-
-######v.1.0.12:
-- Change classes names and methods
-- Passing enums instead of String
 
 <a href="https://github.com/Gitdefllo/Co.line/blob/master/VERSIONS.md">See older versions</a>
 

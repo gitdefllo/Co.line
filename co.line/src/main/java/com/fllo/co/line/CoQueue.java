@@ -17,6 +17,7 @@ package com.fllo.co.line;
 
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /*
@@ -36,9 +37,9 @@ public class CoQueue {
     private static final String CO_LINE_QUEUE  = "-- CoQueue";
 
     // Configuration
+    private boolean logs;
     private static CoQueue queue = null;
-    private ArrayList<Coline>  requests;
-    private boolean            logs;
+    private ArrayList<WeakReference<Coline>> requests;
 
     // Lifecycle
     private boolean used = false;
@@ -90,7 +91,7 @@ public class CoQueue {
             return;
         }
 
-        this.requests.add(this.requests.size(), request);
+        this.requests.add(new WeakReference<>(request));
         this.used = true;
         this.logs = request.getStatusLogs();
         this.pendingRequests += 1;
@@ -112,10 +113,14 @@ public class CoQueue {
         if ( logs )
             Log.d(CO_LINE_QUEUE, "Start execution of pending requests");
 
-        for (final Coline r : this.requests) {
-            if ( logs )
-                Log.d(CO_LINE_QUEUE, "Execute request in current queue (rf. " + r.toString() + ")");
-            r.exec();
+        for (final WeakReference<Coline> req : this.requests) {
+            Coline c = req.get();
+            if (c != null) {
+                if ( logs )
+                    Log.d(CO_LINE_QUEUE,
+                            "Execute request in current queue (rf. " + req.toString() + ")");
+                c.exec();
+            }
             queue.pendingRequests -= 1;
         }
     }

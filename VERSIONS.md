@@ -1,6 +1,10 @@
 Old versions
 ------------
 
+######v.1.0.12:
+- Change classes names and methods
+- Passing enums instead of String
+
 ######v.1.0.11:
 - Debugs
 

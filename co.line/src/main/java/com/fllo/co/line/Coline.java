@@ -32,13 +32,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
-/*
+/**
  * Co.line
  * -------
  * @version 1.0.13
@@ -57,7 +58,8 @@ public class Coline {
     private static final String CO_LINE  = "-- Co.line";
 
     // Configuration
-    private Context        context;
+    private WeakReference<Context> context;
+    private Thread         thread;
     private String         method;
     private String         route;
     private String         auth;
@@ -89,7 +91,7 @@ public class Coline {
      */
     public static Coline init(Context context) {
         Coline coline  = new Coline();
-        coline.context = context;
+        coline.context = new WeakReference<>(context);
         coline.values  = new ContentValues();
         coline.used    = true;
         coline.logs    = CoLogs.getInstance().getStatus();
@@ -248,13 +250,14 @@ public class Coline {
     public void exec() {
         if ( logs )
             Log.d(CO_LINE, "Request execution...");
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 setValues();
                 request();
             }
-        }).start();
+        });
+        thread.start();
     }
 
     /**
@@ -263,12 +266,13 @@ public class Coline {
      * @see         Thread
      */
     public void queue() {
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 CoQueue.init().add(Coline.this);
             }
-        }).start();
+        });
+        thread.start();
     }
 
     /**
@@ -286,12 +290,13 @@ public class Coline {
             return;
         }
 
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 CoQueue.getInstance().start();
             }
-        }).start();
+        });
+        thread.start();
     }
 
     /**
@@ -429,7 +434,7 @@ public class Coline {
                 Log.e(CO_LINE, "Error when parsing result: " + e.toString());
         }
 
-        if (status != 200 || response.length() == 0 || response.contains("error")) {
+        if ((status < 200 && status > 400) || response.length() == 0 || response.contains("error")) {
             returnFail(response);
             return;
         }
@@ -458,13 +463,17 @@ public class Coline {
     private void returnSuccess(final String s) {
         if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "OK, onSuccess() called");
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                response.onSuccess(s);
-                clear();
-            }
-        });
+
+        Context c = context.get();
+        if (c != null) {
+            new Handler(c.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    response.onSuccess(s);
+                    clear();
+                }
+            });
+        }
     }
 
     /**
@@ -475,13 +484,17 @@ public class Coline {
     private void returnFail(final String s) {
         if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "Oops, onFail() called");
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                response.onFail(s);
-                clear();
-            }
-        });
+
+        Context c = context.get();
+        if (c != null) {
+            new Handler(c.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    response.onFail(s);
+                    clear();
+                }
+            });
+        }
     }
 
     /**

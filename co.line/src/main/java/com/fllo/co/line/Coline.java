@@ -443,7 +443,7 @@ public class Coline {
     }
 
     /**
-     * Create a JSON to be handled by returnFail(String)
+     * Private: Create a JSON to be handled by returnFail(String)
      *
      * @see         {@link #returnFail(String s)}
      */
@@ -463,7 +463,7 @@ public class Coline {
     private void returnSuccess(final String s) {
         if (response == null) return;
         if ( logs ) Log.d(CO_LINE, "OK, onSuccess() called");
-
+        
         Context c = context.get();
         if (c != null) {
             new Handler(c.getMainLooper()).post(new Runnable() {
@@ -495,6 +495,22 @@ public class Coline {
                 }
             });
         }
+    }
+
+    /**
+     * Unused: This method interrupts the background thread.
+     *
+     * @see         Thread
+     */
+    public void cancel() {
+        if ( logs )
+            Log.d(CO_LINE, "Interrupt background treatment");
+
+        if (thread == null) {
+            Log.i(CO_LINE, "The background treatment is already null.");
+            return;
+        }
+        thread.interrupt();
     }
 
     /**

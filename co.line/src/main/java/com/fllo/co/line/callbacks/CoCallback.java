@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Florent Blot
+ * Copyright 2015 Florent Blot
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fllo.co.line;
+package com.fllo.co.line.callbacks;
 
-/*
- * Co.lineAuth
- * -----------
- * @author  Florent Blot (@Gitdefllo)
- *
- */
-public enum CoAuth {
+import com.fllo.co.line.models.CoError;
+import com.fllo.co.line.models.CoResponse;
 
-    // Enums
-    BASIC("Basic "),
-    OAUTH_2("Bearer ");
-
-    private final String value;
+public interface CoCallback {
 
     /**
-     * @param value methods value
+     * This method returns a couple of response objects
+     *
+     * @param err (CoError) error object
+     * @param res (CoResponse) response object
      */
-    private CoAuth(final String value) {
-        this.value = value;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-        return value;
-    }
+    void onResult(CoError err, CoResponse res);
 }

@@ -17,24 +17,15 @@ package com.fllo.co.line;
 
 import android.util.Log;
 
+import com.fllo.co.line.builders.CoLogs;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-/*
- * Co.lineQueue
- * -----------------
- * @author  Florent Blot (@Gitdefllo)
- *
- * Add multiple requests on a queue and launch one time:
- * Create a new queue or an instance of the current one if it exists yet. Then, save
- * the state of each request, wait the last one and send it to the server.
- * Contains an ArrayList of Coline's request with its properties.
- *
- */
 public class CoQueue {
 
     // Tags
-    private static final String CO_LINE_QUEUE  = "-- CoQueue";
+    private static final String CO_LINE_QUEUE  = "CoQueue";
 
     // Configuration
     private boolean logs;
@@ -43,7 +34,7 @@ public class CoQueue {
 
     // Lifecycle
     private boolean used = false;
-    private int     pendingRequests;
+    private int pendingRequests;
 
     /**
      * Co.lineQueue's constructor: method to initiate CoQueue with actual Context.
@@ -58,9 +49,9 @@ public class CoQueue {
         if (queue == null) {
             synchronized (CoQueue.class) {
                 if (queue == null) {
-                    queue          = new CoQueue();
+                    queue = new CoQueue();
                     queue.requests = new ArrayList<>();
-                    queue.logs     = CoLogs.getInstance().getStatus();
+                    queue.logs = CoLogs.getInstance().getStatus();
                     if (queue.logs)
                         Log.d(CO_LINE_QUEUE, "Queue initialization");
                 }

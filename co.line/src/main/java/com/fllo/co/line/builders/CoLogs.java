@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fllo.co.line;
+package com.fllo.co.line.builders;
 
 import android.util.Log;
 
-/*
- * Co.lineLogs
- * -----------
- * @author  Florent Blot (@Gitdefllo)
- *
- * Enable or disable debug logs in Co.line
- *
- */
+import com.fllo.co.line.BuildConfig;
+
 public class CoLogs {
 
     // Tags

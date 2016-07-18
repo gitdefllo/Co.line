@@ -18,6 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".SimpleRequestActivity"
+            android:label="@string/hello_title" />
+
+        <activity
+            android:name=".QueueRequestActivity"
+            android:label="@string/hello_title" />
     </application>
 
 </manifest>

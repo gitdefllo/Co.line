@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fllo.co.line;
+package com.fllo.co.line.builders;
 
-/*
- * CoHttp
- * -----------------
- * @author  Florent Blot (@Gitdefllo)
- *
- */
 public enum CoHttp {
 
     // Enums
     GET("GET"),
     POST("POST"),
     PUT("PUT"),
+    PATCH("PATCH"),
     DELETE("DELETE"),
     HEAD("HEAD");
 

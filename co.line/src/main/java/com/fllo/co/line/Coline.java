@@ -23,8 +23,11 @@ import android.os.Handler;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fllo.co.line.builders.CoHttp;
+import com.fllo.co.line.builders.CoLogs;
+import com.fllo.co.line.callbacks.CoCallback;
+import com.fllo.co.line.models.CoError;
+import com.fllo.co.line.models.CoResponse;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -42,8 +45,8 @@ import java.util.Map;
 /**
  * Co.line
  * -------
- * @version 1.0.20
- * @author  Florent Blot (@Gitdefllo)
+ * @version 2.0.0
+ * @author Florent Blot (@Gitdefllo)
  *
  * Android library for HttpURLConnection connections with automatic Thread
  * and Callbacks in chained methods in one line.
@@ -55,19 +58,17 @@ import java.util.Map;
 public class Coline {
 
     // Tags
-    private static final String CO_LINE  = "-- Co.line";
+    private static final String CO_LINE  = "Co.line";
 
     // Configuration
     private WeakReference<Context> context;
-    private Thread         thread;
-    private String         method;
-    private String         route;
-    private String         auth;
-    private String         token;
-    private ContentValues  values;
-    private StringBuilder  body = null;
-    private CoResponse     response;
-    private boolean        logs;
+    private Thread thread;
+    private String method;
+    private String route;
+    private ContentValues values, headers;
+    private StringBuilder body = null;
+    private CoCallback callback;
+    private boolean logs;
 
     /**
      * <p>
@@ -92,7 +93,8 @@ public class Coline {
         Coline coline  = new Coline();
         coline.context = new WeakReference<>(context);
         coline.values  = new ContentValues();
-        coline.logs    = CoLogs.getInstance().getStatus();
+        coline.headers = new ContentValues();
+        coline.logs    = coline.getStatusLogs();
         return coline;
     }
 
@@ -145,7 +147,8 @@ public class Coline {
      */
     public Coline with(final ContentValues values) {
         if (values.size() <= 0) {
-            prepareOnFail("Please check the values sent in \"with(\"ContentValues\")\".");
+            Log.i(CO_LINE, "Please check the values sent in " +
+                    "\"with(ContentValues)\".");
         }
 
         this.values = values;
@@ -170,7 +173,8 @@ public class Coline {
      */
     public Coline with(final Object... values) {
         if (values.length <= 0 || values.length % 2 == 0) {
-            prepareOnFail("Please check the values sent in \"with(\"key1\",\"value1\",...)\".");
+            Log.i(CO_LINE, "Please check the values sent in " +
+                    "\"with(\"key1\",\"value1\",...)\".");
         }
 
         for (int i=0; i<values.length; ++i) {
@@ -202,7 +206,8 @@ public class Coline {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline with(final ArrayMap<String, Object> values) {
         if (values.size() <= 0) {
-            prepareOnFail("Please check the values sent in \"with(\"ArrayMap<String, Object>\")\".");
+            Log.i(CO_LINE, "Please check the values sent in " +
+                    "\"with(ArrayMap<String, Object>)\".");
         }
 
         for (int i = 0; i<values.size(); ++i) {
@@ -213,30 +218,99 @@ public class Coline {
     }
 
     /**
-     * This method prepares the header field to authenticate a request.
+     * <p>
+     * This method initiates the values to pass in header properties from
+     * a ContentValues object.
+     * </p>
+     * <p>
+     * See also: head(Object...) and head(ArrayMap&lt;String, Object&gt;)
+     * </p>
      *
-     * @param auth  (enum) Key method for Authentication from
-     *              CoAuth in header field
-     * @param token (String) Value of Authentication (should be a String
-     *              encoded in BASE64)
-     * @return      The current instance of the class
-     * @see         CoAuth
+     * @param params (ContentValues) Values to pass in header properties
+     * @return       The current instance of the class
      */
-    public Coline auth(CoAuth auth, String token) {
-        this.auth  = auth.toString();
-        this.token = token;
+    public Coline head(final ContentValues params) {
+        if (params.size() <= 0) {
+            Log.i(CO_LINE, "Please check the properties sent in " +
+                    "\"head(ContentValues)\".");
+        }
+
+        this.headers = params;
+        return this;
+    }
+
+    /**
+     * <p>
+     * This method initiates the values to pass in header properties from
+     * an Object array. It declared as follows:<br>
+     * 'head("key1", value1, "key2", "value2", "key3", values3);'.
+     * </p>
+     * <p>
+     * All the object in the array will be convert to a String.
+     * </p>
+     * <p>
+     * See also: head(ContentValues) and head(ArrayMap&lt;String, Object&gt;)
+     * </p>
+     *
+     * @param params (Object...) Values to pass in header properties
+     * @return       The current instance of the class
+     */
+    public Coline head(final Object... params) {
+        if (params.length <= 0 || params.length % 2 == 0) {
+            Log.i(CO_LINE, "Please check the properties sent in " +
+                    "\"head(\"key1\",\"value1\",...)\".");
+        }
+
+        for (int i=0; i<params.length; ++i) {
+            this.headers.put( String.valueOf(params[i]),
+                    String.valueOf(params[i + 1]));
+            ++i;
+        }
+        return this;
+    }
+
+    /**
+     * <p>
+     * Only with KitKat version and higher:
+     * </p>
+     * <p>
+     * This method initiates the values to pass in header properties from
+     * an ArrayMap&lt;String, Object&gt;.
+     * </p>
+     * <p>
+     * All the object in the array will be convert to a String.
+     * </p>
+     * <p>
+     * See also: head(ContentValues) and head(Object...)
+     * </p>
+     *
+     * @param params (ArrayMap) Values to pass into the request
+     * @return       The current instance of the class
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public Coline head(final ArrayMap<String, Object> params) {
+        if (params.size() <= 0) {
+            Log.i(CO_LINE, "Please check the properties sent in " +
+                    "\"head(ArrayMap<String, Object>)\".");
+        }
+
+        for (int i = 0; i<params.size(); ++i) {
+            this.headers.put(String.valueOf(params.keyAt(i)),
+                    String.valueOf(params.valueAt(i)));
+        }
+
         return this;
     }
 
     /**
      * This method handles a callback when server returned response.
      *
-     * @param response (CoResponse) Interface of successful and errors requests
+     * @param callback (CoCallback) Interface of successful and errors requests
      * @return         The current instance of the class
-     * @see            CoResponse
+     * @see            CoCallback
      */
-    public Coline res(CoResponse response) {
-        this.response = response;
+    public Coline res(CoCallback callback) {
+        this.callback = callback;
         return this;
     }
 
@@ -248,6 +322,7 @@ public class Coline {
     public void exec() {
         if ( logs )
             Log.d(CO_LINE, "Request execution...");
+
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -316,7 +391,7 @@ public class Coline {
                     body.append(entry.getKey())
                             .append('=')
                             .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
-                } catch(UnsupportedEncodingException e) {
+                } catch (UnsupportedEncodingException e) {
                     if ( logs )
                         Log.e(CO_LINE, e.toString());
                 }
@@ -334,41 +409,51 @@ public class Coline {
      */
     private void request() {
         // Prepare timeout variables
-        int     MAX_READ_TIMEOUT    = 3000;
-        int     MAX_CONNECT_TIMEOUT = 7000;
+        int MAX_READ_TIMEOUT = 3000;
+        int MAX_CONNECT_TIMEOUT = 7000;
+        int NO_STATUS = 0;
 
-        String  response = "";
-        URL     url = null;
+        String response = "";
+        URL url;
 
         // Init URL
         try {
             if ( logs )
                 Log.d(CO_LINE, "URL: " + route);
+
             url = new URL( route );
-        } catch(MalformedURLException e) {
+        } catch (MalformedURLException e) {
             if ( logs )
                 Log.e(CO_LINE, "error in route: " + e.toString());
-        }
 
-        if (url == null) {
-            prepareOnFail("An error occurred when trying to get URL");
+            setErrorResult("MalformedURLException", e.toString(),
+                    "An error occurred when trying to get URL", NO_STATUS);
             return;
         }
 
         // Do connection
         if ( logs )
             Log.d(CO_LINE, "Do connection...");
-        HttpURLConnection http = null;
+
+        HttpURLConnection http;
         try {
             http = (HttpURLConnection) url.openConnection();
-            http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            http.setRequestProperty("Charset", "UTF-8");
-            if (auth != null && token != null)
-                http.addRequestProperty("Authorization", auth + token);
+
+            // Adding header properties
+            if (headers.size() > 0) {
+                for (Map.Entry<String, Object> entry : headers.valueSet()) {
+                    http.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+            } else {
+                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                http.setRequestProperty("Charset", "UTF-8");
+            }
+
             http.setReadTimeout(MAX_READ_TIMEOUT);
             http.setConnectTimeout(MAX_CONNECT_TIMEOUT);
-            http.setUseCaches(false);
+            http.setUseCaches(true);
             http.setDoInput(true);
+
             // Send value when needed
             if ( body != null ) {
                 http.setDoOutput(true);
@@ -378,120 +463,113 @@ public class Coline {
                 wr.flush();
                 wr.close();
             }
-        } catch(IOException e) {
+
+        } catch (IOException e) {
             if ( logs )
                 Log.e(CO_LINE, "Error in http url connection: " + e.toString());
+
+            setErrorResult("IOException", e.toString(),
+                    "Error in http url connection", NO_STATUS);
+            return;
         }
 
-        if (http == null) {
-            prepareOnFail("An error occurred in URL connection");
-            return;
-        } else {
-            if ( logs )
-                Log.d(CO_LINE, "Connection etablished");
-        }
+        if ( logs )
+            Log.d(CO_LINE, "Connection etablished");
 
         // Get response
-        InputStream inputStream = null;
-        int         status      = 0;
+        InputStream inputStream;
+        int status = 0;
         try {
             status = http.getResponseCode();
             if ( logs )
                 Log.d(CO_LINE, "Status response: " + status);
+
             if (status >= 200 && status < 400) {
                 inputStream = http.getInputStream();
             } else {
                 inputStream = http.getErrorStream();
             }
-        } catch (IOException ex) {
+
+        } catch (IOException e) {
             if ( logs )
-                Log.e(CO_LINE, ex.toString());
+                Log.e(CO_LINE, "Error when getting server response: " + e.toString());
+
+            setErrorResult("IOException", e.toString(),
+                    "An error occurred when trying to get server response", status);
+            return;
         }
 
         if (inputStream == null) {
-            prepareOnFail("An error occurred when trying to get server response");
+            setErrorResult("NullPointerException", null,
+                    "An error occurred when trying to get server response", status);
             return;
         }
 
         // Parse responses
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-            StringBuilder sb      = new StringBuilder();
-            String line           = null;
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+            StringBuilder sb = new StringBuilder();
+            String line;
 
             while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
+                sb.append(line + "\n");
             }
 
             inputStream.close();
             response = sb.toString();
-            if ( logs )
-                Log.d(CO_LINE, response);
         } catch (Exception e) {
             if ( logs )
                 Log.e(CO_LINE, "Error when parsing result: " + e.toString());
-        }
 
-        if ((status < 200 && status > 400) || response.length() == 0 || response.contains("error")) {
-            returnFail(response);
+            setErrorResult("Exception", e.toString(),
+                    "An error occurred when reading server response", status);
             return;
         }
 
-        returnSuccess(response);
+        if ( logs )
+            Log.d(CO_LINE, response);
+
+        if ((status < 200 && status > 299) || response.length() == 0) {
+            setErrorResult(null, null, response, status);
+            return;
+        }
+
+        setResponseResult(response, status);
     }
 
     /**
-     * Private: Create a JSON to be handled by returnFail(String)
-     *
-     * @see         {@link #returnFail(String s)}
+     * Private: Create an error object to be handled by CoCallback.onResult()
      */
-    private void prepareOnFail(String s) {
-        try{
-            JSONObject jreturn = new JSONObject(s);
-            s = jreturn.toString();
-        } catch(JSONException e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error when creating JSON: " + e.toString());
-        }
-        returnFail(s);
+    private void setErrorResult(String exception, String stacktrace, String message, int status) {
+        CoError err = new CoError(status, exception, stacktrace, message);
+        returnResult(err, null);
+    }
+
+    /**
+     * Private: Create an error object to be handled by CoCallback.onResult()
+     */
+    private void setResponseResult(String response, int status) {
+        CoResponse res = new CoResponse(status, response);
+        returnResult(null, res);
     }
 
     /**
      * Private: This method returns a String response in main Thread.
      *
-     * @param s (String) Response of request
+     * @param err (CoError) error object
+     * @param res (CoResponse) response object
      */
-    private void returnSuccess(final String s) {
-        if (response == null) return;
-        if ( logs ) Log.d(CO_LINE, "OK, onSuccess() called");
+    private void returnResult(final CoError err, final CoResponse res) {
+        if (callback == null) return;
+        if ( logs ) Log.d(CO_LINE, "ReturnResult() called");
         
         Context c = context.get();
         if (c != null) {
             new Handler(c.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    response.onSuccess(s);
-                    clear();
-                }
-            });
-        }
-    }
-
-    /**
-     * Private: This method returns a String response in main Thread.
-     *
-     * @param s (String) Response of request
-     */
-    private void returnFail(final String s) {
-        if (response == null) return;
-        if ( logs ) Log.d(CO_LINE, "Oops, onFail() called");
-
-        Context c = context.get();
-        if (c != null) {
-            new Handler(c.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    response.onFail(s);
+                    callback.onResult(err, res);
                     clear();
                 }
             });
@@ -562,11 +640,9 @@ public class Coline {
         context = null;
         method = null;
         route = null;
-        auth = null;
-        token = null;
         values = null;
         body = null;
-        response = null;
+        callback = null;
         logs = false;
     }
 

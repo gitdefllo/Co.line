@@ -10,31 +10,39 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:1.0.16'
+compile 'com.fllo.co.line:co.line:2.0.0'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>1.0.16</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
 Usage
 ------
 
-Do a request and retrieve it as:
+A simple request:
 ```java
 Coline.init(this)
-        // Set the HTTP method (GET, PUT..) and the URL
+        // set the HTTP method (GET, PUT..) and the URL
         .url(CoHttp.GET, "http://api.url.com/")
-        // Then get response in CoResponse class
-        .res(new CoResponse() {
+        // then get response in CoResponse class
+        .res(new CoCallback() {
             @Override
-            public void onSuccess(String s) { /** Handle successful response */ }
-            @Override
-            public void onFail(String s) { /** Handle bad response */ }
+            public void onResult(CoError err, CoResponse res) {
+                // check error
+                if (err != null) {
+                    // handle error
+                }
+
+                // handle successful request
+                Log.i("Coline.onResult", "onResult():\n"
+                        + "status: " + res.status+",\n"
+                        + "body: " + res.body);
+            }
         })
         // Execute the request
         .exec();
@@ -83,18 +91,33 @@ Pass the HTTP method and the URL.
 ```java
 Coline.url(CoHttp.POST, "http://api.url.com/user");
 ```
-`CoHttp` class handles the following requests: `GET`, `POST`, `PUT`, `DELETE` and `HEAD`.
+`CoHttp` class handles the following requests: `GET`, `POST`, `PUT`, `PATCH`, ``DELETE` and `HEAD`.
 
-**Authenticate**
+**Headers**
 
 ```java
-public Coline auth(CoAuth auth, String token)
+public Coline head(ContentValues params)
 ```
-Add the Authorization header field.
+Pass the header properties, usually keys/values pairs, into the request.
 ```java
-Coline.auth(CoAuth.OAUTH_2, "e53rqEK0ydzH5kleR98t9r6Eim");
+ContentValues params = new ContentValues();
+params.put("Content-Type", "application/json");
+params.put("Charset", "UTF-8");
+// Values to send in body request
+Coline.head(params);
 ```
-`CoAuth` class handles the following authenticates: `Basic` and `Bearer`.
+Or, it's possible to pass an Object array with this following pattern:
+```java
+Coline.head("Content-Type", "application/json", "Charset", "UTF-8");
+```
+And you can also pass an `ArrayMap<String, Object>` **(only API 19 and higher)**:
+```java
+ArrayMap<String, Object> params = new ArrayMap();
+params.put("Content-Type", "application/json");
+params.put("Charset", "UTF-8");
+Coline.head(params);
+```
+If non-set, the default header properties are `content-type=application/x-www-form-urlencoded` and `charset=UTF-8`
 
 **Parameters**
 
@@ -124,19 +147,28 @@ Coline.with(values);
 **Callbacks**
 
 ```java
-public Coline res(CoResponse response)
+public Coline res(CoCallback callback)
 ```
-Called by `res()`, the request response is a `String` and can be retrieved in `CoResponse` interface, which implements three methods:
-- `onSuccess`: everything went fine,
-- `onFail`: response contains an error.
+Called by `res()`, the request response is a couple `CoError` and `CoResponse` objects:
 ```java
-Coline.res(new CoResponse() {
+Coline.res(new CoCallback() {
     @Override
-    public void onSuccess(String s) { }
-
-    @Override
-    public void onFail(String s) { }
+    public void onResult(CoError err, CoResponse res) { }
 });
+```
+
+`CoError` handles connection error and has these properties:
+```
+error.status (int) Status of server response - if non-set, equals to 0
+error.exception (String) Name of exeption if occurred (NPE, IEO, etc) - if non-set, equals to null
+error.stacktrace (String) Stacktrace of exeption if occurred - if non-set, equals to null
+error.description (String) Short readable description of error
+```
+
+`CoResponse` returns server successful response and has these properties:
+```
+error.status (int) Status of response server
+error.body (String) Body of response server
 ```
 
 **Current queue**
@@ -176,21 +208,6 @@ To disable it, call the static method `desactivate()`:
 ```java
 CoLogs.desactivate();
 ```
-
-Version  
--------
-
-######v.1.0.16:
-- Context stored in WeakReference<>()
-- Error handler with better status server respone
-
-######v.1.0.14 - 1.0.15:
-- Merging Manifest file resolved
-
-######v.1.0.13:
-- Minor app name changes
-
-<a href="https://github.com/Gitdefllo/Co.line/blob/master/VERSIONS.md">See older versions</a>
 
 License
 --------

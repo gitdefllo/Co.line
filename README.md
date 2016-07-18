@@ -38,10 +38,8 @@ Coline.init(this)
                     // handle error
                 }
 
-                // handle successful request
-                Log.i("Coline.onResult", "onResult():\n"
-                        + "status: " + res.status+",\n"
-                        + "body: " + res.body);
+                // handle successful server response
+                Log.i("Coline.onResult", "onResult(): status: " + res.status+", body: " + res.body);
             }
         })
         // Execute the request
@@ -91,7 +89,7 @@ Pass the HTTP method and the URL.
 ```java
 Coline.url(CoHttp.POST, "http://api.url.com/user");
 ```
-`CoHttp` class handles the following requests: `GET`, `POST`, `PUT`, `PATCH`, ``DELETE` and `HEAD`.
+`CoHttp` class handles the following requests: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` and `HEAD`.
 
 **Headers**
 
@@ -103,7 +101,7 @@ Pass the header properties, usually keys/values pairs, into the request.
 ContentValues params = new ContentValues();
 params.put("Content-Type", "application/json");
 params.put("Charset", "UTF-8");
-// Values to send in body request
+// Values to put in header properties
 Coline.head(params);
 ```
 Or, it's possible to pass an Object array with this following pattern:
@@ -158,7 +156,7 @@ Coline.res(new CoCallback() {
 ```
 
 `CoError` handles connection error and has these properties:
-```
+```java
 error.status (int) Status of server response - if non-set, equals to 0
 error.exception (String) Name of exeption if occurred (NPE, IEO, etc) - if non-set, equals to null
 error.stacktrace (String) Stacktrace of exeption if occurred - if non-set, equals to null
@@ -166,9 +164,9 @@ error.description (String) Short readable description of error
 ```
 
 `CoResponse` returns server successful response and has these properties:
-```
-error.status (int) Status of response server
-error.body (String) Body of response server
+```java
+res.status (int) Status of response server
+res.body (String) Body of response server
 ```
 
 **Current queue**

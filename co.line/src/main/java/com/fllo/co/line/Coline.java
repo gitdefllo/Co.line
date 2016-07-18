@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * Co.line
  * -------
- * @version 1.0.13
+ * @version 1.0.20
  * @author  Florent Blot (@Gitdefllo)
  *
  * Android library for HttpURLConnection connections with automatic Thread
@@ -67,7 +67,6 @@ public class Coline {
     private ContentValues  values;
     private StringBuilder  body = null;
     private CoResponse     response;
-    private boolean        used = false;
     private boolean        logs;
 
     /**
@@ -93,7 +92,6 @@ public class Coline {
         Coline coline  = new Coline();
         coline.context = new WeakReference<>(context);
         coline.values  = new ContentValues();
-        coline.used    = true;
         coline.logs    = CoLogs.getInstance().getStatus();
         return coline;
     }
@@ -422,7 +420,7 @@ public class Coline {
             String line           = null;
 
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
 
             inputStream.close();
@@ -451,7 +449,10 @@ public class Coline {
         try{
             JSONObject jreturn = new JSONObject(s);
             s = jreturn.toString();
-        } catch(JSONException e) {}
+        } catch(JSONException e) {
+            if ( logs )
+                Log.e(CO_LINE, "Error when creating JSON: " + e.toString());
+        }
         returnFail(s);
     }
 
@@ -498,7 +499,7 @@ public class Coline {
     }
 
     /**
-     * Unused: This method interrupts the background thread.
+     * This method interrupts the background thread.
      *
      * @see         Thread
      */
@@ -518,6 +519,7 @@ public class Coline {
      * override finalize method.
      *
      */
+    @SuppressWarnings("FinalizeCalledExplicitly")
     private void clear() {
         clearQueue();
         try {
@@ -532,6 +534,7 @@ public class Coline {
      *
      * @see     {@link CoQueue}
      */
+    @SuppressWarnings("FinalizeCalledExplicitly")
     private void clearQueue() {
         if ( CoQueue.getInstance() == null )
             return;
@@ -551,45 +554,39 @@ public class Coline {
     }
 
     /**
-     * Private: This destroys all reference, variable and element of Coline only
-     * if Coline is in {@link #used} state.
+     * Private: This destroys all reference, variable and element of Coline.
      *
      * @throws Throwable  Throw an exception when destroyed is compromised
      */
     public void destroyColine() throws Throwable {
-        if ( used ) {
-            context = null;
-            method = null;
-            route = null;
-            auth = null;
-            token = null;
-            values = null;
-            body = null;
-            response = null;
-            used = false;
-            logs = false;
-        }
+        context = null;
+        method = null;
+        route = null;
+        auth = null;
+        token = null;
+        values = null;
+        body = null;
+        response = null;
+        logs = false;
     }
 
     /**
      * Protected: This overrides Object's finalize method.
-     * This method checks if Coline instance is used and if not, destroy the instance.
+     * This method destroy the instance.
      *
      * @throws Throwable  Throw an exception when destroyed is compromised
      */
     @Override
     protected void finalize() throws Throwable {
-        if ( used ) {
-            try {
-                destroyColine();
-            }
-            catch(Exception ex) {
-                Log.i(CO_LINE, "Destroying the current coline not working");
-            }
-            finally {
-                Log.d(CO_LINE, "Current coline is destroyed");
-                super.finalize();
-            }
+        try {
+            destroyColine();
+        }
+        catch(Exception ex) {
+            Log.i(CO_LINE, "Destroying the current coline not working");
+        }
+        finally {
+            Log.d(CO_LINE, "Current coline is destroyed");
+            super.finalize();
         }
     }
 }

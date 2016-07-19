@@ -34,12 +34,17 @@ public class CoRequest extends Observable {
     private boolean logs;
 
     /**
+     * <p>
+     * CoRequest's constructor will do the request to the server.
+     * It needs the HTTP verb ({method}), the route URL ({route}),
+     * the header properties ({headers}) and the current state of
+     * Logs ({logs}).
+     * </p>
      *
-     *
-     * @param method (String)
-     * @param route (String)
-     * @param headers (ContentValues)
-     * @param logs (boolean)
+     * @param method (String) CoHttp verb using by the request
+     * @param route (String) URL of the request
+     * @param headers (ContentValues) Header properties as "Content-type" or "Authorization"
+     * @param logs (boolean) Current state of Logs
      */
     public CoRequest(String method, String route,
                      ContentValues headers, boolean logs) {
@@ -50,10 +55,13 @@ public class CoRequest extends Observable {
     }
 
     /**
+     * <p>
      * Protected: This method get all value from {ContentValues values} and prepares
      * a StringBuilder with all parameter given to send it into the request.
+     * </p>
      *
-     * @see         StringBuilder
+     * @param values (ContentValues) Body parameters
+     * @see          StringBuilder
      */
     protected void setValues(ContentValues values) {
         if (values != null && values.size() > 0) {

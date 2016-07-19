@@ -3,21 +3,21 @@ Co.line
 
 **REST connection lib in one line for Android.**
 
-Co.line is a custom library to do a HttpURLConnection in REST. Main advantage: using only one and simple line declaration by chained methods. It creates automatically a new Thread and returns result in callbacks main Thread. You can also specify a BasicAuth/OAuth2.0 authorization key.
+Co.line is a custom library to do a HttpURLConnection in REST. It creates automatically a new Thread and returns result in a callback on the Main Thread. You can specify header's properties (@see `head()``), add params in the body request (@see `with()`) and even interrupt the background Thread (@see `cancel()`).
 
 Download
 --------
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:2.0.0'
+compile 'com.fllo.co.line:co.line:2.0.1'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
@@ -193,6 +193,31 @@ Coline.init(context).send();
 *Note: it needs to be declared at the end.*
 ```java
 public void exec()
+```
+
+**Cancellation**
+
+```java
+public void cancel()
+```
+
+By making a Coline variable, you can stop in safe mode the background treatment:
+```java
+Coline cln;
+...
+cln = Coline.init(this);
+cln.url(CoHttp.GET, mUrl)
+    .res(mResult)
+    .exec();
+...
+
+@Override
+public void onDestroy() {
+    if (cln != null) {
+        cln.cancel();
+    }
+    super.onDestroy();
+}
 ```
 
 Debugging

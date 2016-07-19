@@ -63,7 +63,7 @@ public class Coline implements Observer {
     /**
      * <p>
      * Co.line's constructor: method to initiate Coline with actual Context.
-     * It creates a new instance of class if this one does not already exist.
+     * It creates a new instance of class.
      * The Context can be an Activity, a Fragment, a Service or anything. This
      * will be used to return the request response into the main Thread.
      * </p>

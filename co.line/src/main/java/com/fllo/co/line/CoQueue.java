@@ -52,8 +52,7 @@ public class CoQueue {
                     queue = new CoQueue();
                     queue.requests = new ArrayList<>();
                     queue.logs = CoLogs.getInstance().getStatus();
-                    if (queue.logs)
-                        Log.d(CO_LINE_QUEUE, "Queue initialization");
+                    if (queue.logs) Log.d(CO_LINE_QUEUE, "Queue initialization");
                 }
             }
         }
@@ -77,8 +76,7 @@ public class CoQueue {
      */
     public void add(Coline request) {
         if (this.requests == null) {
-            if ( logs )
-                Log.e(CO_LINE_QUEUE, "Failed to add a request to the queue: list = null");
+            if ( logs ) Log.e(CO_LINE_QUEUE, "Failed to add a request to the queue: list = null");
             return;
         }
 
@@ -86,8 +84,7 @@ public class CoQueue {
         this.used = true;
         this.logs = request.getStatusLogs();
         this.pendingRequests += 1;
-        if ( logs )
-            Log.d(CO_LINE_QUEUE, "New request added to the queue");
+        if ( logs ) Log.d(CO_LINE_QUEUE, "New request added to the queue");
     }
 
     /**
@@ -96,20 +93,18 @@ public class CoQueue {
      */
     public void start() {
         if (this.requests == null) {
-            if ( logs )
-                Log.e(CO_LINE_QUEUE, "Failed to launch the queue: list = null");
+            if ( logs ) Log.e(CO_LINE_QUEUE, "Failed to launch the queue: list = null");
             return;
         }
 
-        if ( logs )
-            Log.d(CO_LINE_QUEUE, "Start execution of pending requests");
+        if ( logs ) Log.d(CO_LINE_QUEUE, "Start execution of pending requests");
 
         for (final WeakReference<Coline> req : this.requests) {
             Coline c = req.get();
             if (c != null) {
-                if ( logs )
-                    Log.d(CO_LINE_QUEUE,
-                            "Execute request in current queue (rf. " + req.toString() + ")");
+                if ( logs ) Log.d(CO_LINE_QUEUE, "Execute request in current " +
+                        "queue (rf. " + req.toString() + ")");
+
                 c.exec();
             }
             queue.pendingRequests -= 1;

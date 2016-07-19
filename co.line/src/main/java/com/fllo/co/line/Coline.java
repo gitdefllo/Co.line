@@ -36,7 +36,7 @@ import java.util.Observer;
 /**
  * Co.line
  * -------
- * @version 2.0.0
+ * @version 2.0.2
  * @author Florent Blot (@Gitdefllo)
  *
  * Android library for HttpURLConnection connections with automatic Thread
@@ -137,8 +137,8 @@ public class Coline implements Observer {
      */
     public Coline head(final ContentValues params) {
         if (params.size() <= 0) {
-            Log.i(CO_LINE, "Please check the properties sent in " +
-                    "\"head(ContentValues)\".");
+            if ( logs ) Log.i(CO_LINE, "Please check the properties sent in " +
+                        "\"head(ContentValues)\".");
         }
 
         this.headers = params;
@@ -163,8 +163,8 @@ public class Coline implements Observer {
      */
     public Coline head(final Object... params) {
         if (params.length <= 0 || params.length % 2 == 0) {
-            Log.i(CO_LINE, "Please check the properties sent in " +
-                    "\"head(\"key1\",\"value1\",...)\".");
+            if ( logs ) Log.i(CO_LINE, "Please check the properties sent in " +
+                        "\"head(\"key1\",\"value1\",...)\".");
         }
 
         for (int i=0; i<params.length; ++i) {
@@ -196,8 +196,8 @@ public class Coline implements Observer {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline head(final ArrayMap<String, Object> params) {
         if (params.size() <= 0) {
-            Log.i(CO_LINE, "Please check the properties sent in " +
-                    "\"head(ArrayMap<String, Object>)\".");
+            if ( logs ) Log.i(CO_LINE, "Please check the properties sent in " +
+                        "\"head(ArrayMap<String, Object>)\".");
         }
 
         for (int i = 0; i<params.size(); ++i) {
@@ -222,8 +222,8 @@ public class Coline implements Observer {
      */
     public Coline with(final ContentValues values) {
         if (values.size() <= 0) {
-            Log.i(CO_LINE, "Please check the values sent in " +
-                    "\"with(ContentValues)\".");
+            if ( logs ) Log.i(CO_LINE, "Please check the values sent in " +
+                        "\"with(ContentValues)\".");
         }
 
         this.values = values;
@@ -248,8 +248,8 @@ public class Coline implements Observer {
      */
     public Coline with(final Object... values) {
         if (values.length <= 0 || values.length % 2 == 0) {
-            Log.i(CO_LINE, "Please check the values sent in " +
-                    "\"with(\"key1\",\"value1\",...)\".");
+            if ( logs ) Log.i(CO_LINE, "Please check the values sent in " +
+                        "\"with(\"key1\",\"value1\",...)\".");
         }
 
         for (int i=0; i<values.length; ++i) {
@@ -281,8 +281,8 @@ public class Coline implements Observer {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline with(final ArrayMap<String, Object> values) {
         if (values.size() <= 0) {
-            Log.i(CO_LINE, "Please check the values sent in " +
-                    "\"with(ArrayMap<String, Object>)\".");
+            if ( logs ) Log.i(CO_LINE, "Please check the values sent in " +
+                        "\"with(ArrayMap<String, Object>)\".");
         }
 
         for (int i = 0; i<values.size(); ++i) {
@@ -325,12 +325,11 @@ public class Coline implements Observer {
      * @see         Thread
      */
     public void send() {
-        if ( logs )
-            Log.d(CO_LINE, "Launch all request in the current queue");
+        if ( logs ) Log.d(CO_LINE, "Launch all request in the current queue");
 
         if (CoQueue.getInstance() == null) {
-            Log.i(CO_LINE, "The queue isn't created. Maybe you missed to add " +
-                    "a request with 'queue()'.");
+            if ( logs ) Log.i(CO_LINE, "The queue isn't created. Maybe you missed to add " +
+                        "a request with 'queue()'.");
             return;
         }
 
@@ -349,8 +348,7 @@ public class Coline implements Observer {
      * @see         Thread
      */
     public void exec() {
-        if ( logs )
-            Log.d(CO_LINE, "Request execution...");
+        if ( logs ) Log.d(CO_LINE, "Request execution...");
 
         thread = new Thread(new Runnable() {
             @Override
@@ -405,11 +403,10 @@ public class Coline implements Observer {
      * @see         Thread
      */
     public void cancel() {
-        if ( logs )
-            Log.d(CO_LINE, "Interrupt background treatment");
+        if ( logs ) Log.d(CO_LINE, "Interrupt background treatment");
 
         if (thread == null) {
-            Log.i(CO_LINE, "The background treatment is already null.");
+            if ( logs ) Log.i(CO_LINE, "The background treatment is already null.");
             return;
         }
         thread.interrupt();
@@ -426,7 +423,7 @@ public class Coline implements Observer {
         try {
             finalize();
         } catch (Throwable t) {
-            Log.i(CO_LINE, "Clear coline error: " + t.toString());
+            if ( logs ) Log.i(CO_LINE, "Clear coline error: " + t.toString());
         }
     }
 
@@ -448,8 +445,7 @@ public class Coline implements Observer {
             try {
                 CoQueue.getInstance().finalize();
             } catch(Throwable t) {
-                if ( logs )
-                    Log.i(CO_LINE, "Clear queue error: "+t.toString());
+                if ( logs ) Log.i(CO_LINE, "Clear queue error: "+t.toString());
             }
         }
     }
@@ -480,10 +476,10 @@ public class Coline implements Observer {
             destroyColine();
         }
         catch(Exception ex) {
-            Log.i(CO_LINE, "Destroying the current coline not working");
+            if ( logs ) Log.i(CO_LINE, "Destroying the current coline not working");
         }
         finally {
-            Log.d(CO_LINE, "Current coline is destroyed");
+            if ( logs ) Log.d(CO_LINE, "Current coline is destroyed");
             super.finalize();
         }
     }

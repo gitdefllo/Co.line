@@ -76,13 +76,11 @@ public class CoRequest extends Observable {
                             .append('=')
                             .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    if ( logs )
-                        Log.e(CO_LINE, e.toString());
+                    if ( logs ) Log.e(CO_LINE, e.toString());
                 }
                 first_value = false;
             }
-            if ( logs )
-                Log.d(CO_LINE, "Values added to the request body");
+            if ( logs ) Log.d(CO_LINE, "Values added to the request body");
         }
     }
 
@@ -102,13 +100,11 @@ public class CoRequest extends Observable {
 
         // Init URL
         try {
-            if ( logs )
-                Log.d(CO_LINE, "URL: " + route);
+            if ( logs ) Log.d(CO_LINE, "URL: " + route);
 
             url = new URL( route );
         } catch (MalformedURLException e) {
-            if ( logs )
-                Log.e(CO_LINE, "error in route: " + e.toString());
+            if ( logs ) Log.e(CO_LINE, "error in route: " + e.toString());
 
             setErrorResult("MalformedURLException", e.toString(),
                     "An error occurred when trying to get URL", NO_STATUS);
@@ -116,8 +112,7 @@ public class CoRequest extends Observable {
         }
 
         // Do connection
-        if ( logs )
-            Log.d(CO_LINE, "Do connection...");
+        if ( logs ) Log.d(CO_LINE, "Do connection...");
 
         HttpURLConnection http;
         try {
@@ -149,24 +144,21 @@ public class CoRequest extends Observable {
             }
 
         } catch (IOException e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error in http url connection: " + e.toString());
+            if ( logs ) Log.e(CO_LINE, "Error in http url connection: " + e.toString());
 
             setErrorResult("IOException", e.toString(),
                     "Error in http url connection", NO_STATUS);
             return;
         }
 
-        if ( logs )
-            Log.d(CO_LINE, "Connection etablished");
+        if ( logs ) Log.d(CO_LINE, "Connection etablished");
 
         // Get response
         InputStream inputStream;
         int status = 0;
         try {
             status = http.getResponseCode();
-            if ( logs )
-                Log.d(CO_LINE, "Status response: " + status);
+            if ( logs ) Log.d(CO_LINE, "Status response: " + status);
 
             if (status >= 200 && status < 400) {
                 inputStream = http.getInputStream();
@@ -175,8 +167,7 @@ public class CoRequest extends Observable {
             }
 
         } catch (IOException e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error when getting server response: " + e.toString());
+            if ( logs ) Log.e(CO_LINE, "Error when getting server response: " + e.toString());
 
             setErrorResult("IOException", e.toString(),
                     "An error occurred when trying to get server response", status);
@@ -203,16 +194,15 @@ public class CoRequest extends Observable {
             inputStream.close();
             response = sb.toString();
         } catch (Exception e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error when parsing result: " + e.toString());
+            if ( logs ) Log.e(CO_LINE, "Error when parsing result: " + e.toString());
 
             setErrorResult("Exception", e.toString(),
                     "An error occurred when reading server response", status);
             return;
         }
 
-        if ( logs )
-            Log.d(CO_LINE, response);
+        // Handle server response
+        if ( logs ) Log.d(CO_LINE, response);
 
         if ((status < 200 && status > 299) || response.length() == 0) {
             setErrorResult(null, null, response, status);

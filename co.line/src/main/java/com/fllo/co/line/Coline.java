@@ -125,90 +125,6 @@ public class Coline implements Observer {
 
     /**
      * <p>
-     * This method initiates the values to pass into the request from
-     * a ContentValues object.
-     * </p>
-     * <p>
-     * See also: with(Object...) and with(ArrayMap&lt;String, Object&gt;)
-     * </p>
-     *
-     * @param values (ContentValues) Values to pass into the request
-     * @return       The current instance of the class
-     */
-    public Coline with(final ContentValues values) {
-        if (values.size() <= 0) {
-            Log.i(CO_LINE, "Please check the values sent in " +
-                    "\"with(ContentValues)\".");
-        }
-
-        this.values = values;
-        return this;
-    }
-
-    /**
-     * <p>
-     * This method initiates the values to pass into the request from
-     * an Object array. It declared as follows:<br>
-     * 'with("key1", value1, "key2", "value2", "key3", values3);'.
-     * </p>
-     * <p>
-     * All the object in the array will be convert to a String.
-     * </p>
-     * <p>
-     * See also: with(ContentValues) and with(ArrayMap&lt;String, Object&gt;)
-     * </p>
-     *
-     * @param values (Object...) Values to pass into the request
-     * @return       The current instance of the class
-     */
-    public Coline with(final Object... values) {
-        if (values.length <= 0 || values.length % 2 == 0) {
-            Log.i(CO_LINE, "Please check the values sent in " +
-                    "\"with(\"key1\",\"value1\",...)\".");
-        }
-
-        for (int i=0; i<values.length; ++i) {
-            this.values.put( String.valueOf(values[i]),
-                    String.valueOf(values[i + 1]));
-            ++i;
-        }
-        return this;
-    }
-
-    /**
-     * <p>
-     * Only with KitKat version and higher:
-     * </p>
-     * <p>
-     * This method initiates the values to pass into the request from
-     * an ArrayMap&lt;String, Object&gt;.
-     * </p>
-     * <p>
-     * All the object in the array will be convert to a String.
-     * </p>
-     * <p>
-     * See also: with(ContentValues) and with(Object...)
-     * </p>
-     *
-     * @param values (ArrayMap) Values to pass into the request
-     * @return       The current instance of the class
-     */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public Coline with(final ArrayMap<String, Object> values) {
-        if (values.size() <= 0) {
-            Log.i(CO_LINE, "Please check the values sent in " +
-                    "\"with(ArrayMap<String, Object>)\".");
-        }
-
-        for (int i = 0; i<values.size(); ++i) {
-            this.values.put(String.valueOf(values.keyAt(i)),
-                    String.valueOf(values.valueAt(i)));
-        }
-        return this;
-    }
-
-    /**
-     * <p>
      * This method initiates the values to pass in header properties from
      * a ContentValues object.
      * </p>
@@ -293,6 +209,90 @@ public class Coline implements Observer {
     }
 
     /**
+     * <p>
+     * This method initiates the values to pass into the request from
+     * a ContentValues object.
+     * </p>
+     * <p>
+     * See also: with(Object...) and with(ArrayMap&lt;String, Object&gt;)
+     * </p>
+     *
+     * @param values (ContentValues) Values to pass into the request
+     * @return       The current instance of the class
+     */
+    public Coline with(final ContentValues values) {
+        if (values.size() <= 0) {
+            Log.i(CO_LINE, "Please check the values sent in " +
+                    "\"with(ContentValues)\".");
+        }
+
+        this.values = values;
+        return this;
+    }
+
+    /**
+     * <p>
+     * This method initiates the values to pass into the request from
+     * an Object array. It declared as follows:<br>
+     * 'with("key1", value1, "key2", "value2", "key3", values3);'.
+     * </p>
+     * <p>
+     * All the object in the array will be convert to a String.
+     * </p>
+     * <p>
+     * See also: with(ContentValues) and with(ArrayMap&lt;String, Object&gt;)
+     * </p>
+     *
+     * @param values (Object...) Values to pass into the request
+     * @return       The current instance of the class
+     */
+    public Coline with(final Object... values) {
+        if (values.length <= 0 || values.length % 2 == 0) {
+            Log.i(CO_LINE, "Please check the values sent in " +
+                    "\"with(\"key1\",\"value1\",...)\".");
+        }
+
+        for (int i=0; i<values.length; ++i) {
+            this.values.put( String.valueOf(values[i]),
+                    String.valueOf(values[i + 1]));
+            ++i;
+        }
+        return this;
+    }
+
+    /**
+     * <p>
+     * Only with KitKat version and higher:
+     * </p>
+     * <p>
+     * This method initiates the values to pass into the request from
+     * an ArrayMap&lt;String, Object&gt;.
+     * </p>
+     * <p>
+     * All the object in the array will be convert to a String.
+     * </p>
+     * <p>
+     * See also: with(ContentValues) and with(Object...)
+     * </p>
+     *
+     * @param values (ArrayMap) Values to pass into the request
+     * @return       The current instance of the class
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public Coline with(final ArrayMap<String, Object> values) {
+        if (values.size() <= 0) {
+            Log.i(CO_LINE, "Please check the values sent in " +
+                    "\"with(ArrayMap<String, Object>)\".");
+        }
+
+        for (int i = 0; i<values.size(); ++i) {
+            this.values.put(String.valueOf(values.keyAt(i)),
+                    String.valueOf(values.valueAt(i)));
+        }
+        return this;
+    }
+
+    /**
      * This method handles a callback when server returned response.
      *
      * @param callback (CoCallback) Interface of successful and errors requests
@@ -302,27 +302,6 @@ public class Coline implements Observer {
     public Coline res(CoCallback callback) {
         this.callback = callback;
         return this;
-    }
-
-    /**
-     * This method executes a request in a new Thread.
-     *
-     * @see         Thread
-     */
-    public void exec() {
-        if ( logs )
-            Log.d(CO_LINE, "Request execution...");
-
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                CoRequest req = new CoRequest(method, route, headers, logs);
-                req.setValues(values);
-                req.makeRequest();
-                req.addObserver(Coline.this);
-            }
-        });
-        thread.start();
     }
 
     /**
@@ -359,6 +338,27 @@ public class Coline implements Observer {
             @Override
             public void run() {
                 CoQueue.getInstance().start();
+            }
+        });
+        thread.start();
+    }
+
+    /**
+     * This method executes a request in a new Thread.
+     *
+     * @see         Thread
+     */
+    public void exec() {
+        if ( logs )
+            Log.d(CO_LINE, "Request execution...");
+
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                CoRequest req = new CoRequest(method, route, headers, logs);
+                req.addObserver(Coline.this);
+                req.setValues(values);
+                req.makeRequest();
             }
         });
         thread.start();

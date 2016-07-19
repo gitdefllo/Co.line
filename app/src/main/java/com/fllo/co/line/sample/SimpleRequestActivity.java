@@ -59,7 +59,7 @@ public class SimpleRequestActivity extends AppCompatActivity {
         public void onResult(CoError err, CoResponse res) {
             // Handle errors
             if (err != null) {
-                String result = "(Error):\n\tStatus: "+ err.status + "\n\tException: " + err.exception + "\n\tError: " + err.description;
+                String result = "(Error):\n\tStatus: "+ err.status + "\n\tException: " + err.exception + "\n\tDescription: " + err.description;
                 textResults.setText(result);
                 textResults.setTextColor(Color.parseColor("#650000"));
                 return;

@@ -29,18 +29,9 @@ import com.fllo.co.line.callbacks.CoCallback;
 import com.fllo.co.line.models.CoError;
 import com.fllo.co.line.models.CoResponse;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Co.line
@@ -55,7 +46,7 @@ import java.util.Map;
  * Issue tracker: https://github.com/Gitdefllo/Co.line/issues
  *
  */
-public class Coline {
+public class Coline implements Observer {
 
     // Tags
     private static final String CO_LINE  = "Co.line";
@@ -65,8 +56,7 @@ public class Coline {
     private Thread thread;
     private String method;
     private String route;
-    private ContentValues values, headers;
-    private StringBuilder body = null;
+    private ContentValues headers, values;
     private CoCallback callback;
     private boolean logs;
 
@@ -326,8 +316,10 @@ public class Coline {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                setValues();
-                request();
+                CoRequest req = new CoRequest(method, route, headers, logs);
+                req.setValues(values);
+                req.makeRequest();
+                req.addObserver(Coline.this);
             }
         });
         thread.start();
@@ -373,185 +365,16 @@ public class Coline {
     }
 
     /**
-     * Private: This method get all value from {@link #with(ContentValues values)},
-     * {@link #with(Object... values)} or {@link #with(ArrayMap<String, Object> values)} and prepares
-     * a StringBuilder with all parameter given to send it into the request.
      *
-     * @see         StringBuilder
-     */
-    private void setValues() {
-        if (this.values != null && this.values.size() > 0) {
-            boolean first_value = true;
-            body = new StringBuilder();
-            for (Map.Entry<String, Object> entry : this.values.valueSet()) {
-                if (!first_value) {
-                    body.append('&');
-                }
-                try {
-                    body.append(entry.getKey())
-                            .append('=')
-                            .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    if ( logs )
-                        Log.e(CO_LINE, e.toString());
-                }
-                first_value = false;
-            }
-            if ( logs )
-                Log.d(CO_LINE, "Values added to the request body");
-        }
-    }
-
-    /**
-     * Private: This method does a request by HttpURLConnection
      *
-     * @see         HttpURLConnection
+     * @param obs (Observable)
+     * @param obj (Object)
      */
-    private void request() {
-        // Prepare timeout variables
-        int MAX_READ_TIMEOUT = 3000;
-        int MAX_CONNECT_TIMEOUT = 7000;
-        int NO_STATUS = 0;
-
-        String response = "";
-        URL url;
-
-        // Init URL
-        try {
-            if ( logs )
-                Log.d(CO_LINE, "URL: " + route);
-
-            url = new URL( route );
-        } catch (MalformedURLException e) {
-            if ( logs )
-                Log.e(CO_LINE, "error in route: " + e.toString());
-
-            setErrorResult("MalformedURLException", e.toString(),
-                    "An error occurred when trying to get URL", NO_STATUS);
-            return;
+    public void update(Observable obs, Object obj) {
+        if (obs instanceof CoRequest) {
+            CoRequest req = (CoRequest) obs;
+            returnResult(req.err, req.res);
         }
-
-        // Do connection
-        if ( logs )
-            Log.d(CO_LINE, "Do connection...");
-
-        HttpURLConnection http;
-        try {
-            http = (HttpURLConnection) url.openConnection();
-
-            // Adding header properties
-            if (headers.size() > 0) {
-                for (Map.Entry<String, Object> entry : headers.valueSet()) {
-                    http.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
-                }
-            } else {
-                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                http.setRequestProperty("Charset", "UTF-8");
-            }
-
-            http.setReadTimeout(MAX_READ_TIMEOUT);
-            http.setConnectTimeout(MAX_CONNECT_TIMEOUT);
-            http.setUseCaches(true);
-            http.setDoInput(true);
-
-            // Send value when needed
-            if ( body != null ) {
-                http.setDoOutput(true);
-                http.setRequestMethod( method );
-                DataOutputStream wr = new DataOutputStream( http.getOutputStream() );
-                wr.writeBytes( body.toString() );
-                wr.flush();
-                wr.close();
-            }
-
-        } catch (IOException e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error in http url connection: " + e.toString());
-
-            setErrorResult("IOException", e.toString(),
-                    "Error in http url connection", NO_STATUS);
-            return;
-        }
-
-        if ( logs )
-            Log.d(CO_LINE, "Connection etablished");
-
-        // Get response
-        InputStream inputStream;
-        int status = 0;
-        try {
-            status = http.getResponseCode();
-            if ( logs )
-                Log.d(CO_LINE, "Status response: " + status);
-
-            if (status >= 200 && status < 400) {
-                inputStream = http.getInputStream();
-            } else {
-                inputStream = http.getErrorStream();
-            }
-
-        } catch (IOException e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error when getting server response: " + e.toString());
-
-            setErrorResult("IOException", e.toString(),
-                    "An error occurred when trying to get server response", status);
-            return;
-        }
-
-        if (inputStream == null) {
-            setErrorResult("NullPointerException", null,
-                    "An error occurred when trying to get server response", status);
-            return;
-        }
-
-        // Parse responses
-        try {
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-            StringBuilder sb = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-
-            inputStream.close();
-            response = sb.toString();
-        } catch (Exception e) {
-            if ( logs )
-                Log.e(CO_LINE, "Error when parsing result: " + e.toString());
-
-            setErrorResult("Exception", e.toString(),
-                    "An error occurred when reading server response", status);
-            return;
-        }
-
-        if ( logs )
-            Log.d(CO_LINE, response);
-
-        if ((status < 200 && status > 299) || response.length() == 0) {
-            setErrorResult(null, null, response, status);
-            return;
-        }
-
-        setResponseResult(response, status);
-    }
-
-    /**
-     * Private: Create an error object to be handled by CoCallback.onResult()
-     */
-    private void setErrorResult(String exception, String stacktrace, String message, int status) {
-        CoError err = new CoError(status, exception, stacktrace, message);
-        returnResult(err, null);
-    }
-
-    /**
-     * Private: Create an error object to be handled by CoCallback.onResult()
-     */
-    private void setResponseResult(String response, int status) {
-        CoResponse res = new CoResponse(status, response);
-        returnResult(null, res);
     }
 
     /**
@@ -636,12 +459,11 @@ public class Coline {
      *
      * @throws Throwable  Throw an exception when destroyed is compromised
      */
-    public void destroyColine() throws Throwable {
+    private void destroyColine() throws Throwable {
         context = null;
         method = null;
         route = null;
         values = null;
-        body = null;
         callback = null;
         logs = false;
     }

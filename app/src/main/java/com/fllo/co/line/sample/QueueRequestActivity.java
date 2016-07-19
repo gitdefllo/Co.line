@@ -67,7 +67,7 @@ public class QueueRequestActivity extends AppCompatActivity {
             // Handle errors
             if (err != null) {
                 String result = textResults.getText().toString();
-                result += "Request n." + countRequests + " (Error):\n\tStatus: "+ err.status + "\n\tError: " + err.description + "\n-------------\n";
+                result += "Request n." + countRequests + " (Error):\n\tStatus: "+ err.status + "\n\tDescription: " + err.description + "\n-------------\n";
                 textResults.setText(result);
                 return;
             }

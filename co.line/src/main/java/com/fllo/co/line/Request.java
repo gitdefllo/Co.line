@@ -3,8 +3,8 @@ package com.fllo.co.line;
 import android.content.ContentValues;
 import android.util.Log;
 
-import com.fllo.co.line.models.CoError;
-import com.fllo.co.line.models.CoResponse;
+import com.fllo.co.line.results.Error;
+import com.fllo.co.line.results.Response;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -19,14 +19,14 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Observable;
 
-public class CoRequest extends Observable {
+public class Request extends Observable {
 
     // Tags
     private static final String CO_LINE  = "Co.line";
 
     // Configuration
-    protected CoError err;
-    protected CoResponse res;
+    protected Error err;
+    protected Response res;
     private String method;
     private String route;
     private ContentValues headers;
@@ -35,19 +35,19 @@ public class CoRequest extends Observable {
 
     /**
      * <p>
-     * CoRequest's constructor will do the request to the server.
+     * Request's constructor will do the request to the server.
      * It needs the HTTP verb ({method}), the route URL ({route}),
      * the header properties ({headers}) and the current state of
      * Logs ({logs}).
      * </p>
      *
-     * @param method (String) CoHttp verb using by the request
+     * @param method (String) HttpMethod verb using by the request
      * @param route (String) URL of the request
      * @param headers (ContentValues) Header properties as "Content-type" or "Authorization"
      * @param logs (boolean) Current state of Logs
      */
-    public CoRequest(String method, String route,
-                     ContentValues headers, boolean logs) {
+    public Request(String method, String route,
+                   ContentValues headers, boolean logs) {
         this.method = method;
         this.route = route;
         this.headers = headers;
@@ -80,7 +80,7 @@ public class CoRequest extends Observable {
                 }
                 first_value = false;
             }
-            if ( logs ) Log.d(CO_LINE, "Values added to the request body");
+            if ( logs ) Log.d(CO_LINE, "Values added to the request body: " + body.toString());
         }
     }
 
@@ -124,8 +124,8 @@ public class CoRequest extends Observable {
                     http.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
                 }
             } else {
-                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                http.setRequestProperty("Charset", "UTF-8");
+                http.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded;Charset=UTF-8");
             }
 
             http.setReadTimeout(MAX_READ_TIMEOUT);
@@ -204,30 +204,33 @@ public class CoRequest extends Observable {
         // Handle server response
         if ( logs ) Log.d(CO_LINE, response);
 
-        if ((status < 200 && status > 299) || response.length() == 0) {
-            setErrorResult(null, null, response, status);
+        if (status >= 200 && status <= 299) {
+            setResponseResult(response, status);
             return;
         }
 
-        setResponseResult(response, status);
+        setErrorResult(null, null, response, status);
     }
 
     /**
-     * Private: Create an error object to be handled by CoCallback.onResult()
+     * Private: Create an error object to be handled by Collback.onResult()
      */
     private void setErrorResult(String exception, String stacktrace, String message, int status) {
-        this.err = new CoError(status, exception, stacktrace, message);
+        if (message == null || message.length() == 0) {
+            message = "An error occurred when trying to contact the server";
+        }
+        this.err = new Error(status, exception, stacktrace, message);
         this.res = null;
         setChanged();
         notifyObservers();
     }
 
     /**
-     * Private: Create an error object to be handled by CoCallback.onResult()
+     * Private: Create an error object to be handled by Collback.onResult()
      */
     private void setResponseResult(String response, int status) {
         this.err = null;
-        this.res = new CoResponse(status, response);
+        this.res = new Response(status, response);
         setChanged();
         notifyObservers();
     }

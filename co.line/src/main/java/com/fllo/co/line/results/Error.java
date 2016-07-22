@@ -1,6 +1,6 @@
-package com.fllo.co.line.models;
+package com.fllo.co.line.results;
 
-public class CoError {
+public class Error {
 
     public int status;
     public String exception;
@@ -8,15 +8,15 @@ public class CoError {
     public String description;
 
     /**
-     * CoError object handles error which occured in connection
+     * Error object handles error which occured in connection
      *
      * @param status (int) HTTP response status
      * @param exception (String) Raised exception (can be 'null')
      * @param stacktrace (String) Stacktrace of the exception (can be 'null')
      * @param description (String) Little description of the error
      */
-    public CoError(int status, String exception,
-                   String stacktrace, String description) {
+    public Error(int status, String exception,
+                 String stacktrace, String description) {
         this.status = status;
         this.exception = exception;
         this.stacktrace = stacktrace;

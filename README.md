@@ -1,7 +1,7 @@
 Co.line
 =======
 
-**REST connection lib in one line for Android.**
+**REST connection lib for Android.**
 
 Co.line is a custom library to do a HttpURLConnection in REST. It creates automatically a new Thread and returns result in a callback on the Main Thread. You can specify header's properties (@see `head()`), add params in the body request (@see `with()`) and even interrupt the background Thread (@see `cancel()`).
 
@@ -10,14 +10,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:2.0.2'
+compile 'com.fllo.co.line:co.line:2.1.0'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>2.0.2</version>
+  <version>2.1.0</version>
 </dependency>
 ```
 
@@ -27,22 +27,23 @@ Usage
 A simple request:
 ```java
 Coline.init(this)
-        // set the HTTP method (GET, PUT..) and the URL
-        .url(CoHttp.GET, "http://api.url.com/")
-        // then get response in CoResponse class
-        .res(new CoCallback() {
+        // set the HTTP method (GET, PUT, etc) and the URL
+        .url(HttpMethod.GET, "http://api.url.com/")
+        // then get the result in Collback class
+        .res(new Collback() {
             @Override
-            public void onResult(CoError err, CoResponse res) {
-                // check error
+            public void onResult(Error err, Response res) {
+                // check for errors
                 if (err != null) {
                     // handle error
+                    return;
                 }
 
                 // handle successful server response
-                Log.i("Coline.onResult", "onResult(): status: " + res.status+", body: " + res.body);
+                Log.i("Coline.onResult()", "Response: status: " + res.status+", body: " + res.body);
             }
         })
-        // Execute the request
+        // execute the request
         .exec();
 ```
 
@@ -51,19 +52,19 @@ Request queue
 
 Set multiple requests in queue and launch all at one time:
 ```java
-// Prepare a first request
+// prepare a first request
 Coline.init(this)
-        .url(CoHttp.GET, "http://api.url.com/user")
+        .url(HttpMethod.GET, "http://api.url.com/user")
         .res(userResponse)
         .queue();
 
-// Prepare another request
+// prepare another request
 Coline.init(this)
-        .url(CoHttp.GET, "http://api.url.com/user/messages")
+        .url(HttpMethod.GET, "http://api.url.com/user/messages")
         .res(msgResponse)
         .queue();
 
-// Finally, launch the queue
+// finally, launch the queue
 Coline.init(this).send();
 ```
 
@@ -83,13 +84,13 @@ Coline.init(MainActivity.this);
 **Request methods**
 
 ```java
-public Coline url(CoHttp method, String url)
+public Coline url(HttpMethod method, String url)
 ```
 Pass the HTTP method and the URL.
 ```java
-Coline.url(CoHttp.POST, "http://api.url.com/user");
+Coline.url(HttpMethod.POST, "http://api.url.com/user");
 ```
-`CoHttp` class handles the following requests: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` and `HEAD`.
+`HttpMethod` class handles the following requests: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` and `HEAD`.
 
 **Headers**
 
@@ -104,20 +105,10 @@ params.put("Charset", "UTF-8");
 // Values to put in header properties
 Coline.head(params);
 ```
-Or, it's possible to pass an Object array with this following pattern:
-```java
-Coline.head("Content-Type", "application/json", "Charset", "UTF-8");
-```
-And you can also pass an `ArrayMap<String, Object>` **(only API 19 and higher)**:
-```java
-ArrayMap<String, Object> params = new ArrayMap();
-params.put("Content-Type", "application/json");
-params.put("Charset", "UTF-8");
-Coline.head(params);
-```
-If non-set, the default header properties are `content-type=application/x-www-form-urlencoded` and `charset=UTF-8`
+It's possible to use an `ArrayMap<String, Object>` **(only API 19 and higher)**.  
+If non-set, the default header properties are `content-type=application/x-www-form-urlencoded;charset=UTF-8`
 
-**Parameters**
+**Body**
 
 ```java
 public Coline with(ContentValues values)
@@ -130,43 +121,35 @@ values.put("github",   "Gitdefllo");
 // Values to send in body request
 Coline.with(values);
 ```
-Or, it's possible to pass an Object array with this following pattern:  
-```java
-Coline.with("username", "Fllo", "github", "Gitdefllo");
-```
-And you can also pass an `ArrayMap<String, Object>` **(only API 19 and higher)**:
-```java
-ArrayMap<String, Object> values = new ArrayMap();
-values.put("userid",   123456);
-values.put("username", "Fllo");
-Coline.with(values);
+It's possible to use an `ArrayMap<String, Object>` **(only API 19 and higher)**.
 ```
 
 **Callbacks**
 
 ```java
-public Coline res(CoCallback callback)
+public Coline res(Collback collback)
 ```
-Called by `res()`, the request response is a couple `CoError` and `CoResponse` objects:
+Called by `res()`, the request response is a couple `Error` and `Response` objects:
 ```java
-Coline.res(new CoCallback() {
+Coline.res(new Collback() {
     @Override
-    public void onResult(CoError err, CoResponse res) { }
+    public void onResult(Error err, Response res) { }
 });
 ```
 
-`CoError` handles connection error and has these properties:
+**All requests from below 200 and above 299 are considered as an `Error`.**
+`Error` handles connection error. This object has these properties:
 ```java
-error.status (int) Status of server response - if non-set, equals to 0
-error.exception (String) Name of exeption if occurred (NPE, IEO, etc) - if non-set, equals to null
-error.stacktrace (String) Stacktrace of exeption if occurred - if non-set, equals to null
-error.description (String) Short readable description of error
+Error.status (int) Status of server response - if non-set, equals to 0
+Error.exception (String) Name of exeption if occurred (NPE, IEO, etc) - if non-set, equals to null
+Error.stacktrace (String) Stacktrace of exeption if occurred - if non-set, equals to null
+Error.description (String) Short readable description of error
 ```
 
-`CoResponse` returns server successful response and has these properties:
+`Response` returns server successful response and has these properties:
 ```java
-res.status (int) Status of response server
-res.body (String) Body of response server
+Response.status (int) Status of response server
+Response.body (String) Body of response server
 ```
 
 **Current queue**
@@ -178,9 +161,9 @@ public void send()
 These methods are used to fetch and batch multiple requests later at one time.
 To add a request to the current queue, call `queue()` at the end:
 ```java
-Coline.init(context).url(CoHttp.GET, urlA).res(responseA).queue();
+Coline.init(context).url(HttpMethod.GET, urlA).res(responseA).queue();
 ...
-Coline.init(context).url(CoHttp.POST, urlB).with(valuesB).res(responseB).queue();
+Coline.init(context).url(HttpMethod.POST, urlB).with(valuesB).res(responseB).queue();
 ...
 ```
 Then, call `send()` in order to launch all request in the current queue:
@@ -201,20 +184,23 @@ public void exec()
 public void cancel()
 ```
 
-By making a Coline variable, you can stop in safe mode the background treatment:
+By making a global Coline variable, you can stop in safe mode the background treatment:
 ```java
-Coline cln;
+
+Coline colineService;
 ...
-cln = Coline.init(this);
-cln.url(CoHttp.GET, mUrl)
-    .res(mResult)
-    .exec();
+colineService = Coline.init(this);
+
+colineService.url(HttpMethod.GET, mUrl)
+             .res(mResult)
+             .exec();
 ...
 
 @Override
 public void onDestroy() {
-    if (cln != null) {
-        cln.cancel();
+    if (colineService != null) {
+        colineService.cancel();
+        colineService = null;
     }
     super.onDestroy();
 }
@@ -223,13 +209,13 @@ public void onDestroy() {
 Debugging
 ---------
 
-Logs are disabled by default. If you want to enable it, just call the following method:
+Logs are disabled by default. If you want to enable it, just call the following method before `init()`:
 ```java
-CoLogs.activate();
+Coline.enableDebug();
 ```
-To disable it, call the static method `desactivate()`:
+To disable it, call the static method `disableDebug()`:
 ```java
-CoLogs.desactivate();
+Coline.disableDebug();
 ```
 
 License

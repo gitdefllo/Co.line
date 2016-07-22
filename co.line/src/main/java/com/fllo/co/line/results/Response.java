@@ -1,17 +1,17 @@
-package com.fllo.co.line.models;
+package com.fllo.co.line.results;
 
-public class CoResponse {
+public class Response {
 
     public int status;
     public String body;
 
     /**
-     * CoError object handles error which occured in connection
+     * Error object handles error which occured in connection
      *
      * @param status (int) HTTP response status
      * @param body (String) Body response of server
      */
-    public CoResponse(int status, String body) {
+    public Response(int status, String body) {
         this.status = status;
         this.body = body;
     }

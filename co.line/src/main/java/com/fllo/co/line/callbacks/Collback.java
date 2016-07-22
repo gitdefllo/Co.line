@@ -15,16 +15,16 @@
  */
 package com.fllo.co.line.callbacks;
 
-import com.fllo.co.line.models.CoError;
-import com.fllo.co.line.models.CoResponse;
+import com.fllo.co.line.results.Error;
+import com.fllo.co.line.results.Response;
 
-public interface CoCallback {
+public interface Collback {
 
     /**
      * This method returns a couple of response objects
      *
-     * @param err (CoError) error object
-     * @param res (CoResponse) response object
+     * @param err (Error) error object
+     * @param res (Response) response object
      */
-    void onResult(CoError err, CoResponse res);
+    void onResult(Error err, Response res);
 }

@@ -9,11 +9,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.fllo.co.line.Coline;
-import com.fllo.co.line.builders.CoHttp;
-import com.fllo.co.line.builders.CoLogs;
-import com.fllo.co.line.callbacks.CoCallback;
-import com.fllo.co.line.models.CoError;
-import com.fllo.co.line.models.CoResponse;
+import com.fllo.co.line.builders.HttpMethod;
+import com.fllo.co.line.callbacks.Collback;
+import com.fllo.co.line.results.Error;
+import com.fllo.co.line.results.Response;
 import com.fllo.co.line.sample.utils.UrlsConstants;
 
 public class QueueRequestActivity extends AppCompatActivity {
@@ -29,7 +28,7 @@ public class QueueRequestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_queue);
 
         // Enable the debugs logs for Co.line
-        CoLogs.activate();
+        Coline.enableDebug();
 
         textResults = (TextView) findViewById(R.id.result_text);
         textResults.setMovementMethod(new ScrollingMovementMethod());
@@ -44,7 +43,7 @@ public class QueueRequestActivity extends AppCompatActivity {
         // Initialize Coline with a Queue
         Coline.init(this)
                 // Prepare method and URL
-                .url(CoHttp.GET, urlForRequest)
+                .url(HttpMethod.GET, urlForRequest)
                 // Retrieve queue results in response callback
                 .res(queueCallback)
                 // Add the request to the current queue
@@ -59,9 +58,9 @@ public class QueueRequestActivity extends AppCompatActivity {
     }
 
     // General callback
-    private CoCallback queueCallback = new CoCallback() {
+    private Collback queueCallback = new Collback() {
         @Override
-        public void onResult(CoError err, CoResponse res) {
+        public void onResult(Error err, Response res) {
             countRequests += 1;
 
             // Handle errors

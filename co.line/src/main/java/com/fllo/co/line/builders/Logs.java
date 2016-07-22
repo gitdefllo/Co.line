@@ -19,31 +19,31 @@ import android.util.Log;
 
 import com.fllo.co.line.BuildConfig;
 
-public class CoLogs {
+public class Logs {
 
     // Tags
     private static final String CO_LINE  = "Co.line";
 
     // Configuration
-    private static CoLogs instance = null;
+    private static Logs instance = null;
 
     // Status
-    public boolean status = false;
+    private boolean status = false;
 
     /**
-     * CoLogs'empty constructor.
+     * Protected: Logs'empty constructor.
      *
      */
-    public CoLogs() { }
+    protected Logs() { }
 
     /**
      * This method gets the current instance or creates a new one.
      *
      * @return       An instance of logs class
      */
-    public static CoLogs getInstance() {
+    public static Logs getInstance() {
         if (instance == null) {
-            CoLogs.instance = new CoLogs();
+            Logs.instance = new Logs();
             Log.i(CO_LINE, "Initialization, version " + BuildConfig.VERSION_NAME);
         }
         return instance;
@@ -65,19 +65,5 @@ public class CoLogs {
      */
     public boolean getStatus() {
         return this.status;
-    }
-
-    /**
-     * This static method activates the logs.
-     */
-    public static void activate() {
-        CoLogs.getInstance().setStatus(true);
-    }
-
-    /**
-     * This static method desactivates the logs.
-     */
-    public static void desactivate() {
-        CoLogs.getInstance().setStatus(false);
     }
 }

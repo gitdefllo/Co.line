@@ -23,11 +23,11 @@ import android.os.Handler;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import com.fllo.co.line.builders.CoHttp;
-import com.fllo.co.line.builders.CoLogs;
-import com.fllo.co.line.callbacks.CoCallback;
-import com.fllo.co.line.models.CoError;
-import com.fllo.co.line.models.CoResponse;
+import com.fllo.co.line.builders.HttpMethod;
+import com.fllo.co.line.builders.Logs;
+import com.fllo.co.line.callbacks.Collback;
+import com.fllo.co.line.results.Error;
+import com.fllo.co.line.results.Response;
 
 import java.lang.ref.WeakReference;
 import java.util.Observable;
@@ -57,7 +57,7 @@ public class Coline implements Observer {
     private String method;
     private String route;
     private ContentValues headers, values;
-    private CoCallback callback;
+    private Collback collback;
     private boolean logs;
 
     /**
@@ -84,18 +84,8 @@ public class Coline implements Observer {
         coline.context = new WeakReference<>(context);
         coline.values  = new ContentValues();
         coline.headers = new ContentValues();
-        coline.logs    = coline.getStatusLogs();
+        coline.logs    = coline.getLogsStatus();
         return coline;
-    }
-
-    /**
-     * This method get the status of current logs.
-     *
-     * @return       A boolean (true: activate, false: disable)
-     * @see          CoLogs
-     */
-    protected boolean getStatusLogs() {
-        return CoLogs.getInstance().getStatus();
     }
 
     /**
@@ -103,21 +93,21 @@ public class Coline implements Observer {
      * This method initiates the request method and the URL to do the request.
      * </p>
      * <p>
-     * The request method is a static int value from CoHttp class like:<br>
-     *      - CoHttp.GET<br>
-     *      - CoHttp.POST<br>
-     *      - CoHttp.PUT<br>
-     *      - CoHttp.DELETE<br>
-     *      - CoHttp.HEAD<br>
+     * The request method is a static int value from HttpMethod class like:<br>
+     *      - HttpMethod.GET<br>
+     *      - HttpMethod.POST<br>
+     *      - HttpMethod.PUT<br>
+     *      - HttpMethod.DELETE<br>
+     *      - HttpMethod.HEAD<br>
      * </p>
      *
-     * @param method (CoHttp) Value from CoHttp of request method
+     * @param method (HttpMethod) Value from HttpMethod of request method
      * @param route  (String) Value for URL route (should be a String URL as
      *               "http://www.example.com")
      * @return       The current instance of the class
-     * @see          CoHttp
+     * @see          HttpMethod
      */
-    public Coline url(CoHttp method, String route) {
+    public Coline url(HttpMethod method, String route) {
         this.method = method.toString();
         this.route  = route;
         return this;
@@ -129,7 +119,7 @@ public class Coline implements Observer {
      * a ContentValues object.
      * </p>
      * <p>
-     * See also: head(Object...) and head(ArrayMap&lt;String, Object&gt;)
+     * See also: head(ArrayMap&lt;String, Object&gt;)
      * </p>
      *
      * @param params (ContentValues) Values to pass in header properties
@@ -137,41 +127,11 @@ public class Coline implements Observer {
      */
     public Coline head(final ContentValues params) {
         if (params.size() <= 0) {
-            if ( logs ) Log.i(CO_LINE, "Please check the properties sent in " +
+            if ( logs ) Log.e(CO_LINE, "Please check the properties sent in " +
                         "\"head(ContentValues)\".");
         }
 
         this.headers = params;
-        return this;
-    }
-
-    /**
-     * <p>
-     * This method initiates the values to pass in header properties from
-     * an Object array. It declared as follows:<br>
-     * 'head("key1", value1, "key2", "value2", "key3", values3);'.
-     * </p>
-     * <p>
-     * All the object in the array will be convert to a String.
-     * </p>
-     * <p>
-     * See also: head(ContentValues) and head(ArrayMap&lt;String, Object&gt;)
-     * </p>
-     *
-     * @param params (Object...) Values to pass in header properties
-     * @return       The current instance of the class
-     */
-    public Coline head(final Object... params) {
-        if (params.length <= 0 || params.length % 2 == 0) {
-            if ( logs ) Log.i(CO_LINE, "Please check the properties sent in " +
-                        "\"head(\"key1\",\"value1\",...)\".");
-        }
-
-        for (int i=0; i<params.length; ++i) {
-            this.headers.put( String.valueOf(params[i]),
-                    String.valueOf(params[i + 1]));
-            ++i;
-        }
         return this;
     }
 
@@ -187,7 +147,7 @@ public class Coline implements Observer {
      * All the object in the array will be convert to a String.
      * </p>
      * <p>
-     * See also: head(ContentValues) and head(Object...)
+     * See also: head(ContentValues)
      * </p>
      *
      * @param params (ArrayMap) Values to pass into the request
@@ -196,7 +156,7 @@ public class Coline implements Observer {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline head(final ArrayMap<String, Object> params) {
         if (params.size() <= 0) {
-            if ( logs ) Log.i(CO_LINE, "Please check the properties sent in " +
+            if ( logs ) Log.e(CO_LINE, "Please check the properties sent in " +
                         "\"head(ArrayMap<String, Object>)\".");
         }
 
@@ -222,41 +182,11 @@ public class Coline implements Observer {
      */
     public Coline with(final ContentValues values) {
         if (values.size() <= 0) {
-            if ( logs ) Log.i(CO_LINE, "Please check the values sent in " +
-                        "\"with(ContentValues)\".");
+            if ( logs ) Log.e(CO_LINE, "Please check the values sent in " +
+                    "\"with(ContentValues)\".");
         }
 
         this.values = values;
-        return this;
-    }
-
-    /**
-     * <p>
-     * This method initiates the values to pass into the request from
-     * an Object array. It declared as follows:<br>
-     * 'with("key1", value1, "key2", "value2", "key3", values3);'.
-     * </p>
-     * <p>
-     * All the object in the array will be convert to a String.
-     * </p>
-     * <p>
-     * See also: with(ContentValues) and with(ArrayMap&lt;String, Object&gt;)
-     * </p>
-     *
-     * @param values (Object...) Values to pass into the request
-     * @return       The current instance of the class
-     */
-    public Coline with(final Object... values) {
-        if (values.length <= 0 || values.length % 2 == 0) {
-            if ( logs ) Log.i(CO_LINE, "Please check the values sent in " +
-                        "\"with(\"key1\",\"value1\",...)\".");
-        }
-
-        for (int i=0; i<values.length; ++i) {
-            this.values.put( String.valueOf(values[i]),
-                    String.valueOf(values[i + 1]));
-            ++i;
-        }
         return this;
     }
 
@@ -281,8 +211,8 @@ public class Coline implements Observer {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline with(final ArrayMap<String, Object> values) {
         if (values.size() <= 0) {
-            if ( logs ) Log.i(CO_LINE, "Please check the values sent in " +
-                        "\"with(ArrayMap<String, Object>)\".");
+            if ( logs ) Log.e(CO_LINE, "Please check the values sent in " +
+                    "\"with(ArrayMap<String, Object>)\".");
         }
 
         for (int i = 0; i<values.size(); ++i) {
@@ -295,12 +225,12 @@ public class Coline implements Observer {
     /**
      * This method handles a callback when server returned response.
      *
-     * @param callback (CoCallback) Interface of successful and errors requests
+     * @param collback (Collback) Interface of successful and errors requests
      * @return         The current instance of the class
-     * @see            CoCallback
+     * @see            Collback
      */
-    public Coline res(CoCallback callback) {
-        this.callback = callback;
+    public Coline res(Collback collback) {
+        this.collback = collback;
         return this;
     }
 
@@ -313,7 +243,7 @@ public class Coline implements Observer {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                CoQueue.init().add(Coline.this);
+                Queue.init().add(Coline.this);
             }
         });
         thread.start();
@@ -327,8 +257,8 @@ public class Coline implements Observer {
     public void send() {
         if ( logs ) Log.d(CO_LINE, "Launch all request in the current queue");
 
-        if (CoQueue.getInstance() == null) {
-            if ( logs ) Log.i(CO_LINE, "The queue isn't created. Maybe you missed to add " +
+        if (Queue.getInstance() == null) {
+            if ( logs ) Log.e(CO_LINE, "The queue isn't created. Maybe you missed to add " +
                         "a request with 'queue()'.");
             return;
         }
@@ -336,7 +266,7 @@ public class Coline implements Observer {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                CoQueue.getInstance().start();
+                Queue.getInstance().start();
             }
         });
         thread.start();
@@ -348,12 +278,12 @@ public class Coline implements Observer {
      * @see         Thread
      */
     public void exec() {
-        if ( logs ) Log.d(CO_LINE, "Request execution...");
+        if ( logs ) Log.d(CO_LINE, "...Request execution...");
 
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                CoRequest req = new CoRequest(method, route, headers, logs);
+                Request req = new Request(method, route, headers, logs);
                 req.addObserver(Coline.this);
                 req.setValues(values);
                 req.makeRequest();
@@ -369,8 +299,8 @@ public class Coline implements Observer {
      * @param obj (Object)
      */
     public void update(Observable obs, Object obj) {
-        if (obs instanceof CoRequest) {
-            CoRequest req = (CoRequest) obs;
+        if (obs instanceof Request) {
+            Request req = (Request) obs;
             returnResult(req.err, req.res);
         }
     }
@@ -378,11 +308,11 @@ public class Coline implements Observer {
     /**
      * Private: This method returns a String response in main Thread.
      *
-     * @param err (CoError) error object
-     * @param res (CoResponse) response object
+     * @param err (Error) error object
+     * @param res (Response) response object
      */
-    private void returnResult(final CoError err, final CoResponse res) {
-        if (callback == null) return;
+    private void returnResult(final Error err, final Response res) {
+        if (collback == null) return;
         if ( logs ) Log.d(CO_LINE, "ReturnResult() called");
         
         Context c = context.get();
@@ -390,7 +320,7 @@ public class Coline implements Observer {
             new Handler(c.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onResult(err, res);
+                    collback.onResult(err, res);
                     clear();
                 }
             });
@@ -406,10 +336,34 @@ public class Coline implements Observer {
         if ( logs ) Log.d(CO_LINE, "Interrupt background treatment");
 
         if (thread == null) {
-            if ( logs ) Log.i(CO_LINE, "The background treatment is already null.");
+            if ( logs ) Log.e(CO_LINE, "The background treatment is already null.");
             return;
         }
         thread.interrupt();
+    }
+
+    /**
+     * This method get the status of current logs.
+     *
+     * @return       A boolean (true: activate, false: disable)
+     * @see          Logs
+     */
+    public boolean getLogsStatus() {
+        return Logs.getInstance().getStatus();
+    }
+
+    /**
+     * This static method activates the logs.
+     */
+    public static void enableDebug() {
+        Logs.getInstance().setStatus(true);
+    }
+
+    /**
+     * This static method desactivates the logs.
+     */
+    public static void disableDebug() {
+        Logs.getInstance().setStatus(false);
     }
 
     /**
@@ -423,29 +377,29 @@ public class Coline implements Observer {
         try {
             finalize();
         } catch (Throwable t) {
-            if ( logs ) Log.i(CO_LINE, "Clear coline error: " + t.toString());
+            if ( logs ) Log.e(CO_LINE, "Clear coline error: " + t.toString());
         }
     }
 
     /**
      * Private: Call override Object's finalize method for the current queue.
      *
-     * @see     {@link CoQueue}
+     * @see     {@link Queue}
      */
     @SuppressWarnings("FinalizeCalledExplicitly")
     private void clearQueue() {
-        if ( CoQueue.getInstance() == null )
+        if ( Queue.getInstance() == null )
             return;
 
         if ( logs ) Log.d(CO_LINE, "A current request queue found");
 
-        if ( !CoQueue.getInstance().getPending() ) {
+        if ( !Queue.getInstance().getPending() ) {
             if ( logs ) Log.d(CO_LINE, "No pending requests left, try to destroy the queue");
 
             try {
-                CoQueue.getInstance().finalize();
+                Queue.getInstance().finalize();
             } catch(Throwable t) {
-                if ( logs ) Log.i(CO_LINE, "Clear queue error: "+t.toString());
+                if ( logs ) Log.e(CO_LINE, "Clear queue error: "+t.toString());
             }
         }
     }
@@ -460,7 +414,7 @@ public class Coline implements Observer {
         method = null;
         route = null;
         values = null;
-        callback = null;
+        collback = null;
         logs = false;
     }
 
@@ -476,7 +430,7 @@ public class Coline implements Observer {
             destroyColine();
         }
         catch(Exception ex) {
-            if ( logs ) Log.i(CO_LINE, "Destroying the current coline not working");
+            if ( logs ) Log.e(CO_LINE, "Destroying the current coline not working");
         }
         finally {
             if ( logs ) Log.d(CO_LINE, "Current coline is destroyed");

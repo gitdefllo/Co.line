@@ -5,7 +5,7 @@
     <string name="legend_simple_request">Do a simple request</string>
     <string name="legend_request_queue">Handle a request queue</string>
 
-    <string name="action_check">Check it!</string>
+    <string name="action_try">Try it!</string>
     <string name="action_success">Get success</string>
     <string name="action_error">Get error</string>
     <string name="action_add_to_queue">Add to queue</string>

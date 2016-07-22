@@ -15,7 +15,7 @@
  */
 package com.fllo.co.line.builders;
 
-public enum CoHttp {
+public enum HttpMethod {
 
     // Enums
     GET("GET"),
@@ -30,7 +30,7 @@ public enum CoHttp {
     /**
      * @param value methods value
      */
-    private CoHttp(final String value) {
+    private HttpMethod(final String value) {
         this.value = value;
     }
 

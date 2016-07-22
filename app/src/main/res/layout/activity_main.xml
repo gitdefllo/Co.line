@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="seeSimpleRequest"
-        android:text="@string/action_check"
+        android:text="@string/action_try"
         android:textColor="@android:color/white"
         android:background="@color/blue_main"/>
 
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="seeQueueRequest"
-        android:text="@string/action_check"
+        android:text="@string/action_try"
         android:textColor="@android:color/white"
         android:background="@color/blue_main"/>
 </LinearLayout>

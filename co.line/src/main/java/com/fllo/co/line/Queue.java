@@ -17,19 +17,19 @@ package com.fllo.co.line;
 
 import android.util.Log;
 
-import com.fllo.co.line.builders.CoLogs;
+import com.fllo.co.line.builders.Logs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-public class CoQueue {
+public class Queue {
 
     // Tags
-    private static final String CO_LINE_QUEUE  = "CoQueue";
+    private static final String CO_LINE_QUEUE  = "Queue";
 
     // Configuration
     private boolean logs;
-    private static CoQueue queue = null;
+    private static Queue queue = null;
     private ArrayList<WeakReference<Coline>> requests;
 
     // Lifecycle
@@ -37,7 +37,7 @@ public class CoQueue {
     private int pendingRequests;
 
     /**
-     * Co.lineQueue's constructor: method to initiate CoQueue with actual Context.
+     * Co.lineQueue's constructor: method to initiate Queue with actual Context.
      * It creates a new instance of class if this one does not already exist.
      * The Context can be an Activity, a Fragment, a Service or anything and it
      * assigns by Coline's instance. This is used to create a current queue of
@@ -45,13 +45,13 @@ public class CoQueue {
      *
      * @return        An instance of the class
      */
-    public static CoQueue init() {
+    public static Queue init() {
         if (queue == null) {
-            synchronized (CoQueue.class) {
+            synchronized (Queue.class) {
                 if (queue == null) {
-                    queue = new CoQueue();
+                    queue = new Queue();
                     queue.requests = new ArrayList<>();
-                    queue.logs = CoLogs.getInstance().getStatus();
+                    queue.logs = Logs.getInstance().getStatus();
                     if (queue.logs) Log.d(CO_LINE_QUEUE, "Queue initialization");
                 }
             }
@@ -62,9 +62,9 @@ public class CoQueue {
     /**
      * Get the current queue without checking any errors or nullable instance.
      *
-     * @return       The CoQueue current's instance.
+     * @return       The Queue current's instance.
      */
-    public static CoQueue getInstance() {
+    public static Queue getInstance() {
         return queue;
     }
 
@@ -82,7 +82,7 @@ public class CoQueue {
 
         this.requests.add(new WeakReference<>(request));
         this.used = true;
-        this.logs = request.getStatusLogs();
+        this.logs = request.getLogsStatus();
         this.pendingRequests += 1;
         if ( logs ) Log.d(CO_LINE_QUEUE, "New request added to the queue");
     }
@@ -103,7 +103,7 @@ public class CoQueue {
             Coline c = req.get();
             if (c != null) {
                 if ( logs ) Log.d(CO_LINE_QUEUE, "Execute request in current " +
-                        "queue (rf. " + req.toString() + ")");
+                        "queue (rf. " + c.toString() + ")");
 
                 c.exec();
             }
@@ -131,8 +131,8 @@ public class CoQueue {
     }
 
     /**
-     * Private: This destroys all reference, variable and element of CoQueue
-     * only if CoQueue is every pending requests are done and if the queue is used.
+     * Private: This destroys all reference, variable and element of Queue
+     * only if Queue is every pending requests are done and if the queue is used.
      *
      * @throws  Throwable Throw an exception when destroyed is compromised
      */
@@ -150,7 +150,7 @@ public class CoQueue {
      * Protected: This overrides Object's finalize method.
      * </p>
      * <p>
-     * This method checks if CoQueue instance is used and if not,
+     * This method checks if Queue instance is used and if not,
      * destroy the current queue.
      * </p>
      *
@@ -163,7 +163,7 @@ public class CoQueue {
                 destroyCurrentQueue();
             }
             catch(Exception ex) {
-                Log.d(CO_LINE_QUEUE, "Destroying the current queue not working: " + ex.toString());
+                Log.e(CO_LINE_QUEUE, "Destroying the current queue not working: " + ex.toString());
             }
             finally {
                 Log.d(CO_LINE_QUEUE, "Current queue is destroyed");

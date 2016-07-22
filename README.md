@@ -76,7 +76,7 @@ Documentation
 ```java
 public static Coline init(Context context)
 ```
-Initialise with the current Context.
+Initialize with the current Context.  
 ```java
 Coline.init(MainActivity.this);
 ```
@@ -113,7 +113,7 @@ If non-set, the default header properties are `content-type=application/x-www-fo
 ```java
 public Coline with(ContentValues values)
 ```
-Pass the parameters, generally keys/values pairs, to the server.
+Pass the body parameters, generally keys/values pairs, to the server.  
 ```java
 ContentValues values = new ContentValues();
 values.put("username", "Fllo");
@@ -122,14 +122,13 @@ values.put("github",   "Gitdefllo");
 Coline.with(values);
 ```
 It's possible to use an `ArrayMap<String, Object>` **(only API 19 and higher)**.
-```
 
 **Callbacks**
 
 ```java
 public Coline res(Collback collback)
 ```
-Called by `res()`, the request response is a couple `Error` and `Response` objects:
+Called by `res()`, the request response is a couple `Error` and `Response` objects:  
 ```java
 Coline.res(new Collback() {
     @Override
@@ -137,7 +136,8 @@ Coline.res(new Collback() {
 });
 ```
 
-**All requests from below 200 and above 299 are considered as an `Error`.**
+**All requests from below 200 to above 299 are considered as an `Error`.**  
+
 `Error` handles connection error. This object has these properties:
 ```java
 Error.status (int) Status of server response - if non-set, equals to 0
@@ -158,8 +158,8 @@ Response.body (String) Body of response server
 public void queue()
 public void send()
 ```
-These methods are used to fetch and batch multiple requests later at one time.
-To add a request to the current queue, call `queue()` at the end:
+These methods are used to fetch and batch multiple requests later at one time.  
+To add a request to the current queue, call `queue()` at the end:  
 ```java
 Coline.init(context).url(HttpMethod.GET, urlA).res(responseA).queue();
 ...
@@ -173,18 +173,18 @@ Coline.init(context).send();
 
 **Execution**
 
-*Note: it needs to be declared at the end.*
+*Note: it needs to be declared at the end.*  
 ```java
 public void exec()
 ```
 
-**Cancellation**
+**Cancellation**  
 
 ```java
 public void cancel()
 ```
 
-By making a global Coline variable, you can stop in safe mode the background treatment:
+By making a global Coline variable, you can stop in safe mode the background treatment:  
 ```java
 
 Coline colineService;

@@ -28,13 +28,16 @@ public enum HttpMethod {
     private final String value;
 
     /**
+     * Set the value
      * @param value methods value
      */
     private HttpMethod(final String value) {
         this.value = value;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Get the value of enum
+     *
      * @see java.lang.Enum#toString()
      */
     @Override

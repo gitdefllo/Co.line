@@ -26,106 +26,84 @@ import android.util.Log;
 import com.fllo.co.line.builders.HttpMethod;
 import com.fllo.co.line.builders.Logs;
 import com.fllo.co.line.callbacks.Collback;
+import com.fllo.co.line.callbacks.ObjCollback;
 import com.fllo.co.line.results.Error;
 import com.fllo.co.line.results.Response;
+import com.google.gson.Gson;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
  * Co.line
  * -------
- * @version 2.0.2
- * @author Florent Blot (@Gitdefllo)
+ * Android library for HttpURLConnection in threads
+ * and retrieve callbacks in foreground's app context.
  *
- * Android library for HttpURLConnection connections with automatic Thread
- * and Callbacks in chained methods in one line.
- *
- * Repository:    https://github.com/Gitdefllo/Co.line.git
- * Issue tracker: https://github.com/Gitdefllo/Co.line/issues
- *
+ * @version 2.2.0
+ * https://github.com/Gitdefllo/Co.line.git
  */
 public class Coline implements Observer {
 
-    // Tags
     private static final String CO_LINE  = "Co.line";
 
-    // Configuration
     private WeakReference<Context> context;
     private Thread thread;
-    private String method;
+    private String httpmethod;
     private String route;
-    private ContentValues headers, values;
+    private ContentValues headers, 
+            values;
     private Collback collback;
+    private ObjCollback objcollback;
     private boolean logs;
 
     /**
-     * <p>
-     * Co.line's constructor: method to initiate Coline with actual Context.
-     * It creates a new instance of class.
-     * The Context can be an Activity, a Fragment, a Service or anything. This
-     * will be used to return the request response into the main Thread.
-     * </p>
-     * <p>
-     * When this class is initiate, it attaches also a boolean value
-     * to des/activate logs and creates a new ContentValues.
-     * </p>
-     * <p>
-     * The ContentValues will be used to store the parameters to pass into the
-     * request by {@link #with(ContentValues values)} method.
-     * </p>
+     * Initiate class with current app Context
+     * (an Activity for example)
      *
-     * @param context (Context) Actual Context from the call
-     * @return        An instance of the class
+     * @param context (Context) Current context of client
+     * @return Instance of the class
      */
     public static Coline init(Context context) {
         Coline coline  = new Coline();
         coline.context = new WeakReference<>(context);
-        coline.values  = new ContentValues();
-        coline.headers = new ContentValues();
         coline.logs    = coline.getLogsStatus();
         return coline;
     }
 
     /**
-     * <p>
-     * This method initiates the request method and the URL to do the request.
-     * </p>
-     * <p>
-     * The request method is a static int value from HttpMethod class like:<br>
-     *      - HttpMethod.GET<br>
-     *      - HttpMethod.POST<br>
-     *      - HttpMethod.PUT<br>
-     *      - HttpMethod.DELETE<br>
-     *      - HttpMethod.HEAD<br>
-     * </p>
+     * Initiates HTTP request and URL of server
+     * HTTP request method is a static int value from HttpMethod class as:
+     *      - HttpMethod.GET
+     *      - HttpMethod.POST
+     *      - HttpMethod.PUT
+     *      - HttpMethod.DELETE
+     *      - HttpMethod.HEAD
      *
-     * @param method (HttpMethod) Value from HttpMethod of request method
-     * @param route  (String) Value for URL route (should be a String URL as
-     *               "http://www.example.com")
-     * @return       The current instance of the class
-     * @see          HttpMethod
+     * @param httpmethod (HttpMethod) Value of HttpMethod
+     * @param route (String) Value of URL route
+     * @return Current instance of the class
+     * @see HttpMethod
      */
-    public Coline url(HttpMethod method, String route) {
-        this.method = method.toString();
+    public Coline url(HttpMethod httpmethod, String route) {
+        this.httpmethod = httpmethod.toString();
         this.route  = route;
         return this;
     }
 
     /**
-     * <p>
-     * This method initiates the values to pass in header properties from
-     * a ContentValues object.
-     * </p>
-     * <p>
-     * See also: head(ArrayMap&lt;String, Object&gt;)
-     * </p>
+     * Prepare the header properties from
+     * a ContentValues object
+     * See also: head(ArrayMap<String, Object>)
      *
-     * @param params (ContentValues) Values to pass in header properties
-     * @return       The current instance of the class
+     * @param params (ContentValues) Values of header properties
+     * @return Current instance of the class
      */
     public Coline head(final ContentValues params) {
+        this.headers = new ContentValues();
         if (params.size() <= 0) {
             if ( logs ) Log.e(CO_LINE, "Please check the properties sent in " +
                         "\"head(ContentValues)\".");
@@ -136,22 +114,13 @@ public class Coline implements Observer {
     }
 
     /**
-     * <p>
      * Only with KitKat version and higher:
-     * </p>
-     * <p>
-     * This method initiates the values to pass in header properties from
-     * an ArrayMap&lt;String, Object&gt;.
-     * </p>
-     * <p>
-     * All the object in the array will be convert to a String.
-     * </p>
-     * <p>
+     * Prepare the values for header properties from
+     * an ArrayMap<String, Object>
      * See also: head(ContentValues)
-     * </p>
      *
-     * @param params (ArrayMap) Values to pass into the request
-     * @return       The current instance of the class
+     * @param params (ArrayMap) Values of header properties
+     * @return Current instance of the class
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline head(final ArrayMap<String, Object> params) {
@@ -169,18 +138,14 @@ public class Coline implements Observer {
     }
 
     /**
-     * <p>
-     * This method initiates the values to pass into the request from
-     * a ContentValues object.
-     * </p>
-     * <p>
-     * See also: with(Object...) and with(ArrayMap&lt;String, Object&gt;)
-     * </p>
+     * Convert the values for body request to String
+     * See also: with(ArrayMap<String, Object>)
      *
-     * @param values (ContentValues) Values to pass into the request
-     * @return       The current instance of the class
+     * @param values (ContentValues) Values of body request
+     * @return Current instance of the class
      */
     public Coline with(final ContentValues values) {
+        this.values  = new ContentValues();
         if (values.size() <= 0) {
             if ( logs ) Log.e(CO_LINE, "Please check the values sent in " +
                     "\"with(ContentValues)\".");
@@ -191,22 +156,13 @@ public class Coline implements Observer {
     }
 
     /**
-     * <p>
      * Only with KitKat version and higher:
-     * </p>
-     * <p>
-     * This method initiates the values to pass into the request from
-     * an ArrayMap&lt;String, Object&gt;.
-     * </p>
-     * <p>
-     * All the object in the array will be convert to a String.
-     * </p>
-     * <p>
-     * See also: with(ContentValues) and with(Object...)
-     * </p>
+     * Prepare the values for body request from
+     * an ArrayMap<String, Object>
+     * See also: with(ContentValues)
      *
-     * @param values (ArrayMap) Values to pass into the request
-     * @return       The current instance of the class
+     * @param values (ArrayMap) Values of body request
+     * @return Current instance of the class
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public Coline with(final ArrayMap<String, Object> values) {
@@ -223,11 +179,12 @@ public class Coline implements Observer {
     }
 
     /**
-     * This method handles a callback when server returned response.
+     * Handle a callback with coline objects response
      *
-     * @param collback (Collback) Interface of successful and errors requests
-     * @return         The current instance of the class
-     * @see            Collback
+     * @param collback (Collback) Interface of successful 
+     *                 and errors requests
+     * @return Current instance of the class
+     * @see Collback
      */
     public Coline res(Collback collback) {
         this.collback = collback;
@@ -235,9 +192,21 @@ public class Coline implements Observer {
     }
 
     /**
-     * This method creates a current queue to add multiple requests and launch it once.
+     * Handle a callback for a custom object
      *
-     * @see         Thread
+     * @return Coline Current instance
+     * @see Collback
+     */
+    public Coline res(ObjCollback objcollback) {
+        this.objcollback = objcollback;
+        return this;
+    }
+
+    /**
+     * Create a current queue to add multiple
+     * requests and execute them later
+     *
+     * @see Thread
      */
     public void queue() {
         thread = new Thread(new Runnable() {
@@ -250,9 +219,10 @@ public class Coline implements Observer {
     }
 
     /**
-     * This method launches all Coline instance.
+     * Execute all Coline instances in
+     * a thread
      *
-     * @see         Thread
+     * @see Thread
      */
     public void send() {
         if ( logs ) Log.d(CO_LINE, "Launch all request in the current queue");
@@ -273,9 +243,9 @@ public class Coline implements Observer {
     }
 
     /**
-     * This method executes a request in a new Thread.
+     * Executes a request in a thread
      *
-     * @see         Thread
+     * @see Thread
      */
     public void exec() {
         if ( logs ) Log.d(CO_LINE, "...Request execution...");
@@ -283,7 +253,7 @@ public class Coline implements Observer {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Request req = new Request(method, route, headers, logs);
+                Request req = new Request(httpmethod, route, headers, logs);
                 req.addObserver(Coline.this);
                 req.setValues(values);
                 req.makeRequest();
@@ -293,7 +263,7 @@ public class Coline implements Observer {
     }
 
     /**
-     *
+     * Update the instance with server response
      *
      * @param obs (Observable)
      * @param obj (Object)
@@ -301,18 +271,37 @@ public class Coline implements Observer {
     public void update(Observable obs, Object obj) {
         if (obs instanceof Request) {
             Request req = (Request) obs;
-            returnResult(req.err, req.res);
+            returnResult(req.res, req.err);
         }
+    }
+    
+    /**
+     * Private: return the specific type used from interface
+     *
+     * @param cls (Class) Interface to find the parameter type
+     */
+    private Type typeFromClass(Class cls) {
+        Type[] genericInterfaces = cls.getGenericInterfaces();
+        for (Type genericInterface : genericInterfaces) {
+            if (genericInterface instanceof ParameterizedType) {
+                return ((ParameterizedType) genericInterface)
+                        .getActualTypeArguments()[0];
+            }
+        }
+        return null;
     }
 
     /**
-     * Private: This method returns a String response in main Thread.
+     * Private: return the response in current main thread
      *
-     * @param err (Error) error object
      * @param res (Response) response object
+     * @param err (Error) error object
      */
-    private void returnResult(final Error err, final Response res) {
-        if (collback == null) return;
+    @SuppressWarnings("unchecked")
+    private void returnResult(final Response res, final Error err) {
+        if (collback == null && objcollback == null) 
+            return;
+        
         if ( logs ) Log.d(CO_LINE, "ReturnResult() called");
         
         Context c = context.get();
@@ -320,17 +309,27 @@ public class Coline implements Observer {
             new Handler(c.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    collback.onResult(err, res);
+                    if (objcollback != null) {
+                        Object obj = null;
+                        if (err == null) {
+                            Type type = typeFromClass(objcollback.getClass());
+                            obj = new Gson().fromJson(res.body, type);
+                        }
+                        objcollback.onResult(obj, err);
+                    } else {
+                        collback.onResult(res, err);
+                    }
+
                     clear();
                 }
             });
         }
     }
-
+    
     /**
-     * This method interrupts the background thread.
+     * Interrupt the background thread
      *
-     * @see         Thread
+     * @see Thread
      */
     public void cancel() {
         if ( logs ) Log.d(CO_LINE, "Interrupt background treatment");
@@ -343,33 +342,32 @@ public class Coline implements Observer {
     }
 
     /**
-     * This method get the status of current logs.
+     * Get the current status of debug logs
      *
-     * @return       A boolean (true: activate, false: disable)
-     * @see          Logs
+     * @return boolean (true: activate, false: disable)
+     * @see Logs
      */
     public boolean getLogsStatus() {
         return Logs.getInstance().getStatus();
     }
 
     /**
-     * This static method activates the logs.
+     * Enable the debug logs
      */
     public static void enableDebug() {
         Logs.getInstance().setStatus(true);
     }
 
     /**
-     * This static method desactivates the logs.
+     * Disable the debug logs
      */
     public static void disableDebug() {
         Logs.getInstance().setStatus(false);
     }
 
     /**
-     * Private: This method clear the current queue and calls Coline's
-     * override finalize method.
-     *
+     * Private: clear the current queue and
+     * call finalize
      */
     @SuppressWarnings("FinalizeCalledExplicitly")
     private void clear() {
@@ -382,9 +380,10 @@ public class Coline implements Observer {
     }
 
     /**
-     * Private: Call override Object's finalize method for the current queue.
+     * Private: call overrided Object's finalize
+     * for the current queue
      *
-     * @see     {@link Queue}
+     * @see {@link Queue}
      */
     @SuppressWarnings("FinalizeCalledExplicitly")
     private void clearQueue() {
@@ -405,24 +404,27 @@ public class Coline implements Observer {
     }
 
     /**
-     * Private: This destroys all reference, variable and element of Coline.
+     * Private: destroy all references, variables and elements
      *
-     * @throws Throwable  Throw an exception when destroyed is compromised
+     * @throws Throwable Throw an exception when destroy
+     * is compromised
      */
     private void destroyColine() throws Throwable {
         context = null;
-        method = null;
+        httpmethod = null;
         route = null;
         values = null;
         collback = null;
+        objcollback = null;
         logs = false;
     }
 
     /**
-     * Protected: This overrides Object's finalize method.
-     * This method destroy the instance.
+     * Protected: override Object's finalize method
+     * and set the current instance to null
      *
-     * @throws Throwable  Throw an exception when destroyed is compromised
+     * @throws Throwable Throw an exception when destroy
+     * is compromised
      */
     @Override
     protected void finalize() throws Throwable {

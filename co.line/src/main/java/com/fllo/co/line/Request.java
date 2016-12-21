@@ -21,10 +21,8 @@ import java.util.Observable;
 
 public class Request extends Observable {
 
-    // Tags
     private static final String CO_LINE  = "Co.line";
 
-    // Configuration
     protected Error err;
     protected Response res;
     private String method;
@@ -34,16 +32,12 @@ public class Request extends Observable {
     private boolean logs;
 
     /**
-     * <p>
-     * Request's constructor will do the request to the server.
-     * It needs the HTTP verb ({method}), the route URL ({route}),
-     * the header properties ({headers}) and the current state of
-     * Logs ({logs}).
-     * </p>
+     * Class to do the request to the server
      *
      * @param method (String) HttpMethod verb using by the request
      * @param route (String) URL of the request
-     * @param headers (ContentValues) Header properties as "Content-type" or "Authorization"
+     * @param headers (ContentValues) Header properties as
+     *                "Content-type" or "Authorization"
      * @param logs (boolean) Current state of Logs
      */
     public Request(String method, String route,
@@ -55,13 +49,11 @@ public class Request extends Observable {
     }
 
     /**
-     * <p>
-     * Protected: This method get all value from {ContentValues values} and prepares
-     * a StringBuilder with all parameter given to send it into the request.
-     * </p>
+     * Protected: get all values from {ContentValues values} and prepare
+     * a StringBuilder with all parameters given for the body request
      *
-     * @param values (ContentValues) Body parameters
-     * @see          StringBuilder
+     * @param values (ContentValues) Body values
+     * @see StringBuilder
      */
     protected void setValues(ContentValues values) {
         if (values != null && values.size() > 0) {
@@ -85,9 +77,9 @@ public class Request extends Observable {
     }
 
     /**
-     * Protected: This method does a request by HttpURLConnection
+     * Protected: do the request with HttpURLConnection
      *
-     * @see         HttpURLConnection
+     * @see HttpURLConnection
      */
     protected void makeRequest() {
         // Prepare timeout variables
@@ -119,7 +111,7 @@ public class Request extends Observable {
             http = (HttpURLConnection) url.openConnection();
 
             // Adding header properties
-            if (headers.size() > 0) {
+            if (headers != null && headers.size() > 0) {
                 for (Map.Entry<String, Object> entry : headers.valueSet()) {
                     http.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
                 }
@@ -213,7 +205,8 @@ public class Request extends Observable {
     }
 
     /**
-     * Private: Create an error object to be handled by Collback.onResult()
+     * Private: create an error object to be handled by
+     * Collback.onResult()
      */
     private void setErrorResult(String exception, String stacktrace, String message, int status) {
         if (message == null || message.length() == 0) {
@@ -226,7 +219,8 @@ public class Request extends Observable {
     }
 
     /**
-     * Private: Create an error object to be handled by Collback.onResult()
+     * Private: create a response object to be handled by
+     * Collback.onResult()
      */
     private void setResponseResult(String response, int status) {
         this.err = null;

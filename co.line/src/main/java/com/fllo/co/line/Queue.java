@@ -24,26 +24,19 @@ import java.util.ArrayList;
 
 public class Queue {
 
-    // Tags
     private static final String CO_LINE_QUEUE  = "Queue";
 
-    // Configuration
     private boolean logs;
     private static Queue queue = null;
     private ArrayList<WeakReference<Coline>> requests;
-
-    // Lifecycle
     private boolean used = false;
     private int pendingRequests;
 
     /**
-     * Co.lineQueue's constructor: method to initiate Queue with actual Context.
-     * It creates a new instance of class if this one does not already exist.
-     * The Context can be an Activity, a Fragment, a Service or anything and it
-     * assigns by Coline's instance. This is used to create a current queue of
-     * request and launch it at one time.
+     * Initiate queue class and prepare to get multiple
+     * Coline objects
      *
-     * @return        An instance of the class
+     * @return Instance of the class
      */
     public static Queue init() {
         if (queue == null) {
@@ -60,19 +53,20 @@ public class Queue {
     }
 
     /**
-     * Get the current queue without checking any errors or nullable instance.
+     * Get the current queue without checking any errors
+     * or nullable instance
      *
-     * @return       The Queue current's instance.
+     * @return The Queue current's instance
      */
     public static Queue getInstance() {
         return queue;
     }
 
     /**
-     * Save the current request into the current queue.
+     * Save the current request into the current queue
      *
-     * @param request (Coline) The Coline's instance which will be
-     *                added to the queue.
+     * @param request (Coline) Coline's instance which will be
+     *                added to the queue
      */
     public void add(Coline request) {
         if (this.requests == null) {
@@ -88,8 +82,7 @@ public class Queue {
     }
 
     /**
-     * Retrieve all requests in queue, and launch them.
-     *
+     * Retrieve all requests in queue and execute them
      */
     public void start() {
         if (this.requests == null) {
@@ -112,18 +105,18 @@ public class Queue {
     }
 
     /**
-     * Get the number of pending requests in the current queue.
+     * Get the number of pending requests in the current queue
      *
-     * @return       The number of pending requests
+     * @return Number of pending requests
      */
     public boolean getPending() {
         return this.pendingRequests > 0;
     }
 
     /**
-     * Get the current state of the queue: if it's used or not.
+     * Get the current state of the queue: if it's used or not
      *
-     * @return       The state of the current queue
+     * @return State of the current queue
      */
     // Get the number of pending request in the current queue
     public boolean getState() {
@@ -131,10 +124,10 @@ public class Queue {
     }
 
     /**
-     * Private: This destroys all reference, variable and element of Queue
-     * only if Queue is every pending requests are done and if the queue is used.
+     * Private: destroy all references, variables and elements of Queue
+     * only if Queue has every pending requests done and if the queue is used
      *
-     * @throws  Throwable Throw an exception when destroyed is compromised
+     * @throws Throwable Throw an exception when destroy is compromised
      */
     public void destroyCurrentQueue() throws Throwable {
         if ( getState() && pendingRequests == 0 ) {
@@ -146,15 +139,10 @@ public class Queue {
     }
 
     /**
-     * <p>
-     * Protected: This overrides Object's finalize method.
-     * </p>
-     * <p>
-     * This method checks if Queue instance is used and if not,
-     * destroy the current queue.
-     * </p>
+     * Protected: Override Object's finalize method, check if
+     * Queue's instance is used and if not and destroy the current queue
      *
-     * @throws  Throwable Throw an exception when destroyed is compromised
+     * @throws Throwable Throw an exception when destroy is compromised
      */
     @Override
     protected void finalize() throws Throwable {

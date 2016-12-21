@@ -13,9 +13,9 @@ import com.fllo.co.line.builders.HttpMethod;
 import com.fllo.co.line.callbacks.Collback;
 import com.fllo.co.line.results.Error;
 import com.fllo.co.line.results.Response;
-import com.fllo.co.line.sample.utils.UrlsConstants;
+import com.fllo.co.line.sample.utils.UrlsUtils;
 
-public class QueueRequestActivity extends AppCompatActivity {
+public class MultipleRequestsActivity extends AppCompatActivity {
 
     private boolean isSuccessfulRequest = true;
     private int countRequests = 0;
@@ -35,9 +35,9 @@ public class QueueRequestActivity extends AppCompatActivity {
     }
 
     public void addRequestToQueue(View view) {
-        String urlForRequest = UrlsConstants.URL_DISCOVER;
+        String urlForRequest = UrlsUtils.URL_DISCOVER;
         if ( !isSuccessfulRequest ) {
-            urlForRequest = UrlsConstants.URL_FAKE_ERROR;
+            urlForRequest = UrlsUtils.URL_FAKE_ERROR;
         }
 
         // Initialize Coline with a Queue
@@ -60,7 +60,7 @@ public class QueueRequestActivity extends AppCompatActivity {
     // General callback
     private Collback queueCallback = new Collback() {
         @Override
-        public void onResult(Error err, Response res) {
+        public void onResult(Response res, Error err) {
             countRequests += 1;
 
             // Handle errors

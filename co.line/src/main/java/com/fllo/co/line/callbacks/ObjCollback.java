@@ -16,15 +16,15 @@
 package com.fllo.co.line.callbacks;
 
 import com.fllo.co.line.results.Error;
-import com.fllo.co.line.results.Response;
 
-public interface Collback {
+public interface ObjCollback<T> {
 
     /**
-     * Return two objects: Response and Error
+     * Return two objects: Error and Custom Class Object
+     * previously attached
      *
-     * @param res (Response) response object
+     * @param obj (T) custom response object
      * @param err (Error) error object
      */
-    void onResult(Response res, Error err);
+    void onResult(T obj, Error err);
 }

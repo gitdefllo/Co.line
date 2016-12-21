@@ -14,10 +14,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void seeSimpleRequest(View view) {
-        startActivity(new Intent(this, SimpleRequestActivity.class));
+        startActivity(new Intent(this, SingleRequestActivity.class));
     }
 
     public void seeQueueRequest(View view) {
-        startActivity(new Intent(this, QueueRequestActivity.class));
+        startActivity(new Intent(this, MultipleRequestsActivity.class));
     }
 }

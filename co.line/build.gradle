@@ -4,20 +4,24 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def projectVersion  = '2.1.0'
+def codeVersion     = '2'
+def projectVersion  = '2.2.0'
 def libName         = 'Co.line'
 def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
 def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
 def gitUrl          = 'https://github.com/Gitdefllo/Co.line.git'
 
+version = projectVersion
+group = 'com.fllo.co.line'
+
 android {
-    compileSdkVersion 24
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 24
-        versionCode 1
+        targetSdkVersion 25
+        versionCode = codeVersion
         versionName = projectVersion
     }
     buildTypes {
@@ -30,10 +34,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.google.code.gson:gson:2.4'
 }
-
-version = projectVersion
-group = 'com.fllo.co.line'
 
 install {
     repositories.mavenInstaller {

@@ -1,13 +1,18 @@
 <resources>
-    <string name="sample_name">Co.line</string>
+    <string name="app_name">Co.line</string>
     <string name="hello_title">Hello Co.line!</string>
 
     <string name="legend_simple_request">Do a simple request</string>
     <string name="legend_request_queue">Handle a request queue</string>
 
     <string name="action_try">Try it!</string>
-    <string name="action_success">Get success</string>
-    <string name="action_error">Get error</string>
+    <string name="action_success">Get Success</string>
+    <string name="action_error">Get Error</string>
+    <string name="action_object">Get Custom Object</string>
     <string name="action_add_to_queue">Add to queue</string>
     <string name="action_launch_the_queue">Call the queue</string>
+
+    <string name="label_res_error">Exception:\n%1$s\n- status %2$d\n%3$s</string>
+    <string name="label_res_success">Success:\n- status %1$d\n%2$s</string>
+    <string name="label_res_object">Object:\n\tid: %1$d\n\ttitle: %2$s\n\toverview: %3$s\n\tvote_average: %4$f\n\tposter_path: %5$s</string>
 </resources>

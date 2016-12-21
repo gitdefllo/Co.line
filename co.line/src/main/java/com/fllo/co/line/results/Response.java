@@ -6,7 +6,7 @@ public class Response {
     public String body;
 
     /**
-     * Error object handles error which occured in connection
+     * Response object handles string results from server
      *
      * @param status (int) HTTP response status
      * @param body (String) Body response of server

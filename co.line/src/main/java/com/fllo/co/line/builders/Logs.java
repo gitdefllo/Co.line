@@ -21,25 +21,21 @@ import com.fllo.co.line.BuildConfig;
 
 public class Logs {
 
-    // Tags
     private static final String CO_LINE  = "Co.line";
 
-    // Configuration
     private static Logs instance = null;
-
-    // Status
     private boolean status = false;
 
     /**
-     * Protected: Logs'empty constructor.
+     * Protected: logs'empty constructor.
      *
      */
     protected Logs() { }
 
     /**
-     * This method gets the current instance or creates a new one.
+     * Get the current instance. If null, create a new one
      *
-     * @return       An instance of logs class
+     * @return An instance of logs class
      */
     public static Logs getInstance() {
         if (instance == null) {
@@ -50,7 +46,7 @@ public class Logs {
     }
 
     /**
-     * This method sets the method request.
+     * Set the current status
      *
      * @param status (boolean) Value to set for logs
      */
@@ -59,9 +55,9 @@ public class Logs {
     }
 
     /**
-     * This method returns the status'logs for Co.line class.
+     * Get the current status
      *
-     * @return       A boolean
+     * @return A boolean
      */
     public boolean getStatus() {
         return this.status;

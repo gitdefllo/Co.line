@@ -1,4 +1,4 @@
-Co.line Docs
+Docs
 =======
 
 Full documentation
@@ -6,15 +6,13 @@ Full documentation
 
 **Safe usage**
 
-By making a global Coline variable, you can stop in safe mode the background treatment:
+By making a global Coline variable, you can stop in safe mode the background treatment when `onDestroy` is called:
 ```java
 
 Coline coline;
 ...
 coline = Coline.init(this);
-coline.url(HttpMethod.GET, mUrl)
-             .res(mResult)
-             .exec();
+coline.url(HttpMethod.GET, mUrl).res(mResult).exec();
 ...
 
 @Override

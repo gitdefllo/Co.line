@@ -79,7 +79,7 @@ or maven
 Documentation
 --------
 
-See the [docs](https://github.com/Gitdefllo/Co.line/DOCS.md) for more informations.
+See the [docs](https://github.com/Gitdefllo/Co.line/blob/master/DOCS.md) for more information.
 
 
 License

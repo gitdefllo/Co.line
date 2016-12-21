@@ -339,6 +339,7 @@ public class Coline implements Observer {
             return;
         }
         thread.interrupt();
+        clear();
     }
 
     /**

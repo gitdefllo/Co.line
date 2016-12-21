@@ -1,0 +1,59 @@
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.jfrog.bintray'
+
+Properties properties = new Properties()
+properties.load(new FileInputStream("local.properties"))
+
+group = properties.getProperty("bintray.group")
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+afterEvaluate {
+    javadoc.classpath += files(android.libraryVariants.collect { variant ->
+        variant.javaCompile.classpath.files
+    })
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.key")
+    configurations = ['archives']
+
+    pkg {
+        repo = properties.getProperty("bintray.repo")
+        name = properties.getProperty("lib.name")
+        desc = properties.getProperty("lib.desc")
+        websiteUrl = properties.getProperty("lib.site")
+        vcsUrl = properties.getProperty("lib.git")
+        licenses = ["Apache-2.0"]
+        publish = true
+        publicDownloadNumbers = true
+
+        version {
+            name = properties.getProperty("lib.version")
+            desc = properties.getProperty("lib.desc")
+            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
+                    Locale.FRANCE).format(new Date())
+            vcsTag = properties.getProperty("lib.version")
+        }
+    }
+}

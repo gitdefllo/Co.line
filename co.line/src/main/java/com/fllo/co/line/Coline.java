@@ -43,7 +43,7 @@ import java.util.Observer;
  * Android library for HttpURLConnection in threads
  * and retrieve callbacks in foreground's app context.
  *
- * @version 2.2.0
+ * @version 2.2.1
  * https://github.com/Gitdefllo/Co.line.git
  */
 public class Coline implements Observer {
@@ -97,7 +97,7 @@ public class Coline implements Observer {
     /**
      * Prepare the header properties from
      * a ContentValues object
-     * See also: head(ArrayMap<String, Object>)
+     * See also: head(ArrayMap&lt;String, Object&gt;)
      *
      * @param params (ContentValues) Values of header properties
      * @return Current instance of the class
@@ -116,7 +116,7 @@ public class Coline implements Observer {
     /**
      * Only with KitKat version and higher:
      * Prepare the values for header properties from
-     * an ArrayMap<String, Object>
+     * an ArrayMap&lt;String, Object&gt;
      * See also: head(ContentValues)
      *
      * @param params (ArrayMap) Values of header properties
@@ -139,7 +139,7 @@ public class Coline implements Observer {
 
     /**
      * Convert the values for body request to String
-     * See also: with(ArrayMap<String, Object>)
+     * See also: with(ArrayMap&lt;String, Object&gt;)
      *
      * @param values (ContentValues) Values of body request
      * @return Current instance of the class
@@ -158,7 +158,7 @@ public class Coline implements Observer {
     /**
      * Only with KitKat version and higher:
      * Prepare the values for body request from
-     * an ArrayMap<String, Object>
+     * an ArrayMap&lt;String, Object&gt;
      * See also: with(ContentValues)
      *
      * @param values (ArrayMap) Values of body request
@@ -194,6 +194,8 @@ public class Coline implements Observer {
     /**
      * Handle a callback for a custom object
      *
+     * @param objcollback (ObjCollback) Interface of client
+     *                    object requests
      * @return Coline Current instance
      * @see Collback
      */

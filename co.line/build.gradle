@@ -1,18 +1,7 @@
-import java.text.SimpleDateFormat
-
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
 
-def codeVersion     = '2'
-def projectVersion  = '2.2.0'
-def libName         = 'Co.line'
-def libDesc         = 'Android library for HttpURLConnection connections with automatic Thread and Callbacks in chained methods'
-def siteUrl         = 'https://github.com/Gitdefllo/Co.line'
-def gitUrl          = 'https://github.com/Gitdefllo/Co.line.git'
-
-version = projectVersion
-group = 'com.fllo.co.line'
+Properties properties = new Properties()
+properties.load(new FileInputStream("local.properties"))
 
 android {
     compileSdkVersion 25
@@ -21,9 +10,14 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode = codeVersion
-        versionName = projectVersion
+        versionCode 1
+        versionName = properties.getProperty("lib.version")
     }
+
+    repositories {
+        mavenCentral()
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -37,95 +31,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'aar'
-                name = libName
-                description = libDesc
-                url siteUrl
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'bintray-fllo-maven'
-                        name 'bintray-plugins'
-                        email 'http://dl.bintray.com/fllo/maven'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options.links("http://docs.oracle.com/javase/7/docs/api/");
-    options.linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"
-    exclude '**/BuildConfig.java'
-    exclude '**/R.java'
-    failOnError = false
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options.encoding = 'UTF-8'
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives androidJavadocsJar
-    archives javadocJar
-    archives sourcesJar
-}
-
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.key")
-
-    configurations = ['archives']
-    pkg {
-        repo = "maven"
-        name = libName
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
-        publish = true
-        version {
-            name = projectVersion
-            desc = libDesc
-            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
-                    Locale.FRANCE).format(new Date())
-            vcsTag = projectVersion
-        }
-    }
-}
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'

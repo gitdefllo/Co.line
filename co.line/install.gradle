@@ -1,0 +1,42 @@
+apply plugin: 'com.github.dcendents.android-maven'
+
+Properties properties = new Properties()
+properties.load(new FileInputStream("local.properties"))
+
+group = properties.getProperty("bintray.group")
+version = properties.getProperty("lib.version")
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                groupId group
+                artifactId = properties.getProperty("bintray.artifact")
+
+                name = properties.getProperty("lib.name")
+                description = properties.getProperty("lib.desc")
+                url = properties.getProperty("lib.site")
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = properties.getProperty("dev.id")
+                        name = properties.getProperty("dev.name")
+                        email = properties.getProperty("dev.email")
+                    }
+                }
+                scm {
+                    connection = properties.getProperty("lib.git")
+                    developerConnection = properties.getProperty("lib.git")
+                    url = properties.getProperty("lib.site")
+                }
+            }
+        }
+    }
+}

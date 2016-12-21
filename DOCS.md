@@ -81,7 +81,7 @@ It's possible to use an `ArrayMap<String, Object>` **(only API 19 and higher)**.
 
 Two callbacks are available:
 
-**Collback** which retrieve two Coline objects:
+*Collback* which retrieves two Coline objects:
 ```java
 public Coline res(Collback collback)
 ```
@@ -93,7 +93,7 @@ coline.res(new Collback() {
 });
 ```
 
-Or **ObjCollback** which can handle any custom object, converting by [Gson](https://github.com/google/gson) library:
+Or *ObjCollback* which can handle any custom object, internal use of [Gson](https://github.com/google/gson) library:
 ```java
 public Coline res(Collback<T> collback)
 ```

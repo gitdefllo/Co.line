@@ -65,14 +65,14 @@ Download
 
 Via gradle
 ```java
-compile 'com.fllo.co.line:co.line:2.2.0'
+compile 'com.fllo.co.line:co.line:2.2.4'
 ```
 or maven
 ```xml
 <dependency>
   <groupId>com.fllo.co.line</groupId>
   <artifactId>co.line</artifactId>
-  <version>2.2.0</version>
+  <version>2.2.4</version>
 </dependency>
 ```
 

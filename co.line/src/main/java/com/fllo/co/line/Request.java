@@ -124,11 +124,11 @@ public class Request extends Observable {
             http.setConnectTimeout(MAX_CONNECT_TIMEOUT);
             http.setUseCaches(true);
             http.setDoInput(true);
+            http.setRequestMethod( method );
 
             // Send value when needed
             if ( body != null ) {
                 http.setDoOutput(true);
-                http.setRequestMethod( method );
                 DataOutputStream wr = new DataOutputStream( http.getOutputStream() );
                 wr.writeBytes( body.toString() );
                 wr.flush();

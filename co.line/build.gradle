@@ -1,17 +1,14 @@
 apply plugin: 'com.android.library'
 
-Properties properties = new Properties()
-properties.load(new FileInputStream("local.properties"))
-
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 1
-        versionName = properties.getProperty("lib.version")
+        versionCode 2
+        versionName '2.2.4'
     }
 
     repositories {
@@ -31,5 +28,4 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
 }
 
-apply from: 'install.gradle'
-apply from: 'bintray.gradle'
+apply from: 'deploy.gradle'

@@ -1,0 +1,89 @@
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+Properties props = new Properties()
+props.load(new FileInputStream("local.properties"))
+
+version=props.getProperty("lib.vs")
+group=props.getProperty("bintray.group")
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId props.getProperty("bintray.group")
+            artifactId props.getProperty("bintray.artifact")
+            version props.getProperty("lib.vs")
+            name props.getProperty("bintray.artifact")
+            url props.getProperty("lib.git")
+            inceptionYear '2017'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution "repo"
+                }
+            }
+            developers {
+                developer {
+                    id props.getProperty("dev.id")
+                    name props.getProperty("dev.name")
+                    email props.getProperty("dev.email")
+                }
+            }
+            scm {
+                connection props.getProperty("lib.git")
+                developerConnection props.getProperty("lib.git")
+                url props.getProperty("lib.site")
+            }
+        }
+    }
+}
+
+bintray {
+    user = props.getProperty("bintray.user")
+    key = props.getProperty("bintray.key")
+
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = props.getProperty("lib.name")
+        desc = props.getProperty("lib.desc")
+        websiteUrl = props.getProperty("lib.site")
+        vcsUrl = props.getProperty("lib.git")
+
+        licenses = ["Apache-2.0"]
+        publish = true
+
+        version {
+            name = props.getProperty("lib.vs")
+            desc = props.getProperty("lib.desc")
+            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
+                    Locale.FRANCE).format(new Date())
+            vcsTag = props.getProperty("lib.vs")
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+    // options.encoding = 'UTF-8'
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
